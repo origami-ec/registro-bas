@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="comprobante_factura_subreport_st" language="groovy" pageWidth="210" pageHeight="297" columnWidth="190" leftMargin="0" rightMargin="20" topMargin="0" bottomMargin="0" uuid="3f60f481-3db4-4ef1-b0e1-e5e1f6341b74">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_LIQ" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select
+ac.nombre, det.valor
+from financiero.ren_pago_rubro as det
+left join app.reg_acto as ac on (ac.id = det.rubro)
+where det.pago  = $P{ID_LIQ}]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="1" width="106" height="12" isRemoveLineWhenBlank="true" uuid="bf66619d-bac6-4fcb-85f9-a2008e5568c4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="106" y="0" width="64" height="12" isRemoveLineWhenBlank="true" uuid="9eaa4ec4-47c5-4ab6-8ea2-9540f2fe4a32"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sigef="http://xmlns.jcp.org/jsf/composite/sigef/components"
+                template="/template/bpmTemplate.xhtml">
+    <ui:define name="title">
+        Iniciar Trámite
+    </ui:define>
+
+    <ui:param name="tittle" value="INICIAR TRÁMITE"/>
+    <ui:define name="content">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12">
+                <h:form id="formMain" prependId="false">
+                    <div class="card" style="padding: 20px; "> 
+                        <p:outputLabel value="👋 Hola! Bienvenido al inicio del trámite #{userSession.name_user}! 😁 antes de iniciar un trámite verifica que toda la información esté correctamente.️" 
+                                       style="font-weight: bold"/>
+                    </div>
+                    <div class="ui-g">
+                        <div class="ui-g-4">
+                            <div class="card">
+                                <p:outputLabel value="🏢 Departamentos y Servicios Disponibles" style="font-weight: bold"/><br/><br/>
+                                <p:panelGrid columns="1" layout="grid" styleClass="form-group ui-panelgrid-blank">
+                                    <h:panelGroup id="panelDept">
+                                        <p:outputLabel id="lblDepartamento" value="Departamentos"  style="font-weight: bolder" /><br></br>
+                                        <p:selectOneMenu id="cmbDepartamento" value="#{iniciarTramiteVUMB.departamento}" filter="true"
+                                                         converter="dtoConverter" autoWidth="true"  
+                                                         style="width: 100%" filterMatchMode="contains">
+                                            <p:ajax listener="#{iniciarTramiteVUMB.getServicioByDpto()}" 
+                                                    update="panelItems"/>
+                                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                            <f:selectItems value="#{iniciarTramiteVUMB.departamentos}" var="dpt" 
+                                                           itemLabel="#{dpt.nombre}" itemValue="#{dpt}"/>
+                                        </p:selectOneMenu>    
+                                    </h:panelGroup> 
+                                    <h:panelGroup id="panelItems">
+                                        <p:outputLabel id="lblServicios" value="Servicio" 
+                                                       style="font-weight: bolder" /><br></br>
+                                        <p:selectOneMenu value="#{iniciarTramiteVUMB.servicio}"
+                                                         converter="dtoConverter" autoWidth="false" filter="true"
+                                                         style="width: 100%" filterMatchMode="contains">
+                                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                            <f:selectItems value="#{iniciarTramiteVUMB.servicios}"
+                                                           var="item" itemLabel="#{item.nombre}" itemValue="#{item}"/>
+                                            <p:ajax update="formMain" listener="#{iniciarTramiteVUMB.cargarTipoContribuyentes()}"/>
+                                        </p:selectOneMenu>    
+                                    </h:panelGroup>
+                                    <h:panelGroup id="panelContribuyentes">
+                                        <p:outputLabel id="lblContribuyentes" value="Tipo de contribuyente" style="font-weight: bold" /><br></br>
+                                        <p:selectOneMenu value="#{iniciarTramiteVUMB.tipoContribuyente}"
+                                                         converter="dtoConverter" autoWidth="false" filter="true"
+                                                         style="width: 100%">
+                                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                            <f:selectItems value="#{iniciarTramiteVUMB.tiposContribuyentes}"
+                                                           var="tc" itemLabel="#{tc.nombre}" itemValue="#{tc}"/>
+                                            <p:ajax update="formMain" listener="#{iniciarTramiteVUMB.getRequisitosByServicio()}"/>
+                                        </p:selectOneMenu>    
+                                    </h:panelGroup>
+                                </p:panelGrid>
+                            </div>
+                            <div class="card">
+                                <p:outputLabel value="👩 🧑 Solicitante" style="font-weight: bold" /><br/><br/>
+                                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group" id="idBeneficiacio">
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput" >
+                                        <p:outputLabel value="Identificación:" style="font-weight: bold"/>
+                                        <div class="ui-inputgroup"> 
+                                            <p:inputText value="#{iniciarTramiteVUMB.tramite.solicitante.ciRuc}" 
+                                                         placeholder="Ingrese la Identificación" style="width: 100%" 
+                                                         readonly="#{iniciarTramiteVUMB.tramite.solicitante.id ne null}"
+                                                         onkeypress="if (event.keyCode == 13) {
+                                                                     return false;
+                                                                 }">
+                                            </p:inputText>
+                                            <p:spacer width="5" />
+                                            <p:commandButton icon="pi pi-search" title="Buscar Solicitante" 
+                                                             actionListener="#{iniciarTramiteVUMB.searchBeneficiario(true)}">
+                                                <p:ajax event="dialogReturn" update="idBeneficiacio"
+                                                        listener="#{iniciarTramiteVUMB.selectBeneficiario}"/>
+                                            </p:commandButton>
+                                            <p:remoteCommand name="buscar" actionListener="#{iniciarTramiteVUMB.searchBeneficiario(true)}"  />
+                                            <p:spacer width="5" />
+                                            <p:commandButton  icon="pi pi-trash" update="idBeneficiacio"
+                                                              actionListener="#{iniciarTramiteVUMB.limpiarDatosSolicitante()}" >
+                                            </p:commandButton>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput">
+                                        <p:outputLabel value="Nombres:" style="font-weight: bold"/>
+                                        <p:inputText id="nombre_solicitante" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.nombres}"
+                                                     onkeypress="focusNextOnEnter(event, 'razonSocial')" readonly="true"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput" >
+                                        <p:outputLabel value="Apellidos:" style="font-weight: bold"/>
+                                        <p:inputText id="apellido_solicitante" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.apellidos}"
+                                                     onkeypress="focusNextOnEnter(event, 'razonSocial')" readonly="true"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput" 
+                                                  rendered="#{iniciarTramiteVUMB.tramite.solicitante.ciRuc.length() eq 13}">
+                                        <p:outputLabel value="Razon Social:" style="font-weight: bold"/>
+                                        <p:inputText id="razonSocial" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.razonSocial}"
+                                                     onkeypress="focusNextOnEnter(event, 'razonSocial')" readonly="true"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput"
+                                                  rendered="#{iniciarTramiteVUMB.tramite.solicitante.ciRuc.length() eq 13}">
+                                        <p:outputLabel value="Nombre Comercial:" style="font-weight: bold"/>
+                                        <p:inputText id="nombre" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.nombreComercial}"
+                                                     onkeypress="focusNextOnEnter(event, 'nombre')" readonly="true"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput" >
+                                        <p:outputLabel value="Dirección:" style="font-weight: bold"/>
+                                        <p:inputText id="direccion" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.direccion}"
+                                                     onkeypress="focusNextOnEnter(event, 'direccion')"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput" >
+                                        <p:outputLabel value="Correo:" style="font-weight: bold"/>
+                                        <p:inputText id="correo" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.correo1}"
+                                                     onkeypress="focusNextOnEnter(event, 'email')"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" style="width: 100%;" class="panelInput" >
+                                        <p:outputLabel value="Teléfono:" style="font-weight: bold"/>
+                                        <p:inputText id="telefono" style="width: 100%;" value="#{iniciarTramiteVUMB.tramite.solicitante.telefono1}"
+                                                     onkeypress="focusNextOnEnter(event, 'celular')"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <center>
+                                            <p:commandButton value="Actualizar" icon="pi pi-refresh" style="width: auto"
+                                                             actionListener="#{iniciarTramiteVUMB.actualizarDatosSolicitante()}"/>
+                                        </center>
+                                    </h:panelGroup>
+                                </p:panelGrid>
+                            </div>
+                            <div class="card">
+                                <p:outputLabel value="🧐 Asunto u observación del trámite" style="font-weight: bold"/>
+                                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                    <h:panelGroup>
+                                        <p:inputTextarea id="concepto" style="width: 100%;" value="#{iniciarTramiteVUMB.solicitudServicios.descripcion}"
+                                                         onkeypress="focusNextOnEnter(event, 'concepto')" readonly="false" rows="5">
+                                        </p:inputTextarea>
+                                    </h:panelGroup>
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                        <div class="ui-g-8">
+                            <div class="card">
+                                <p:outputLabel value="📑 Escoja un servicio y el tipo de contribuyente para la carga de los requisitos" style="font-weight: bold"
+                                               rendered="#{iniciarTramiteVUMB.servicio eq null or iniciarTramiteVUMB.tipoContribuyente eq null}"/>
+                                <p:outputPanel rendered="#{not empty iniciarTramiteVUMB.requisitos}"> 
+                                    <p:outputLabel value="📃 Requisitos del Servicio #{iniciarTramiteVUMB.servicio.nombre}" 
+                                                   style="font-weight: bold"/><br/><br/>
+                                    <h:panelGroup>
+                                        <p:dataTable id="dtRequisitos" value="#{iniciarTramiteVUMB.requisitos}"
+                                                     var="item" paginator="true" rowsPerPageTemplate="10,15" rows="10"
+                                                     paginatorPosition="bottom" currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords}"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     emptyMessage="No existen requisitos" tableStyle="table-layout:auto" rowKey="#{item.id}"
+                                                     selection="#{iniciarTramiteVUMB.requisitosSeleccionados}">
+                                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                                            <p:column headerText="Nombre Requisito" style="width: 450px">
+                                                <p:outputLabel value="#{item.nombre}"/>
+                                            </p:column>
+                                            <p:column headerText="Requerido" style="width: 16px;text-align: center;">
+                                                <p:outputLabel value="#{item.opcional ==true?'NO':'SI'}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGroup>
+                                </p:outputPanel>
+                            </div>
+                            <div class="card">
+                                <p:outputLabel value="⚠️ Validaciones" style="font-weight: bold"/><br/><br/>
+
+                            </div>
+                            <div class="card">
+                                <p:outputLabel value="📑 Subir Documento" style="font-weight: bold"/>
+                                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group" id="panelDocumento">
+                                    <p:outputLabel value="#{iniciarTramiteVUMB.file.fileName}" rendered="#{iniciarTramiteVUMB.file ne null}"/>
+                                    <p:fileUpload listener="#{iniciarTramiteVUMB.handleFileUpload}"  style="width: 100%" accept=".pdf"
+                                                  skinSimple="true" allowTypes="/(\.|\/)(pdf)$/i" mode="advanced" dragDropSupport="false"
+                                                  messageTemplate="Solo puede subir archivos PDF"
+                                                  label="Buscar" uploadLabel="Subir" cancelLabel="Cancelar" update="panelDocumento" previewWidth="60" />
+                                </p:panelGrid>
+                            </div>
+                            <div class="card">
+                                <p:outputLabel value="🧒 👦 Usuarios disponibles para el trámite" style="font-weight: bold"/>
+                                <p:panelGrid columns="1" layout="grid"  >
+                                   
+                                        <p:dataTable id="dtUsuariosSelect" widgetVar="dtUsuariosSelect"
+                                                     value="#{iniciarTramiteVUMB.userList}" var="user"
+                                                     filterEvent="enter"
+                                                     paginator="true" rowsPerPageTemplate="10,50,100" 
+                                                     paginatorPosition="bottom" rows="10" 
+
+                                                     rowKey="#{user.id}" reflow="true"
+                                                     selection="#{iniciarTramiteVUMB.userSelect}" rowIndexVar="i"
+                                                     emptyMessage="No existen registros"  style="font-size: 12px">
+                                            <p:column headerText="***" style="text-align: center" width="40" 
+                                                      selectionMode="single"/>
+                                            <p:column headerText="Usuario" filterBy="#{user.usuario.usuario}">
+                                                <h:outputText value="#{user.usuario.usuario}"/>
+                                            </p:column>
+                                            <p:column headerText="Nombres" filterBy="#{user.usuario.ente.nombres}">
+                                                <h:outputText value="#{user.usuario.ente.nombres}"/><br/>
+                                            </p:column>
+                                            <p:column headerText="Apellidos" filterBy="#{user.usuario.ente.apellidos}">
+                                                <h:outputText value="#{user.usuario.ente.apellidos}"/><br/>
+                                            </p:column>
+
+                                        </p:dataTable> 
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                    </div>
+                    <center>
+                        <h:panelGroup id="panelTramite" layout="block">
+                            <br/>
+                            <p:commandButton value="Iniciar trámite" icon="pi pi-play" 
+                                             actionListener="#{iniciarTramiteVUMB.initTramite()}"
+                                             id="btnIniciarTramite" style="width: auto"/>
+                        </h:panelGroup>
+                    </center>
+                </h:form>
+            </div>
+        </div>
+
+        <p:dialog id="dialogDeudas" width="60%" widgetVar="dialogDeudas" modal="true" showEffect="fade"
+                  hideEffect="fade" resizable="false" closeOnEscape="true">
+            <h:form id="formDeudasPredio"  prependId="false">
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="continuarDlg" widgetVar="continuarDlg" width="30%" position="center" closable="false"
+                  modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+            <h:form prependId="false" id="frmContinuar">
+                <div class="ticket__divider">
+                    <center>
+                        <h2>Inicio del Trámite</h2>
+                        <p:outputLabel value="#{iniciarTramiteVUMB.tramite.tipoTramite.descripcion}"
+                                       style="font-weight: bold;font-size: 20px;"/><br/>
+                        <p:outputLabel value="#{iniciarTramiteVUMB.servicio.nombre}"
+                                       style="font-weight: bold;"/><br/>
+                        <p:outputLabel value="##{iniciarTramiteVUMB.tramite.numTramite}"
+                                       style="width: 100%; font-size: 20px;"/>
+                    </center>
+                </div>
+                <div class="ticket__divider">
+                    <br/>
+                    <center>
+                        <p:commandButton value="Continuar" icon="fa fa-play" 
+                                         actionListener="#{iniciarTramiteVUMB.continuarTarea()}"
+                                         id="btnContinuar" styleClass="Fs16" style="width: auto;margin-right: 5px"/>
+                        <p:commandButton value="Comprobante" icon="fa fa-print" rendered="false"
+                                         actionListener="#{iniciarTramiteVUMB.imprimirTicket()}"
+                                         id="btnImprimir" styleClass="Fs16" style="width: auto;"/>
+                    </center>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgAutorizado" widgetVar="dlgAutorizado" modal="true" showEffect="fade" hideEffect="fade"
+                  resizable="false" closable="false">
+            <div class="card">
+                <h:form id="formAutorizacion">
+
+                </h:form>
+            </div>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

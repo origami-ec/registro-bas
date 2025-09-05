@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="content">
+        <center><h2>BANDEJA DE TAREAS</h2></center>
+        <h:form id="formMain">
+            <div>
+                <p:outputLabel value="Usuario: " style="font-size: 18px; font-weight: bolder;" />
+                
+                <p:inputText value="#{dashBoard.usuario}" >
+                    <p:ajax event="change" listener="#{dashBoard.actualizarTramitePendiente()}" />
+                </p:inputText>
+                <p:outputLabel value="Total Tramites: #{dashBoard.cantidad}" style="font-size: 18px; font-weight: bolder; float: right;"/>
+            </div><br/><br/>
+            <p:dataTable paginator="true" style="text-align: center;" var="v_task" value="#{dashBoard.lazy}" lazy="true" rowIndexVar="indexInd"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rows="20" rowsPerPageTemplate="20,50,100" emptyMessage="No tiene tareas pendientes..." filterEvent="enter" rendered="#{dashBoard.data eq 2}">
+                <p:column headerText="*" width="15">
+                    <p:graphicImage value="/resources/image/circleOrange.png" height="15" rendered="#{v_task.priority lt 50 ? true : false}"/>
+                    <p:graphicImage value="/resources/image/circleRed.png" height="15" rendered="#{v_task.priority gt 50 ? true : false}" title="Prioridad Alta"/>
+                    <p:graphicImage value="/resources/image/circleGreen.png" height="15" rendered="#{v_task.priority eq 50 ? true : false}"/>
+                </p:column>
+                <p:column headerText="No." width="30">
+                    <h:outputText value="#{indexInd+1}" />
+                </p:column>
+                <p:column headerText="Nombre Tarea">
+                    <p:outputLabel value=" #{v_task.name}" style="text-transform: uppercase"/>
+                </p:column>
+                <!--<p:column headerText="Nombre Tramite">
+                    <p:outputLabel value="# {v_task.tarea.description}"  style="text-transform: uppercase"/>
+                </p:column>-->
+                <p:column headerText="Tipo Ingreso" width="80">
+                    <p:outputLabel value="#{ls_task.idProcesoTemp}" rendered="#{ls_task.idProcesoTemp ne null}"/>
+                    <p:outputLabel value="Ventanilla" rendered="#{ls_task.idProcesoTemp eq null}"/>
+                </p:column>
+                <p:column headerText="Solicitante">
+                    <p:outputLabel value="#{v_task.nombrePropietario}" style="text-transform: uppercase"/>
+                </p:column>
+                <p:column headerText="No.Tramite" filterBy="#{v_task.idTramite}" width="120" filterStyle="width: 90%">
+                    <p:outputLabel value="#{v_task.numTramite}"/>
+                </p:column>
+                <p:column headerText="Fecha Ingreso" width="100">
+                    <p:outputLabel value="#{v_task.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Fecha Entrega" width="100">
+                    <p:outputLabel value="#{v_task.fechaEntrega}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Tarea" width="40">
+                    <p:commandButton actionListener="#{dashBoard.redirecTask(v_task)}" styleClass="btnStyle" icon="fa fa-check-square-o"/>
+                </p:column>
+            </p:dataTable>
+
+            <!--<h:panelGrid styleClass="noBorder" columns="3" style="width: 100%">
+                <p:outputLabel value="Nombre de Tarea:" style="font-weight: bolder; color: #0033FF; font-size: 14px" 
+                        rendered="# {dashBoard.data eq 2}"/>
+                <p:selectOneMenu value="# {dashBoard.taskDefKey}" rendered="# {dashBoard.data eq 2}">
+                    <f:selectItem itemLabel="TODAS" itemValue="# {null}"/>
+                    <f:selectItem itemLabel="Digitalizacion Inicial" itemValue="digitalizacionInicial"/>
+                    <f:selectItem itemLabel="Analisis Registral" itemValue="analisisProcesoRegistral"/>
+                    <f:selectItem itemLabel="Inscribir Certificar" itemValue="inscribirCertificar"/>
+                    <f:selectItem itemLabel="Marginacion" itemValue="marginacionFisica"/>
+                    <f:selectItem itemLabel="Firma y Revision" itemValue="revisionFirma"/>
+                    <f:selectItem itemLabel="Digitalizacion Final" itemValue="digitalizacionFinal"/>
+                    <f:selectItem itemLabel="Entrega Documentos" itemValue="entregaDocs"/>
+                    <p:ajax event="change" listener="# {dashBoard.actualizarTramitePendiente()}" />
+                </p:selectOneMenu>              
+            </h:panelGrid>--> 
+            <!--<p:dataTable paginator="true" style="text-align: center;" var="ls_task" value="# {dashBoard.tareasWF}" rowIndexVar="indexWf"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rows="20" emptyMessage="No tiene tareas pendientes..." filterEvent="enter" rendered="# {dashBoard.data eq 1}">
+                <p:column headerText="*" style="width: 40px;">
+                    <p:graphicImage value="/resources/image/circleOrange.png" height="15" rendered="# {ls_task.priority lt 50 ? true : false}"/>
+                    <p:graphicImage value="/resources/image/circleRed.png" height="15" rendered="# {ls_task.priority gt 50 ? true : false}" title="Prioridad Alta"/>
+                    <p:graphicImage value="/resources/image/circleGreen.png" height="15" rendered="# {ls_task.priority eq 50 ? true : false}" title="Prioridad Normal"/>
+                </p:column>
+                <p:column headerText="No1" width="40">
+                    <h:outputText value="# {indexWf+1}" />
+                </p:column>
+                <p:column headerText="Nombre Tarea" style="text-align: center" width="170">
+                    <p:outputLabel value=" # {ls_task.tarea.name}" style="text-transform: uppercase"/>
+                </p:column>
+                <p:column headerText="Nombre Tramite">
+                    <p:outputLabel value="# {v_task.tarea.description}"  style="text-transform: uppercase"/>
+                </p:column>
+                <p:column headerText="Tipo Ingreso" width="100">
+                    <p:outputLabel value="# {ls_task.idProcesoTemp}" rendered="# {ls_task.idProcesoTemp ne null}"/>
+                    <p:outputLabel value="Presencial" rendered="# {ls_task.idProcesoTemp eq null}"/>
+                </p:column>
+                <p:column headerText="Solicitante">
+                    <p:outputLabel value="# {ls_task.nombrePropietario}" style="text-transform: uppercase"/>
+                </p:column>
+                <p:column headerText="No.Tramite" filterBy="# {ls_task.idTramite}" width="130" filterStyle="width: 90%">
+                    <p:outputLabel value="# {ls_task.numTramite}"/>
+                </p:column>
+                <p:column headerText="Fecha Ingreso" width="150">
+                    <p:outputLabel value="# {ls_task.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Fecha Entrega" width="150">
+                    <p:outputLabel value="# {ls_task.fechaEntrega}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Tarea" width="40">
+                    <p:commandButton actionListener="# {dashBoard.redirecPag(ls_task)}" styleClass="btnStyle" icon="fa fa-check-square-o"/>
+                </p:column>
+            </p:dataTable>-->
+
+        </h:form>
+    </ui:define>
+</ui:composition>

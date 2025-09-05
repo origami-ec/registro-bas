@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Catálogos del Sistema</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">CONFIGURACIÓN DE CATÁLOGO E ITEMS DE SISTEMA</h3></center>
+            <h:panelGrid style="font-weight: bolder;margin: 0 auto;" columns="6" >
+                Catálogos:
+                <p:selectOneMenu value="#{catalogoItemMB.catalogo}" converter="entityConverter" style="width: 250px;" >
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                    <f:selectItems value="#{catalogoItemMB.catalogos}" var="tf" itemLabel="#{tf.nombre}" itemValue="#{est}" />
+                    <p:ajax event="change" listener="#{catalogoItemMB.updateLazy()}" update="mainForm:dlgValores"/>
+                </p:selectOneMenu>
+                <p:spacer width="40" height="1"/>
+                <p:commandButton value="Registrar Nuevo Catálogo" icon="pi pi-sort-alpha-up" actionListener="#{catalogoItemMB.showDlgCatalogo()}" />
+                <p:spacer width="40" height="1"/>
+                <p:commandButton value="Registrar Nuevo Item" icon="pi pi-sort-amount-up-alt" actionListener="#{catalogoItemMB.showDlgNew()}"/>
+            </h:panelGrid>
+            <p:dataTable paginator="true" lazy="true" rows="10" style="text-align: center;width: 70%;margin: 0 auto;" rowsPerPageTemplate="10,20,30" resizableColumns="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" paginatorPosition="bottom" id="dlgValores" 
+                         value="#{catalogoItemMB.lazy}" var="var" emptyMessage="No se encontró registros." filterEvent="enter" >
+                <p:column headerText="Catalogo" filterStyle="width: 95%">
+                    <h:outputText value="#{var.catalogo.nombre}"/>
+                </p:column>
+                <p:column headerText="Valor" filterBy="#{var.valor}" filterStyle="width: 95%">
+                    <h:outputText value="#{var.valor}"/>
+                </p:column>
+                <p:column headerText="Codigo" filterBy="#{var.codename}" filterStyle="width: 95%">
+                    <h:outputText value="#{var.codename}"/>
+                </p:column>
+                <p:column headerText="Estado" width="80">
+                    <h:outputText value="ACTIVO" rendered="#{var.estado eq 'A'}"/>
+                    <h:outputText value="INACTIVO" rendered="#{var.estado eq 'I'}"/>
+                </p:column>
+                <p:column headerText="Edit." width="50">
+                    <p:commandButton icon="pi pi-pencil" title="Editar Valores" actionListener="#{catalogoItemMB.showDlgItem(var)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Catalogos del Sistema" widgetVar="dlgCatalogo" resizable="false" modal="true" closeOnEscape="true" width="500">
+            <h:form id="formCatalogo">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="1">
+                    Nombre:
+                    <p:inputText value="#{catalogoItemMB.nuevo.nombre}" style="width: 100%;"/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{catalogoItemMB.guardarCatalogo()}" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Items de Catalogo" widgetVar="dlgItem" resizable="false" modal="true" closeOnEscape="true" width="500">
+            <h:form id="formItem">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="1">
+                    Catalogo:
+                    <p:inputText value="#{catalogoItemMB.item.catalogo.nombre}" style="width: 100%;" readonly="true"/>
+                    Valor:
+                    <p:inputText value="#{catalogoItemMB.item.valor}" style="width: 100%;" />
+                    Codigo:
+                    <p:inputText value="#{catalogoItemMB.item.codename}" style="width: 100%;" />
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{catalogoItemMB.guardarItem()}" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

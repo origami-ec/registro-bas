@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="informeTramiteOnline" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cef78e97-9fe7-4739-818b-ebae4d50d9b4">
+	<property name="ireport.zoom" value="1.6500000000000004"/>
+	<property name="ireport.x" value="93"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="USUARIO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\PROYECTOS\\PROYECTOS\\registropropiedad\\src\\main\\webapp\\resources\\image\\logo.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HASTA" class="java.util.Date"/>
+	<parameter name="DESDE" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+	acto.id, acto.nombre certificado,
+	(
+		select count(*) from flow.pub_solicitud solicitud
+	 	where tipo_formulario = 'APP_MOVIL' and tipo_solicitud = acto.id
+		and fecha_solicitud::date between $P{DESDE} and $P{HASTA}
+	) cantidad_ingresados_movil,
+	(
+		select count(*) from flow.pub_solicitud solicitud
+	 	where tipo_formulario = 'WEB_PAGE' and tipo_solicitud = acto.id
+		and fecha_solicitud::date between $P{DESDE} and $P{HASTA}
+	) cantidad_ingresados_web,
+	(
+		select count(*) from flow.pub_solicitud solicitud
+	 	where tipo_formulario in ('WEB_PAGE', 'APP_MOVIL') and tipo_solicitud = acto.id
+		and fecha_solicitud::date between $P{DESDE} and $P{HASTA}
+	) cantidad_ingresados,
+	(
+		select count(*) from flow.pub_solicitud solicitud
+	 	inner join flow.regp_liquidacion rl on rl.tramite = solicitud.tramite
+		where tipo_formulario in ('APP_MOVIL', 'WEB_PAGE')
+		and estado_liquidacion = 2 and estado_pago = 2  and tipo_solicitud = acto.id
+		and fecha_solicitud::date between $P{DESDE} and $P{HASTA}
+	) cantidad_pagados,
+	(
+		select count(distinct cert.*)
+		from flow.pub_solicitud solicitud
+		inner join flow.historico_tramites ht on ht.id = solicitud.tramite
+		inner join flow.regp_liquidacion rl on rl.tramite = solicitud.tramite
+		inner join app.reg_certificado cert on cert.num_tramite = ht.num_tramite
+		where tipo_formulario in ('APP_MOVIL', 'WEB_PAGE')
+		and estado_liquidacion = 2 and estado_pago = 2
+		and tipo_solicitud = acto.id and cert.num_certificado is not null
+		and fecha_solicitud::date between $P{DESDE} and $P{HASTA}
+	) cantidad_realizados
+
+
+from  app.reg_acto acto
+where id not in (202,120) and solvencia]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="certificado" class="java.lang.String"/>
+	<field name="cantidad_ingresados_movil" class="java.lang.Long"/>
+	<field name="cantidad_ingresados_web" class="java.lang.Long"/>
+	<field name="cantidad_ingresados" class="java.lang.Long"/>
+	<field name="cantidad_pagados" class="java.lang.Long"/>
+	<field name="cantidad_realizados" class="java.lang.Long"/>
+	<variable name="TOTAL_INGRESO_MOVIL" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad_ingresados_movil}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_INGRESO_WEB" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad_ingresados_web}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_INGRESO" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad_ingresados}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_PAGADOS" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad_pagados}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_REALIZADOS" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad_realizados}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="83" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="375" height="36" backcolor="#CCCCCC" uuid="73e4f807-d784-42a4-8143-268dd8eb937a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[INFORME DE TRÀMITES EN LINEA]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="376" y="0" width="179" height="54" uuid="2b7df0a5-bb24-4696-96e2-5679cd127575"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="42" y="59" width="61" height="14" uuid="abbae88d-58bd-4fd6-81ba-405fcd5d1570"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="103" y="59" width="91" height="14" uuid="2ebac31a-920e-4c6a-b81b-f81f3f4334a3"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="228" y="59" width="44" height="14" uuid="bdf83f20-3857-45ba-b4f6-f644c4610714"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="272" y="59" width="103" height="14" uuid="d39776f2-6394-4493-ac0c-588ed975e0e7"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{HASTA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="103" y="45" width="169" height="14" uuid="20b2df78-b219-4a24-a623-aa0bc9565847"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="42" y="45" width="61" height="14" uuid="351a2efe-c74b-42f6-9949-10df29013753"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="272" y="45" width="103" height="14" uuid="2589da9f-3fb6-48bc-88ec-cfdaf4108727"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="18" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="61" y="0" width="138" height="18" backcolor="#CCCCCC" uuid="0ddb2cca-f097-40e6-b62d-345e3883da2c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Certificado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="199" y="0" width="59" height="18" backcolor="#CCCCCC" uuid="4b5f1386-9b45-448c-a91b-eba800daa220"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ingresos Mòvil]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="317" y="0" width="59" height="18" backcolor="#CCCCCC" uuid="33d5e53f-196e-4974-b283-fd160c9d30cb"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tràmites Ingresados]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="258" y="0" width="59" height="18" backcolor="#CCCCCC" uuid="0551a8d6-eba8-4667-af2b-88e882dff073"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ingresos Web]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="376" y="0" width="59" height="18" backcolor="#CCCCCC" uuid="975cc865-4536-4bcf-8621-382aa0eed261"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tràmites Pagados]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="42" y="0" width="19" height="18" backcolor="#CCCCCC" uuid="6ef76c8d-4773-44b3-ac7f-09a551e398c3"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nº]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="435" y="0" width="59" height="18" backcolor="#CCCCCC" uuid="803222df-54fb-4d0b-bf3e-cc8d381c9660"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tràmites Realizados]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="61" y="0" width="138" height="14" isPrintWhenDetailOverflows="true" uuid="43b81e0c-6805-446e-8a90-a6528021e3f1"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{certificado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="199" y="0" width="59" height="14" isPrintWhenDetailOverflows="true" uuid="315e6d1e-d01e-43d6-9589-6b1f874cd29f"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad_ingresados_movil}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="317" y="0" width="59" height="14" isPrintWhenDetailOverflows="true" uuid="6146ee15-10c7-43aa-a2ea-c3702bc5fb21"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad_ingresados}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="258" y="0" width="59" height="14" isPrintWhenDetailOverflows="true" uuid="af0c7d06-48e8-401d-a765-23795daec05b"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad_ingresados_web}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="376" y="0" width="59" height="14" isPrintWhenDetailOverflows="true" uuid="bf1092ea-fcd0-4612-a664-470df9f2f00a"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad_pagados}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="42" y="0" width="19" height="14" isPrintWhenDetailOverflows="true" uuid="0d5468ca-3d76-4394-b404-202de492a697"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="435" y="0" width="59" height="14" isPrintWhenDetailOverflows="true" uuid="3c72fe1a-5d8e-411e-b297-0b15bc174bda"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad_realizados}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="14">
+			<textField>
+				<reportElement x="199" y="0" width="59" height="14" uuid="58e7e610-07c7-419e-81b3-68254072afab"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_INGRESO_MOVIL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="258" y="0" width="59" height="14" uuid="f6cba938-c2e1-413b-9534-8f0bc8296ab7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_INGRESO_WEB}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="317" y="0" width="59" height="14" uuid="b66fc6bb-fca4-4482-8fb9-0a03bb77fd9b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_INGRESO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="376" y="0" width="59" height="14" uuid="4e21e190-ab74-496d-8a22-f82988a337d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_PAGADOS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="435" y="0" width="59" height="14" uuid="e531b1ce-f854-429b-a8ba-7ad226abae9a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_REALIZADOS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="14" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="279" y="0" width="134" height="14" uuid="c7e7cdea-7ab6-4c45-b6db-ccd86cb2de56"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="194" y="0" width="73" height="14" uuid="c3466e7a-12bf-44e1-a67c-56bb29fac0c0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="435" y="0" width="80" height="14" uuid="9e9fa10a-78fd-4ce0-9231-d2044e50ce5e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="0" width="40" height="14" uuid="0bd7b135-5698-49bf-b4c1-2dab1b0ced57"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="14" y="0" width="61" height="14" uuid="5785b347-92e2-453a-a997-4b017654f96d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario Imprime:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="75" y="0" width="108" height="14" uuid="379fbeb6-89ca-41e0-ac38-87a6837b43dc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="75" splitType="Stretch"/>
+	</summary>
+</jasperReport>

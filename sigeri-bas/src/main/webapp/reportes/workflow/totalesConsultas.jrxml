@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="totalesConsultas" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="74697560-fe80-442e-9642-f905f69de0de">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.String"/>
+	<field name="user" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="tareas" class="java.lang.Integer"/>
+	<field name="fichas" class="java.lang.Integer"/>
+	<field name="movimientos" class="java.lang.Integer"/>
+	<title>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="29e0ef02-a098-41eb-b133-c6f03f8e85a8" x="0" y="0" width="555" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMPRESA PÚBLICA MUNICIPAL DEL REGISTRO DE LA PROPIEDAD DEL CANTÓN PORTOVIEJO EP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1c4f8a40-8cd1-4a6d-aa75-2142c2b01e0f" x="0" y="14" width="555" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE CANTIDADES POR USUARIOS]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="4f3ace78-0b8a-44f9-99d5-7ee6667b26ba" x="45" y="28" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cbea8422-a175-49c2-a3f3-97cfb72cdf25" x="0" y="28" width="45" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="66937645-b0bf-4196-8811-2f26e1c8381d" x="188" y="28" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{HASTA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="96180d95-191c-4c96-8e92-9e789c33a97d" x="145" y="28" width="43" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="d0fa2ccb-9ffb-485a-bbba-4e72555d0498" x="0" y="42" width="555" height="1"/>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="473cb1b0-8e6c-48b4-9be5-610a8514ad31" x="0" y="12" width="289" height="28"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funcionario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7795e399-96a5-41d3-88e9-18713264c864" x="289" y="12" width="88" height="28"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tramites en Bandeja de Tareas (a la fecha)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="37c34985-1324-4eef-9fe6-b869b1dac638" x="377" y="12" width="88" height="28"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fichas Creadas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8745272a-1c1b-400b-bb76-341e8be0c137" x="465" y="12" width="88" height="28"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Antecedentes Creados]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement uuid="7ac8d9c2-191d-4e97-962a-60cc357e15bc" x="0" y="0" width="289" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="c67b5bdc-b7fa-475b-a50b-0989a4bb8912" x="289" y="0" width="88" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tareas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="6bc3a843-9118-4b5c-bb19-08d2d81d6131" x="465" y="0" width="88" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{movimientos}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="57501716-2d25-4cc2-9f14-e56ed871fc84" x="377" y="0" width="88" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fichas}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement uuid="71441b0e-0079-445f-a83b-446686cfb5b1" x="70" y="40" width="129" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="3421797e-501e-4e9a-8ea6-5c59cba453dd" x="0" y="40" width="70" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="5156b23c-7270-4d79-87d0-fa1ac034be38" x="424" y="40" width="129" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="dd89415f-baa3-48a9-a2d1-2e938a1da37d" x="339" y="40" width="85" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Impresión:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

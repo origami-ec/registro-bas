@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+
+    <f:metadata >
+        <f:event type="preRenderView" listener="#{cropImagesPdf.initView()}"/>
+        <f:viewParam name="id" value="#{cropImagesPdf.id}" />
+        <f:viewParam name="numRepertorio" value="#{cropImagesPdf.numRepertorio}"/>
+        <f:viewParam name="numInscripcion" value="#{cropImagesPdf.numInscripcion}" />
+        <f:viewParam name="fechaIns" value="#{cropImagesPdf.fechaIns}"/>
+    </f:metadata>
+    <h:head>
+        <title>Crop Imagenes Tramites</title>
+        <ui:include src="styleTemplete.xhtml" />
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+        </f:facet>
+    </h:head>
+    <h:body>
+        <h:form id="frmMainCrop">
+            <p:growl id="growl" showDetail="true" ><p:autoUpdate /></p:growl>
+            <poue:layout fullPage="true" style="min-width: 400px; min-height: 600px;">
+                <poue:layoutPane position="west" resizable="true" size="200" minSize="100" maxSize="200" closable="true">
+                    <p:panelGrid columns="1" layout="grid">
+                        <h:panelGroup>
+                            <p:outputLabel for="enabledCrop" value="Habilitar recortar image" class="FontBold"/>
+                            <p:selectBooleanButton id="enabledCrop" value="#{cropImagesPdf.enableCrop}" onLabel="Si" offLabel="No" >
+                                <p:ajax update="frmMainCrop:dgPaguinas" />
+                            </p:selectBooleanButton>
+                        </h:panelGroup>
+
+                        <p:outputLabel for="basic" value="Basic:" class="FontBold"/>
+                        <p:selectOneListbox id="basic" value="#{cropImagesPdf.idBlodSelect}">
+                            <f:selectItems value="#{cropImagesPdf.archivos}" var="arch1" itemLabel="#{arch1.idBLob}" itemValue="#{arch1.idBLob}" />
+                            <p:ajax update="frmMainCrop:dgPaguinas" listener="#{cropImagesPdf.generarPaguinas()}" />
+                        </p:selectOneListbox>
+                    </p:panelGrid>
+                </poue:layoutPane>
+
+                <poue:layoutPane position="center" closable="true" >
+                    <div align="center" style="width: 70%; margin: 10px; text-align: center; height: 200px !important; " >
+                        <p:dataGrid var="pagina" value="#{cropImagesPdf.paginas}" columns="1" layout="grid" rows="1" paginator="true" id="dgPaguinas"
+                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                    rowStatePreserved="true" >
+                            <center>
+                                <h:panelGroup style="z-index: 1000; float: top; vertical-align: top; padding-bottom: 5px" class="Wid100" >
+                                    <!--<p:commandButton icon="fa fa-reply" onclick="PF('rotateAndResizeWidget').rotateLeft(90);return false;"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="fa fa-share" onclick="PF('rotateAndResizeWidget').rotateRight(90);return false;"/>
+                                    <p:spacer width="10" />-->
+                                    <p:commandButton icon="fa fa-search-plus" onclick="PF('rotateAndResizeWidget').scale(1.1);return false;"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="fa fa-search-minus" onclick="PF('rotateAndResizeWidget').scale(0.90);return false;"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="ui-icon-arrow-4-diag" onclick="PF('rotateAndResizeWidget').restoreDefaults();return false;"/>
+                                </h:panelGroup>
+                            </center>
+                            <poue:imageRotateAndResize id="rotateAndResize" for="imagen" widgetVar="rotateAndResizeWidget">
+                                <!--                            <p:ajax event="rotate" listener="# {imageController.rotateListener}"
+                                                                    update="growl" oncomplete="PF('areaSelectWidget').reload();"/>-->
+                                <poue:javascript event="resize" execute="PF('areaSelct').reload();  " />
+                                <poue:javascript event="rotate" execute="PF('areaSelct').reload();  " />
+                            </poue:imageRotateAndResize>
+                            <p:graphicImage id="imagen" value="/ImageServletPage?idBlob=#{cropImagesPdf.idBlodSelect}&amp;anio=#{cropImagesPdf.fechaIns}&amp;page=#{pagina}"
+                                            width="100%" style="border: 1px solid #f1f1f1; margin-top: 10px; " />
+                            <poue:imageAreaSelect id="areaSelect" for="imagen" rendered="#{cropImagesPdf.enableCrop}" widgetVar="areaSelct"
+                                                  autoHide="true" handles="false" movable="false" persistent="false" resizable="false">
+                                <p:ajax event="selectEnd" listener="#{cropImagesPdf.selectEndListener}"/>
+                            </poue:imageAreaSelect>
+
+                        </p:dataGrid>
+                    </div>
+                </poue:layoutPane>
+            </poue:layout>
+        </h:form>
+
+        <p:dialog modal="true" widgetVar="dlgTextSelect" resizable="false" height="50%" width="50%" header="Texto seleccionado." >
+            <h:form id="frmTextAux">
+                <p:outputPanel style="text-justify: auto; font-size: 18px" >
+                    #{cropImagesPdf.textAux}
+                </p:outputPanel>
+                <div align="center">
+                    <p:commandButton icon="fa fa-close" onclick="PF('dlgTextSelect').hide();"/>
+                </div>
+            </h:form>
+        </p:dialog>
+    </h:body>
+</html>

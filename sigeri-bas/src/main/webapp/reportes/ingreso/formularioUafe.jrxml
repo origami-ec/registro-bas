@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="formularioUafe" pageWidth="421" pageHeight="595" whenNoDataType="AllSectionsNoDetail" columnWidth="391" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" isSummaryWithPageHeaderAndFooter="true" isFloatColumnFooter="true" uuid="eaca66aa-9595-4c19-ac4e-47317721d91a">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="ID_LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select liq.fecha_creacion, ht.num_tramite, ben.ci_ruc as ced_bene, ben.telefono1 as telef_bene, ben.direccion as direccion_bene, ben.correo1 as correo_bene,
+case ben.es_persona when true then coalesce(ben.nombres,'')||' '||coalesce(ben.apellidos,'')
+else ben.razon_social end AS beneficiario,
+liq.sub_total, liq.descuento_valor, liq.desc_limit_cobro, liq.total_pagar, liq.descuento_porc,
+liq.adicional, liq.ficha, liq.num_inscripcion, liq.anio_inscripcion,
+liq.gastos_generales, it.valor as uso_documento, liq.inf_adicional_prof,
+coalesce(en.titulo_prof,'') ||' '||
+coalesce(en.nombres,'') ||' '|| coalesce(en.apellidos,'') as user_name,
+liq.oficio_memo_referencia, liq.num_formulario
+from flow.regp_liquidacion as liq
+left join flow.historico_tramites ht on (ht.id = liq.tramite)
+left join app.cat_ente ben on (ben.id = liq.beneficiario)
+left join app.acl_user us on (us.id = liq.user_creacion)
+left join app.cat_ente en on (en.id = us.ente)
+left join app.ctlg_item it on (it.id = liq.uso_documento)
+where liq.id = $P{ID_LIQUIDACION}]]>
+	</queryString>
+	<field name="fecha_creacion" class="java.sql.Timestamp"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<field name="ced_bene" class="java.lang.String"/>
+	<field name="telef_bene" class="java.lang.String"/>
+	<field name="direccion_bene" class="java.lang.String"/>
+	<field name="correo_bene" class="java.lang.String"/>
+	<field name="beneficiario" class="java.lang.String"/>
+	<field name="sub_total" class="java.math.BigDecimal"/>
+	<field name="descuento_valor" class="java.math.BigDecimal"/>
+	<field name="desc_limit_cobro" class="java.math.BigDecimal"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="descuento_porc" class="java.math.BigDecimal"/>
+	<field name="adicional" class="java.math.BigDecimal"/>
+	<field name="ficha" class="java.lang.Long"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="anio_inscripcion" class="java.lang.Integer"/>
+	<field name="gastos_generales" class="java.math.BigDecimal"/>
+	<field name="uso_documento" class="java.lang.String"/>
+	<field name="inf_adicional_prof" class="java.lang.String"/>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="oficio_memo_referencia" class="java.lang.String"/>
+	<field name="num_formulario" class="java.lang.String"/>
+	<title>
+		<band height="102" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="130" height="42" uuid="8d856309-b604-40ed-b1fc-643285c2fb6e"/>
+				<box>
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<leftPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Transparent" x="130" y="0" width="146" height="42" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="9bb1200f-a164-4f02-8ae2-bf02a1029160"/>
+				<box leftPadding="0">
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+					<rightPen lineWidth="0.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[FORMULARIO ÚNICO SOLICITUD DE TRÁMITE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="44" width="391" height="16" backcolor="#CCCCCC" uuid="1a887ddf-f394-41ae-9d73-b051d20f218e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REGISTRO DE LA PROPIEDAD DEL CANTÓN SANTO DOMINGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="61" width="70" height="12" uuid="15c62cdd-c7af-4f9f-87da-7c32297ebfaf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Santo Domingo,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="73" width="391" height="14" uuid="9dd3a42d-7cf0-4a1e-a05a-546cd52f9a1c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[REGISTRADOR DE LA PROPIEDAD DEL CANTÓN SANTO DOMINGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="87" width="100" height="14" uuid="ead11831-8141-4b27-b334-09083553c0db"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Presente.-]]></text>
+			</staticText>
+			<textField pattern="dd &apos;de&apos; MMMMM &apos;del&apos; yyyy" isBlankWhenNull="true">
+				<reportElement x="70" y="61" width="206" height="12" uuid="e6ad1dcb-6bde-4c76-8f3c-f07d99bd6820"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_creacion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="negrita" x="276" y="22" width="115" height="20" uuid="b732fae0-b5ba-424e-ba69-b021a1f347d9"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_tramite})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="276" y="0" width="115" height="22" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="86d67202-8fed-48a3-be66-60fcfafccf57"/>
+				<box leftPadding="0">
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="0.0" lineStyle="Double"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TRÁMITE NRO.]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="124" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="2" width="35" height="120" uuid="d2ee3fe4-2f27-4fb5-af80-90877b5fe2f1"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[INFORMACIÓN DE USUARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="35" y="2" width="51" height="120" uuid="53c49cb6-d62e-4808-97fe-a22f8037aa33"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[(DATOS DE COMPRADOR Y/O DEUDOR HIPOTECARIO)]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="86" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="ec6bf788-944c-4990-b89a-e4629434ea13"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telef_bene}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="14" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="30f8ca94-672d-49bf-b434-a3815658a4d7"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_bene}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="86" y="2" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="16fa805e-5e4d-43f1-b019-8d92b13e2833"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CI/RUC:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="38" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="b5c3b461-cc37-449b-a0e3-e9bd9c7f8995"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{beneficiario}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="86" y="26" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="61f068e6-5ee4-4975-9e4c-20b4f4d04a4f"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NOMBRE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="86" y="50" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="bde49d2b-1301-44b1-9d77-1b88ee177ef7"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CORREO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="86" y="74" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="ba105573-9965-4d3d-9172-4886931ac377"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TELF./CEL.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="62" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="c4c48d23-2a9d-4834-8f54-17d568f96227"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{correo_bene}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="86" y="98" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="8e828acd-4730-4a15-b409-e95cf6e1db67"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[DIRECCIÓN:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="110" width="305" height="12" isPrintWhenDetailOverflows="true" uuid="c6c43108-dcf8-4c24-adb7-4996a3063702"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_bene}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="22" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="391" height="20" uuid="8fe009c3-5acb-437b-9393-d9e9708eeb6f"/>
+				<subreportParameter name="LIQUIDACION">
+					<subreportParameterExpression><![CDATA[$P{ID_LIQUIDACION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "formularioUafe_detalles.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="200" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="16" width="221" height="16" uuid="c34cd4fe-cc9c-4e9b-b2b4-ceb2a38fd156"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[El dinero con el que adquirió el bien inmueble proviene de:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="37" width="110" height="16" uuid="2080cb43-cebf-40c6-939e-861694ea6651"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[AHORRO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="133" y="136" width="120" height="16" uuid="7a7c4690-7605-4936-803e-b6dd4f9e3ff2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Atentamente;]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="391" height="16" backcolor="#CCCCCC" uuid="9f283497-b594-4cc4-a107-dabbdeccfeea"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="221" y="16" width="170" height="16" uuid="caf3b933-1c9c-485e-9bbd-bd1bd5a498ec"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="58" width="110" height="16" uuid="304b0b81-ca85-4486-ad8a-f1646c778988"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[ACTIVIDAD COMERCIAL:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="126" y="37" width="110" height="16" uuid="c3633922-b118-43c6-9071-0acb264acd13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[VENTA DE VEHÍCULO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="126" y="58" width="110" height="16" uuid="a8c5206a-b5d3-47e8-91ef-41f72897958e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[VENTA DE INMUEBLE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="253" y="37" width="120" height="16" uuid="80c1e20e-9055-41d5-a0a6-c01d56716cad"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[PRÉSTAMO HIPOTECARIO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="16" y="79" width="110" height="16" uuid="2540ccfa-2ec2-4da3-85ab-2f2edba13981"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[OTROS ESPECIFIQUE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="110" y="37" width="16" height="16" uuid="fa2b98f8-b6da-4b3b-bc08-384918c308b9"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="110" y="58" width="16" height="16" uuid="224b7542-0054-4fb1-b2ce-193b2dc8c373"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="236" y="37" width="16" height="16" uuid="697bc1e7-88b6-4065-972e-50bfbe341881"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="236" y="58" width="16" height="16" uuid="0418c218-0a38-465a-8810-606042f5e6c6"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="373" y="37" width="16" height="16" uuid="b9dd6513-ebc2-4659-8ede-5fe172b3d4fe"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="126" y="79" width="270" height="16" uuid="588c121f-4adb-4ccc-93ba-e890fbda993a"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="100" width="389" height="36" uuid="8b5331b2-8adf-4a32-a642-72b0aed4cfc5"/>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[NOTA: La información aquí requerida es necesaria para dar fiel cumplimiento al Manual de prevención de lavado de activos y financiamiento del terrorismo y otros delitos, requerido por la Unidad de Análisis Financiero y Económico (UAFE)*]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="133" y="184" width="120" height="16" uuid="3df300f0-b86a-4853-9d71-1ea2ec43f7f0"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Firma de Solicitante]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

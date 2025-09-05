@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h1>
+                <center><p:outputLabel value="#{digitalizarDocsRp.taskDataByTaskID.name}" style="text-transform: uppercase;"/></center>
+                <center><p:outputLabel value="Nº DE TRAMITE: #{digitalizarDocsRp.ht.numTramite}" style="text-transform: uppercase;color: #005f9c;"/></center>
+            </h1>
+            <p:tabView id="mainTab">
+                <p:tab title="Informacion de Proforma">
+                    <br></br>
+                    <h:panelGrid columns="5" style="font-size: 16px;">
+                        <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{digitalizarDocsRp.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                        <p:spacer width="50" height="1"/>
+                        <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{digitalizarDocsRp.liquidacion.solicitante.nombreCompleto}"
+                                       style="text-transform: uppercase;font-weight: bolder;"/>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:dataTable value="#{digitalizarDocsRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" scrollable="true" 
+                                 reflow="true" style="text-align: center" emptyMessage="Sin observaciones..." resizableColumns="true"
+                                 scrollHeight="300">
+                        <p:column headerText="Contrato">
+                            <h:outputText value="#{det.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Cantidad">
+                            <h:outputText value="#{det.cantidad}"/>
+                        </p:column>
+
+                        <p:column headerText="Avaluo" width="100">
+                            <h:outputText value="#{det.avaluo}"/>
+                        </p:column>
+                        <p:column headerText="Cuantia" width="100">
+                            <h:outputText value="#{det.cuantia}"/>
+                        </p:column>
+                        <p:column headerText="Exoneracion" width="200">
+                            <h:outputText value="#{det.descuento}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                    <br></br> 
+                    <h:panelGrid columns="1" styleClass="noBorder" style="margin: 0 auto;width: 100%;">
+                        <p:outputLabel value="DESPUES DE CARGAR EL DOCUMENTO, POR FAVOR, ESPERE A QUE REGRESE A SU BANDEJA DE TAREAS!!!" style="font-weight: bolder;font-size: 14px;color: #0033FF;"/>
+                        <p:panel>
+                            <p:fileUpload listener="#{digitalizarDocsRp.handleUpload}" 
+                                          mode="advanced" 
+                                          fileLimit="1"
+                                          dragDropSupport="false"  
+                                          sizeLimit="10000000000" 
+                                          label="Seleccionar"
+                                          uploadLabel="Subir"
+                                          style="width: auto;"
+                                          cancelLabel="Cancelar"  
+                                          allowTypes="/(\.|\/)(pdf)$/" />
+                        </p:panel>
+                    </h:panelGrid>
+
+                    <center>
+                        <p:commandButton value="Completar Tarea" icon="ui-icon-check" 
+                                         styleClass="btnStyle" actionListener="#{digitalizarDocsRp.completarTareaDigitalizacion()}">
+                        </p:commandButton>
+                    </center>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog id="dlgResult" widgetVar="dlgResult" header="Cargar Documento" modal="true" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formDlgResult">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%; text-align: center" columns="1">
+                    <p:outputLabel value="Tramite asiganado" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="#{digitalizarDocsRp.userName}" style="font-weight: bolder;font-size: 30px;"/>   
+                    <p:commandButton value="Aceptar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{digitalizarDocsRp.continuar()}"
+                                     oncomplete="PF('dlgResult').hide();">
+                    </p:commandButton>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Cargar Documento" modal="true" width="500" height="300" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formObs">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="Contrato: #{digitalizarDocsRp.tarea.detalle.acto.nameTruncate}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="No Inscripcion: #{digitalizarDocsRp.tarea.detalle.inscripcion}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:fileUpload listener="#{digitalizarDocsRp.uploadDocTareaTramite}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

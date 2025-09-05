@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Base Documental</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:panelGrid style="margin: 0 auto;" columns="5">
+                <p:outputLabel value="Libro:" style="font-weight: bolder; font-size: 14px; color: #0033FF;"/>
+                <p:selectOneMenu value="#{dlgLazyTbData.tipoDocumento}" converter="converterDocuments" filter="true" filterMatchMode="startsWith">  
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                    <f:selectItems value="#{dlgLazyTbData.libros}" var="lib" itemLabel="#{lib.desTipoDoc}" itemValue="#{lib}"/>  
+                    <p:ajax listener="#{dlgLazyTbData.updateCarpetas()}" update="carpetas"/>
+                </p:selectOneMenu>
+                <p:spacer width="20" height="1"/>
+                <p:outputLabel value="Anio:" style="font-weight: bolder; font-size: 14px; color: #0033FF;"/>
+                <p:selectOneMenu id="carpetas" value="#{dlgLazyTbData.tipoCarpeta}" converter="converterDocuments" filter="true" filterMatchMode="contains">  
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                    <f:selectItems value="#{dlgLazyTbData.anios}" var="carp" itemLabel="#{carp.desCarpeta}" itemValue="#{carp}"/>  
+                </p:selectOneMenu>
+            </h:panelGrid>
+            <h:panelGrid style="margin: 0 auto;" columns="3">
+                 <p:outputLabel value="Partida:" style="font-weight: bolder; font-size: 14px;color: #0033FF;"/>
+                 <p:inputText value="#{dlgLazyTbData.partida}"/>
+                 <p:commandButton value="Buscar" icon="pi pi-search" actionListener="#{dlgLazyTbData.buscarData()}" update="dtEscrituras"/>
+            </h:panelGrid>
+            <p:dataTable id="dtEscrituras" value="#{dlgLazyTbData.dataLazy}" var="data" paginator="true" filterEvent="enter" 
+                         emptyMessage="No se encontro ningun registro." lazy="true" paginatorPosition="top" rows="10"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+                <p:column headerText="Libro" >
+                    <p:outputLabel value="#{data.idCarpeta.idTipoDoc.desTipoDoc}"/>
+                </p:column>
+                <p:column headerText="Contrato" filterBy="#{data.f07}" filterMatchMode="contains">
+                    <p:outputLabel value="#{data.f07}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="No de Inscripcion" filterBy="#{data.f02}" filterMatchMode="equals" filterFunction="notEqual">
+                    <p:outputLabel value="#{data.f02}"/>
+                </p:column>
+                <p:column headerText="Fecha de Inscripcion" filterBy="#{data.f11}" filterMatchMode="contains">
+                    <p:outputLabel value="#{data.f11}"/>
+                </p:column>
+                <p:column headerText="***" width="80" style="text-align: center;">
+                    <p:commandButton icon="pi pi-file" title="ver escritura"
+                                     actionListener="#{dlgLazyTbData.visualizarBlob(data)}" />
+                    <p:spacer width="10" height="1"/>
+                    <p:commandButton icon="pi pi-chevron-right" title="seleccionar" 
+                                     actionListener="#{dlgLazyTbData.seleccionarMovimiento(data)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

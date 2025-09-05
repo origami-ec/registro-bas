@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="solicitanteInterviniente" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="44c41430-ab03-4fa9-995f-d6837b1f4bd8">
+	<property name="ireport.zoom" value="1.3636363636363653"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="tramite" class="java.lang.Long"/>
+	<field name="factura" class="java.lang.String"/>
+	<field name="fechaingreso" class="java.sql.Timestamp"/>
+	<field name="tramitador" class="java.lang.String"/>
+	<field name="estudioJuridico" class="java.lang.String"/>
+	<field name="infAdicional" class="java.lang.String"/>
+	<field name="valor_fact" class="java.lang.String"/>
+	<title>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="ea9fecc8-61cb-411d-884b-3bd6639d482e" x="1" y="1" width="554" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMPRESA PÚBLICA MUNICIPAL DEL REGISTRO DE LA PROPIEDAD DEL CANTÓN PORTOVIEJO EP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="36322f2b-96f2-4473-b237-4511505f92ab" x="1" y="15" width="554" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE POR SOLICITANTE E INTERVINIENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a84b3f00-443f-4ef2-8b0a-474d34024fc3" x="243" y="29" width="45" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="737f1cf0-1b7f-4bd8-b0be-28b9e6034f98" x="1" y="29" width="62" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="aa902b27-cdca-4a73-97d4-36922ee27c25" x="288" y="29" width="173" height="14" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{HASTA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="bdcf587d-831c-4578-ae4b-fd17f81a830f" x="63" y="29" width="180" height="14" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="61eb244e-a472-45bc-882d-9b0aed049572" x="3" y="44" width="552" height="1"/>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="db0048d6-d585-4c45-9057-3de99fc3da51" x="50" y="0" width="58" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No Factura]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="90398184-26f6-43b1-b389-b9eecf85f164" x="1" y="0" width="49" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No Trámite]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6140ea7c-f6c5-4508-ad99-4e0944e19ed2" x="108" y="0" width="73" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cab00c3f-d179-4293-96eb-fa1503a6617a" x="181" y="0" width="102" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Solicitante]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bae7057a-01d9-4112-a5a1-175663f94f01" x="489" y="0" width="66" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Facturado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="43fef49b-2428-43ad-8fce-c961588617d6" x="385" y="0" width="104" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Informacion Adicional]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d45b1d23-8b24-4363-b1ad-eaff0471e338" x="283" y="0" width="102" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estudio Juridico]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="a7335cd9-5554-4cc2-9d96-acf37ba3d067" x="50" y="0" width="58" height="10" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{factura}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="fa80cda7-5dbd-4c57-a893-f874738fb04b" x="1" y="0" width="49" height="10" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tramite}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="c55a1ce0-d0b2-4b68-9941-5e9978f2d8a1" x="108" y="0" width="73" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaingreso}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="df8a34f4-777c-458e-93e3-75569d9609e2" x="181" y="0" width="102" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tramitador}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="3d25af62-edf1-49e6-9e89-43f80723c563" x="385" y="0" width="104" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{infAdicional}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="c7379db0-60e5-49fa-bb0e-cd8ddd9eb98a" x="489" y="0" width="66" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_fact}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="dc50de35-3398-4320-bc1b-53b79c63af0c" x="283" y="0" width="102" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estudioJuridico}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="50">
+			<line>
+				<reportElement uuid="8f183148-0562-4afa-a952-06dbf8eaed32" x="1" y="2" width="554" height="1"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

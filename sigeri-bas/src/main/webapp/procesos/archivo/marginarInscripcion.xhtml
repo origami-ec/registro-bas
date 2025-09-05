@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Marginaciones</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">MARGINACIONES</h3></center>
+            <p:dataTable id="dtMovimientos" reflow="true" paginator="true" lazy="true" rows="15" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{marginarInscripcion.movimientosLazy}" var="mov" emptyMessage="No se encontró ningún Item." 
+                         style="text-align: center;" filterEvent="enter" resizableColumns="true">
+                <p:column headerText="Libro" filterBy="#{mov.libro.nombre}" filterStyle="width: 95%">
+                    <h:outputText  value="#{mov.libro.nombre}"/>
+                </p:column>
+                <p:column headerText="Acto" filterBy="#{mov.acto.nombre}" filterStyle="width: 95%">
+                    <h:outputText  value="#{mov.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Estado" width="80">
+                    <h:outputText value="#{mov.registro.nombre}"/>
+                </p:column>
+                <p:column headerText="Repertorio" filterBy="#{mov.numRepertorio}" filterStyle="width: 95%"  width="80">
+                    <h:outputText value="#{mov.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Año.Rep." filterBy="#{mov.anioRep}" width="80">
+                    <h:outputText value="#{mov.fechaRepertorio}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="Inscripcion" filterBy="#{mov.numInscripcion}" filterStyle="width: 95%" width="80">
+                    <h:outputText value="#{mov.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Año.Ins." filterBy="#{mov.anioIns}" width="80">
+                    <h:outputText value="#{mov.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="Sec." filterBy="#{mov.indice}" width="30" filterStyle="width: 90%">
+                    <p:outputLabel value="#{mov.indice}"/>
+                </p:column>
+                <p:column headerText="Acciones" width="150">
+                    <p:commandButton icon="pi pi-file-pdf" title="Ver Acta de Inscripcion" style="background-color: orangered;"
+                                     actionListener="#{marginarInscripcion.imprimirInscripcion(mov)}" />
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-folder-open" title="Ver Datos de Inscripcion"
+                                     actionListener="#{marginarInscripcion.showDlgMovSelect(mov)}" />
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-align-center" title="Ver Marginaciones" style="background-color: graytext;" 
+                                     actionListener="#{marginarInscripcion.showDlgMarginaciones(mov)}" />
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-sort-alpha-up" title="Ingresar Marginacion" style="background-color: green;" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgMovimientoRegistral" header="Movimiento Registral Seleccionado" widgetVar="dlgMovRegSelec"
+                  resizable="false" modal="true" closeOnEscape="true" width="800" height="500">
+            <h:form id="formMovRegSelec">
+                <h:panelGrid columns="3" style="font-weight: bolder;">
+                    Naturaleza/Libro:
+                    <p:spacer width="20" height="1"/>
+                    <p:inputText value="#{marginarInscripcion.movimiento.libro.nombre}" size="80" readonly="true"/>
+                </h:panelGrid>
+                <h:panelGrid columns="3" style="font-weight: bolder;">
+                    Contrato/Acto:
+                    <p:spacer width="35" height="1"/>
+                    <p:inputText value="#{marginarInscripcion.movimiento.acto.nombre}" size="80" readonly="true"/>
+                </h:panelGrid>
+                <h:panelGrid columns="4" style="font-weight: bolder;">
+                    No. Inscripción:
+                    <p:inputText value="#{marginarInscripcion.movimiento.numInscripcion}" size="30" readonly="true"/>
+                    Fecha Inscripción:
+                    <p:inputText value="#{marginarInscripcion.movimiento.fechaInscripcion}" size="30" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                    No. Repertorio:
+                    <p:inputText  value="#{marginarInscripcion.movimiento.numRepertorio}" size="30" readonly="true"/>
+                    No. Tomo:
+                    <p:inputText value="#{marginarInscripcion.movimiento.numTomo}" size="30" readonly="true"/>
+                    Folio Inicio:
+                    <p:inputText value="#{marginarInscripcion.movimiento.folioInicio}" size="30" readonly="true"/>
+                    Folio Fin:
+                    <p:inputText value="#{marginarInscripcion.movimiento.folioFin}" size="30" readonly="true"/>
+                    Notaría/Juz.:
+                    <p:inputText value="#{marginarInscripcion.movimiento.enteJudicial.nombre}" size="30" readonly="true"/>
+                    Cantón Not./Juz.:
+                    <p:inputText value="#{marginarInscripcion.movimiento.domicilio.nombre}" size="30" readonly="true"/>
+                    Fech/Otorg.:
+                    <p:inputText value="#{marginarInscripcion.movimiento.fechaOto}" size="30" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                    Esc./Juicio/Prov./Res.:
+                    <p:inputText value="#{marginarInscripcion.movimiento.escritJuicProvResolucion}" size="30" readonly="true"/>
+                </h:panelGrid>
+                <p:tabView id="tvMovimiento">
+                    <p:tab title="Intervinientes">
+                        <p:dataTable emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" resizableColumns="true"
+                                     value="#{marginarInscripcion.modelo.listMovCli}" scrollHeight="190" style="text-align: center">
+                            <p:column headerText="C.I/R.U.C" width="150">
+                                <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre del Cliente">
+                                <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Papel" width="200">
+                                <p:outputLabel value="#{inter.papel.papel}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Bienes">
+                        <p:dataTable value="#{marginarInscripcion.modelo.fichas}" var="fich" style="width: 100%;text-align: center" scrollable="true"
+                                     scrollHeight="230" rowIndexVar="rowIndex" emptyMessage="No se encontraron elementos...">
+                            <p:column headerText="No" width="30">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column headerText="No Ficha" width="150">
+                                <p:outputLabel value="#{fich.numFicha}"/>
+                            </p:column>
+                            <p:column headerText="Parroquia">
+                                <p:outputLabel value="#{fich.parroquia.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Clave Catastral">
+                                <p:outputLabel value="#{fich.claveCatastral}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observacion">
+                        <p:inputTextarea value="#{marginarInscripcion.movimiento.observacion}" readonly="true" 
+                                         autoResize="false" scrollHeight="200" style="width: 100%; height: 150px;"/>
+                    </p:tab>
+                    <p:tab title="Referencias">
+                        <p:dataTable style="text-align: center;width: 100%" scrollable="true" scrollHeight="230" scrollWidth="1000" 
+                                     rowIndexVar="indexMovRef" value="#{marginarInscripcion.modelo.listMovRef}" var="movRef"
+                                     emptyMessage="Movimiento sin referencia(s)." resizableColumns="true">
+                            <p:column headerText="No" width="20">
+                                #{indexMovRef+1}
+                            </p:column>
+                            <p:column headerText="Acto">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Insc." width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.libro.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Marginaciones">
+                        <p:dataTable style="text-align: center;width: 100%" scrollable="true" scrollHeight="230" scrollWidth="1000" 
+                                     rowIndexVar="indexMovMarg" value="#{marginarInscripcion.modelo.marginaciones}" var="movMarg"
+                                     emptyMessage="Movimiento sin marginaciones." resizableColumns="true">
+                            <p:column headerText="No" width="20">
+                                #{indexMovMarg+1}
+                            </p:column>
+                            <p:column headerText="Fecha" width="100">
+                                <p:outputLabel value="#{movMarg.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{marginarInscripcion.getNameUserByIdAclUser(movMarg.userIngreso)}"/>
+                            </p:column>
+                            <p:column headerText="Marginación">
+                                <p:outputLabel value="#{movMarg.observacion}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgVerMarginaciones" header="Marginaciones" modal="true" resizable="false" position="center" 
+                  height="400" width="1000" >
+            <h:form id="formVerMarginaciones">
+                <p:dataTable rowIndexVar="indexM" value="#{marginarInscripcion.modelo.marginaciones}" var="marg"
+                             emptyMessage="Movimiento sin referencia(s)." resizableColumns="true" >
+                    <p:column headerText="No" width="20">
+                        #{indexM+1}
+                    </p:column>
+                    <p:column headerText="Fecha" width="100">
+                        <p:outputLabel value="#{marg.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Usuario" width="100">
+                        <!--<p:outputLabel value="# {marginarInscripcion.getNameUserByIdAclUser(marg.userIngreso)}"/>-->
+                        <p:outputLabel value="#{marg.usuario}"/>
+                    </p:column>
+                    <p:column headerText="Marginación">
+                        <p:outputLabel value="#{marg.observacion}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObsvMarginacion" widgetVar="dlgMarginacion" header="Marginacion" modal="true" resizable="false" position="top">
+            <h:form id="formMarginacion">
+                <p:panelGrid styleClass="noBorder" columns="1" style="text-align: center">
+                    <p:inputTextarea value="#{marginarInscripcion.marg.observacion}" cols="60" rows="10" autoResize="false"/>
+                    <p:commandButton actionListener="#{marginarInscripcion.agregarMarginacion()}" value="Guardar" styleClass="btnStyle"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgDocumentos" header="Documentos de Inscripcion" modal="true">
+            <h:form id="frmDocuments">
+                <h:panelGrid columns="5" style="font-weight: bolder;text-align: center;">
+                    <p:outputLabel value="Acta de Inscripcion"/>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="Razon de Inscripcion"/>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="Razon Grupal"/>
+                    <p:commandLink actionListener="#{marginarInscripcion.imprimirInscripcion(marginarInscripcion.movimiento)}">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="80"/>
+                    </p:commandLink>
+                    <p:spacer width="10"/>
+                    <p:commandLink actionListener="#{marginarInscripcion.imprimirRazon(marginarInscripcion.movimiento)}">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="80"/>
+                    </p:commandLink>
+                    <p:spacer width="10"/>
+                    <p:commandLink actionListener="#{marginarInscripcion.generarRazonGrupal(marginarInscripcion.movimiento)}">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="80"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

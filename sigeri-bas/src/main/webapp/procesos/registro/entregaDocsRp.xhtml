@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h1>
+                <center>
+                    #{entregaDocsRp.taskDataByTaskID.name}
+                </center>
+            </h1>
+            <h:panelGrid styleClass="noBorder" columns="2" style="font-size: 16px;font-weight: bolder;">
+                <p:outputLabel value="Nombre Tarea:" style="font-weight: bolder;color: #005f9c"/>
+                #{entregaDocsRp.taskDataByTaskID.name}
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                #{entregaDocsRp.ht.numTramite}
+                <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                <p:outputLabel value="#{entregaDocsRp.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                <p:outputLabel value="#{entregaDocsRp.liquidacion.solicitante.nombreCompleto}"
+                               style="text-transform: uppercase;font-weight: bolder;"/>
+            </h:panelGrid>
+            <br></br>
+            <p:tabView id="mainTab">
+                <p:tab title="Datos de Usuario">
+                    <br></br>
+                    <h:panelGrid id="panelSolicitante" styleClass="noBorder" style="font-weight: bolder;">
+                        <h:panelGroup>
+                            Identificación:<br></br>
+                            <p:inputText value="#{entregaDocsRp.solicitante.ciRuc}"
+                                         size="46" placeholder="Ingrese numero de Identificacion"
+                                         readonly="#{entregaDocsRp.solicitante.id ne null}"
+                                         onkeyup="if (event.keyCode == 13) {
+                                                     buscar();
+                                                     return false;
+                                                 }" 
+                                         onkeypress="if (event.keyCode == 13) {
+                                                     return false;
+                                                 }"/>    
+                            <p:spacer width="10" />
+                            <p:commandLink  title="Buscar" 
+                                            actionListener="#{entregaDocsRp.buscar()}">
+                                <p:graphicImage value="/resources/icons/buscar.png" style="text-align: right" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{entregaDocsRp.selectObject}" update="mainForm:mainTab:panelSolicitante"/>
+                            </p:commandLink>
+                            <p:remoteCommand name="buscar" actionListener="#{entregaDocsRp.buscar()}" update="mainForm:mainTab:panelSolicitante"/>
+                            <p:spacer width="10" />
+                            <p:commandLink  title="Limpiar" 
+                                            actionListener="#{entregaDocsRp.limpiarDatosSolicitante()}" 
+                                            update="panelSolicitante">
+                                <p:graphicImage value="/resources/icons/trash.png" style="text-align: right" height="16"/>
+                            </p:commandLink>
+                            <p:spacer width="10" />
+                            <p:selectBooleanCheckbox value="#{entregaDocsRp.retiraDocumentoEsSolicitante}" >
+                                <p:ajax update="panelSolicitante" listener="#{entregaDocsRp.actualizarBeneficiarioEsSolicitante()}" />
+                            </p:selectBooleanCheckbox>
+
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Nombres:" style="font-weight: bolder"/><br></br>
+                            <p:inputText value="#{entregaDocsRp.solicitante.nombreCompleto}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Dirección:" style="font-weight: bolder"/><br></br>
+                            <p:inputText value="#{entregaDocsRp.solicitante.direccion}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Correo:" style="font-weight: bolder"/><br></br>    
+                            <p:inputText value="#{entregaDocsRp.solicitante.correo1}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Teléfono:" style="font-weight: bolder"/><br></br>
+                            <p:inputText value="#{entregaDocsRp.solicitante.telefono1}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Observación:" style="font-weight: bolder;"/><br/>
+                            <p:inputTextarea rows="7" cols="80" value="#{entregaDocsRp.observacion}"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <br></br>
+                    <center>
+                        <p:commandButton value="Completar Tarea" icon="ui-icon-check" styleClass="btnStyle"
+                                         actionListener="#{entregaDocsRp.completarTarea()}">
+                        </p:commandButton>
+                    </center>
+                </p:tab>
+                <p:tab title="Informacion de Proforma">
+                    <h:panelGrid styleClass="noBorder" columns="2" style="font-size: 16px;">
+                        <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{entregaDocsRp.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                        <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{entregaDocsRp.liquidacion.solicitante.nombreCompleto}"
+                                       style="text-transform: uppercase;font-weight: bolder;"/>
+                    </h:panelGrid>
+                    <p:dataTable value="#{entregaDocsRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" 
+                                 reflow="true" style="text-align: center" emptyMessage="Sin observaciones..."
+                                 scrollable="true" scrollHeight="300">
+                        <p:column headerText="Contrato">
+                            <h:outputText value="#{det.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Avaluo" width="100">
+                            <h:outputText value="#{det.avaluo}"/>
+                        </p:column>
+                        <p:column headerText="Cuantia" width="100">
+                            <h:outputText value="#{det.cuantia}"/>
+                        </p:column>
+                        <p:column headerText="Exoneracion" width="150">
+                            <h:outputText value="#{det.exoneracion.concepto}"/>
+                        </p:column>
+                        <p:column headerText="Pago" width="150">
+                            <h:outputText value="#{det.valorTotal}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Observaciones" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{entregaDocsRp.observacionesTramites}" var="obs" >
+
+                            <p:column headerText="Fecha de Ingreso" >
+                                #{obs.fecCre}
+                            </p:column>
+                            <p:column headerText="Tarea" >
+                                #{obs.tarea}
+                            </p:column>
+                            <p:column headerText="Observación" >
+                                #{obs.observacion}
+                            </p:column>
+
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

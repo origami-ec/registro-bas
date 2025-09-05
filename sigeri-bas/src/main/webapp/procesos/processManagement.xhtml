@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="title">Carga de Procesos</ui:define>
+    <ui:define name="content">
+        <h:form id="formMain">
+            <center><h3 style="font-weight: bolder;">CARGA DE PROCESOS BPMN (Actualización de Versiones)</h3></center>
+            <p:tabView id="tdatos">
+                <p:tab id="tprocess" title="Procesos para Desplegar">
+                    <center>
+                        <p:commandButton value="Nuevo Proceso" icon="pi pi-sitemap" actionListener="#{processManagement.newProcess()}"/>
+                    </center><br/>
+                    <p:dataTable id="dtprocess" value="#{processManagement.procedures}" var="p" style="width: 90%;margin: 0 auto;" 
+                                 paginator="true" rows="10" emptyMessage="No existen procesos para desplegar" reflow="true" rowsPerPageTemplate="20,50,100" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                        <p:column headerText="ID">
+                            #{p.activitykey}
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            #{p.descripcion}
+                        </p:column>
+                        <p:column headerText="Archivo Bpmn">
+                            #{p.archivoBpmn}
+                        </p:column>
+                        <p:column headerText="Estado" width="70">
+                            <p:outputLabel value="Activo" rendered="#{p.estado}"/>
+                            <p:outputLabel value="Inactivo" rendered="#{!p.estado}"/>
+                        </p:column>
+                        <p:column headerText="Procesos" width="170">
+                            <p:commandButton icon="pi pi-pencil" title="editar" actionListener="#{processManagement.editProcess(p)}"  />
+                            <p:spacer width="10" />
+                            <p:commandButton icon="pi pi-upload" title="actualizar" actionListener="#{processManagement.cargarProceso(p)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab id="tprocessDep" title="Procesos Actuales Desplegados">
+                    <p:dataTable id="dtprocessDep" value="#{processManagement.procesosDesplegados}" var="pd" 
+                                 paginator="true" rows="10" reflow="true" emptyMessage="No tiene procesos desplegados"
+                                 style="width: 70%;margin: 0 auto;text-align: center;">
+                        <p:column headerText="Identificador">
+                            #{pd.id}
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            #{pd.name}
+                        </p:column>
+                        <p:column headerText="Ult. Version" style="width: 10%">
+                            #{pd.version}
+                        </p:column>
+                        <p:column headerText="Diagrama" width="50">
+                            <p:commandButton icon="pi pi-sitemap" title="mostrar diagrama" 
+                                             actionListener="#{processManagement.showDlgDiagram(pd.deploymentId, pd.diagramResourceName)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Historial de Todos los Procesos">
+                    <p:dataTable value="#{processManagement.allProcesosDesplegados}" var="apd" 
+                                 paginator="true" rows="10" reflow="true" emptyMessage="No tiene procesos desplegados"
+                                 style="width: 70%;margin: 0 auto;text-align: center;">
+                        <p:column headerText="Identificador">
+                            #{apd.id}
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            #{apd.name}
+                        </p:column>
+                        <p:column headerText="Ult. Version" style="width: 10%">
+                            #{apd.version}
+                        </p:column>
+                        <p:column headerText="Diagrama" width="50">
+                            <p:commandButton icon="pi pi-sitemap" title="mostrar diagrama" 
+                                             actionListener="#{processManagement.showDlgDiagram(apd.deploymentId, apd.diagramResourceName)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog widgetVar="dlgDiagrama" header="Diagrama de Proceso" modal="true" position="top" closeOnEscape="true" height="650" width="1000">
+            <h:form id="frmDiagrama">
+                <p:graphicImage value="#{processManagement.stream}" rendered="#{processManagement.stream ne null}" stream="false"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Process Definition" widgetVar="dlgProcess" modal="true" resizable="false" position="center">
+            <h:form id="formProcess">
+                <h:panelGrid style="font-weight: bolder;" columns="2" >
+                    Estado:
+                    <p:selectOneMenu value="#{processManagement.tipoTramite.estado}">
+                        <f:selectItem itemLabel="Activo" itemValue="true"/>
+                        <f:selectItem itemLabel="Inactivo" itemValue="false"/>
+                    </p:selectOneMenu>
+                    Descripcion:
+                    <p:inputText value="#{processManagement.tipoTramite.descripcion}" size="50"/>
+                    Activity Key:
+                    <p:inputText value="#{processManagement.tipoTramite.activitykey}" size="50"/>
+                    Archivo Bpmn:
+                    <p:inputText value="#{processManagement.tipoTramite.archivoBpmn}" size="50"/>
+                    Abreviatura:
+                    <p:inputText value="#{processManagement.tipoTramite.abreviatura}" size="50"/>
+                </h:panelGrid>
+                <p:spacer width="1" height="10"/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{processManagement.saveProcess()}"/>
+                </center>
+            </h:form>   
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

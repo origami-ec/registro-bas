@@ -1,0 +1,458 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Ingreso de Ficha</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h3 style="font-weight: bolder;"><center>DATOS DE FICHA REGISTRAL # #{fichaIngresoNuevo.ficha.numFicha}</center></h3>
+            <p:tabView id="tabFicha">
+                <p:tab title="UBICACION" rendered="#{fichaIngresoNuevo.tipoFicha.codigo eq 0}">
+                    <p:fieldset legend="INFORMACION">
+                        <h:panelGrid style="width: 100%; margin-top: 15px;font-weight: bolder;font-size: 14px;" columns="5">
+                            <p:outputLabel value="Tipo de Ficha:"/>
+                            <p:outputLabel value="Estado:"/>
+                            <p:outputLabel value="Tipo Bien:"/>
+                            <p:outputLabel value="Parroquia:"/>
+                            <p:outputLabel value="Tipo Predio:"/>
+                            <p:inputText value="#{fichaIngresoNuevo.tipoFicha.nombre}" readonly="true" size="40"/>                            
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.estado}" converter="entityConverter">
+                                <f:selectItems value="#{fichaIngresoNuevo.estados}" var="est" itemLabel="#{est.valor}" itemValue="#{est}" />
+                            </p:selectOneMenu>
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.uafTipoBien}" converter="entityConverter">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                <f:selectItems value="#{fichaIngresoNuevo.tiposBien}" var="tb" itemLabel="#{tb.descripcion}" itemValue="#{tb}" />
+                            </p:selectOneMenu>
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.parroquia}" converter="entityConverter" 
+                                             filter="true" filterMatchMode="startsWith">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                <f:selectItems value="#{fichaIngresoNuevo.listParroqia}" var="par" itemLabel="#{par.descripcion}" itemValue="#{par}" />
+                                <!--<p:ajax listener="# {fichaIngresoNuevo.reloadBarrios()}" update="selectBarrios" />-->
+                            </p:selectOneMenu>
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.tipoPredio}">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                <f:selectItem itemLabel="URBANO" itemValue="U" />
+                                <f:selectItem itemLabel="RURAL" itemValue="R" />
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <p:fieldset legend="UBICACION">
+                        <p:panelGrid style="width: 100%; margin-top: 15px;font-weight: bolder;font-size: 14px;" 
+                                     styleClass="ui-panelgrid-blank form-group form-elements" columns="4">
+                            Manzana:
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.manzana}" style="width: 95%;" maxlength="19" onkeyup="toUpperCase(this)"/>
+                            Solar/Lote:
+                            <h:panelGroup>
+                                <p:inputText value="#{fichaIngresoNuevo.ficha.lote}" style="width: 95%;" maxlength="19" onkeyup="toUpperCase(this)" />
+                            </h:panelGroup>
+                            Depart./Almacen:
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.departamento}" style="width: 95%;" maxlength="90" onkeyup="toUpperCase(this)"/>
+                            Division/Bloque:
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.division}" style="width: 95%;" maxlength="19" onkeyup="toUpperCase(this)"/>
+                            Edificio/Predio:
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.nombrePredio}" style="width: 95%;" maxlength="100" onkeyup="toUpperCase(this)"/>
+                            Dirección:
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.direccionBien}" style="width: 95%;" maxlength="100"
+                                         placeholder="Calle principal, numeración y calle transversal"/>      
+                        </p:panelGrid>
+                    </p:fieldset>
+                    <p:fieldset legend="AREAS Y MEDIDAS">
+                        <p:panelGrid style="width: 100%; margin-top: 15px;font-weight: bolder;font-size: 14px;" 
+                                     styleClass="ui-panelgrid-blank form-group form-elements" columns="6">
+                            Área Terreno:
+                            <p:inputNumber value="#{fichaIngresoNuevo.ficha.areaTerreno}" decimalPlaces="4" style="width: 95%;"/>
+                            Área Construcción:
+                            <p:inputNumber value="#{fichaIngresoNuevo.ficha.areaConstruccion}" decimalPlaces="4" style="width: 95%;"/>
+                            Unidad de Medida:
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.unidadMedida}" converter="entityConverter">  
+                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                <f:selectItems value="#{fichaIngresoNuevo.unidades}" var="it" itemLabel="#{it.valor}" itemValue="#{it}"/>
+                            </p:selectOneMenu>
+                            Alícuota Terreno:
+                            <p:inputNumber value="#{fichaIngresoNuevo.ficha.alicuotaEscritura}" decimalPlaces="3" style="width: 95%;"/>
+                            Alícuota Construcción:
+                            <p:inputNumber value="#{fichaIngresoNuevo.ficha.alicuotaConstruccion}" decimalPlaces="3" style="width: 95%;"/>
+                        </p:panelGrid>
+                    </p:fieldset>
+                    <p:fieldset legend="DATOS CATASTRO">
+                        <h:panelGrid style="font-weight: bolder;font-size: 14px;" columns="3">
+                            Clave Catastral:
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.claveCatastral}" style="width: 300px;"/>
+                            <p:commandButton value="Validar" icon="pi pi-search" update="@this" 
+                                             actionListener="#{fichaIngresoNuevo.validarClaveCatastral()}" />
+                            <!--Codigo Anterior:
+                            <p:inputText value="# {fichaIngresoNuevo.ficha.claveCatastralOld}" style="width: 90%;"/>
+                            <p:commandButton value="Validar Campos" icon="fa fa-search" rendered="false"
+                                             actionListener="# {fichaIngresoNuevo.validarDatosAdicionales(2)}" update="@this" />-->
+                        </h:panelGrid>
+                    </p:fieldset>
+                </p:tab>
+
+                <p:tab title="LINDEROS" rendered="#{fichaIngresoNuevo.tipoFicha.codigo eq 0}">
+                    <p:fieldset legend="DESCRIPCION DEL BIEN INMUEBLE">
+                        <p:inputTextarea value="#{fichaIngresoNuevo.ficha.descripcionBien}" style="width: 100%;" 
+                                         rows="4" autoResize="false" onkeyup="toUpperCase(this);"/>
+                    </p:fieldset>
+                    <p:fieldset legend="LINDEROS REGISTRALES">
+                        <p:inputTextarea id="lindFichaReg" value="#{fichaIngresoNuevo.ficha.linderos}" style="width: 100%;" rows="10" 
+                                         autoResize="false" />
+                    </p:fieldset>
+                </p:tab>
+
+                <p:tab title="INFORMACION REGISTRAL" rendered="#{fichaIngresoNuevo.tipoFicha.codigo eq 1}">
+                    <p:fieldset legend="DATOS DE BIEN MUEBLE">
+                        <h:panelGrid style="margin-top: 15px;font-weight: bolder;font-size: 14px;width: 75%;" columns="6">
+                            Tipo de Ficha:
+                            <p:inputText value="#{fichaIngresoNuevo.tipoFicha.nombre}" readonly="true" style="width: 90%;"/>
+                            Estado:
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.estado}" converter="entityConverter">
+                                <f:selectItems value="#{fichaIngresoNuevo.estados}" var="est" itemLabel="#{est.valor}" itemValue="#{est}" />
+                            </p:selectOneMenu>
+                            Tipo Bien:
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.uafTipoBien}" converter="entityConverter">
+                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                <f:selectItems value="#{fichaIngresoNuevo.tiposBien}" var="tb" itemLabel="#{tb.descripcion}" itemValue="#{tb}" />
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid style="margin-top: 15px;font-weight: bolder;font-size: 14px;" columns="4">
+                            Codigo/Chasis/Placa:
+                            <p:spacer width="20" height="1"/>
+                            <p:inputText value="#{fichaIngresoNuevo.ficha.claveCatastral}" size="40"/>
+                            <p:commandButton value="Validar" icon="pi pi-search" actionListener="#{fichaIngresoNuevo.validarClaveCatastral()}" update="@this" />
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <p:fieldset legend="DESCRIPCION DE BIEN MUEBLE">
+                        <p:inputTextarea value="#{fichaIngresoNuevo.ficha.linderos}" style="width: 100%;" rows="10" autoResize="false" />
+                    </p:fieldset>
+                </p:tab>
+
+                <p:tab title="INFORMACION REGISTRAL" rendered="#{fichaIngresoNuevo.tipoFicha.codigo gt 1}">
+                    <p:fieldset legend="DATOS DE FICHA">
+                        <h:panelGrid columns="2" style="font-weight: bolder;">
+                            Tipo de Ficha:
+                            <p:inputText value="#{fichaIngresoNuevo.tipoFicha.nombre}" disabled="true" size="40"/>
+                            Estado:
+                            <p:selectOneMenu value="#{fichaIngresoNuevo.ficha.estado}" converter="entityConverter" disabled="true">
+                                <f:selectItems value="#{fichaIngresoNuevo.estados}" var="est" itemLabel="#{est.valor}" itemValue="#{est}" />
+                            </p:selectOneMenu>
+                            CI/RUC/DOC:
+                            <p:inputText readonly="true" value="#{fichaIngresoNuevo.ficha.claveCatastral}" size="40"/>
+                            <p:commandButton value="Buscar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{fichaIngresoNuevo.showDlg('/resources/dialog/dlglazyinterv')}">
+                                <p:ajax event="dialogReturn" listener="#{fichaIngresoNuevo.selectPersona}" update="mainForm"/>
+                            </p:commandButton>
+                            <p:commandButton value="Nuevo" icon="ui-icon-plus" styleClass="btnStyle" 
+                                             actionListener="#{fichaIngresoNuevo.showDlgNewInterv()}"/>
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <p:fieldset legend="DESCRIPCION DE LA FICHA">
+                        <p:inputTextarea value="#{fichaIngresoNuevo.ficha.linderos}" style="width: 100%;" rows="10" autoResize="false" />
+                    </p:fieldset>
+                </p:tab>
+
+                <p:tab title="MOVIMIENTOS">
+                    <div align="right">
+                        <p:commandButton value="Agregar Antecedentes" icon="pi pi-search" 
+                                         actionListener="#{fichaIngresoNuevo.showDlgWith('/resources/dialog/dlglazymov')}">
+                            <p:ajax event="dialogReturn" listener="#{fichaIngresoNuevo.selectObjectMov}" update="dtMov"/>
+                        </p:commandButton>
+                    </div>
+                    <p:spacer height="10" width="0"/>
+                    <p:dataTable id="dtMov" value="#{fichaIngresoNuevo.movimientos}" emptyMessage="No hay movimientos agregados..." 
+                                 var="mov" rowIndexVar="rowIndex" style="text-align: center;" scrollable="true" scrollHeight="400"
+                                 resizableColumns="true">
+                        <p:column headerText="No" width="30">
+                            #{rowIndex + 1}
+                        </p:column>
+                        <p:column headerText="Libro" style="text-align: left;" width="150">
+                            <p:outputLabel value="#{mov.movimiento.libro.nombre}" />
+                        </p:column>
+                        <p:column headerText="Acto" style="text-align: left;">
+                            <p:outputLabel value="#{mov.movimiento.acto.nombre}" />
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <p:outputLabel value="#{mov.movimiento.numRepertorio}" />
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <p:outputLabel value="#{mov.movimiento.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Ins." width="100">
+                            <p:outputLabel value="#{mov.movimiento.fechaInscripcion}" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Sec." width="30">
+                            <p:outputLabel value="#{mov.movimiento.indice}"/>
+                        </p:column>
+                        <!--<p:column headerText="Estado" width="100">
+                            <h:outputText value="# {appConfig.estadoMovimiento(mov.movimiento.registro)}" />
+                        </p:column>
+                        <p:column headerText="Ref" width="100">
+                                <p:outputLabel value="# {fichaIngresoNuevo.referencia(mov.movimiento)}" />
+                        </p:column>-->
+                        <p:column headerText="Sel." width="30">
+                            <p:commandButton icon="pi pi-folder-open" actionListener="#{fichaIngresoNuevo.showDlgMovSelect(mov.movimiento)}"/>
+                        </p:column>
+                        <p:column headerText="Edit." width="30">
+                            <p:commandButton icon="pi pi-pencil" actionListener="#{fichaIngresoNuevo.editarMovimiento(mov.movimiento)}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="30">
+                            <p:commandButton icon="pi pi-trash" update="dtMov" 
+                                             actionListener="#{fichaIngresoNuevo.eliminarMovimiento(mov.movimiento, rowIndex)}">
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-ban" />
+                    </p:confirmDialog>
+                </p:tab>
+                <p:tab title="PROPIETARIOS" rendered="#{fichaIngresoNuevo.tipoFicha.codigo eq 0}">
+                    <p:spacer height="10" width="0"/>
+                    <p:dataTable id="dtPropietarios" value="#{fichaIngresoNuevo.propietarios}" var="pro" 
+                                 emptyMessage="Sin elementos..." rowIndexVar="index" scrollable="true" scrollHeight="300" 
+                                 style="width: 75%;margin: 0 auto;text-align: center;">
+                        <p:column headerText="No" width="30">
+                            #{index + 1}
+                        </p:column>
+                        <p:column headerText="C.I/R.U.C" width="15%">
+                            <p:outputLabel value="#{pro.propietario.cedRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres" width="55%">
+                            <p:outputLabel value="#{pro.propietario.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Delete" width="5%">
+                            <p:commandButton icon="pi pi-trash" update="dtPropietarios" 
+                                             actionListener="#{fichaIngresoNuevo.deletePropietario(index)}" >
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" 
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-ban" />
+                    </p:confirmDialog>
+                </p:tab>
+            </p:tabView><br/>
+            <div align="center">
+                <p:commandButton id="btnSaveFicha" value="Guardar Datos" icon="pi pi-save" 
+                                 actionListener="#{fichaIngresoNuevo.saveFicha()}">
+                    <p:confirm header="Confirmacion" message="Seguro de guardar la informacion de la ficha?" icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+                <p:confirmDialog global="true">
+                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-ban" />
+                </p:confirmDialog>
+                <p:spacer width="30" height="1"/>
+                <p:commandButton value="Visualizar Ficha" icon="pi pi-file-pdf" 
+                                 actionListener="#{fichaIngresoNuevo.imprimirFichaRegistral()}" />
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgCrearInterv" header="Ingreso de Interviniente" widgetVar="dlgCrearInterviniente" 
+                  resizable="false" modal="true" width="450">
+            <h:form id="formCreaInterv">
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group form-elements" 
+                             style="width: 100%;font-weight: bolder; font-size: 12px;">
+                    Tipo Persona:
+                    <p:selectOneMenu value="#{fichaIngresoNuevo.persona.tipoInterv}">
+                        <f:selectItem itemLabel="Natural" itemValue="N" />
+                        <f:selectItem itemLabel="Juridica" itemValue="J" />
+                    </p:selectOneMenu>
+                    CI/RUC/DOC:
+                    <p:inputText value="#{fichaIngresoNuevo.persona.cedRuc}" size="50"/>
+                    NOMBRES:
+                    <p:inputText value="#{fichaIngresoNuevo.persona.nombre}" size="50"/>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" actionListener="#{fichaIngresoNuevo.guardarInterviniente()}" 
+                                     icon="pi pi-save"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!--<p:dialog id="dlgObsvMarginacion" widgetVar="dlgMarginacion" header="Marginacion" modal="true" resizable="false" position="top">
+            <h:form id="formMarginacion">
+                <p:panelGrid styleClass="ui-panelgrid-blank form-group form-elements" columns="1" style="text-align: center">
+                    <p:inputTextarea value="# {fichaIngresoNuevo.marg.observacion}" cols="60" rows="10" autoResize="false"/>
+                    <p:commandButton actionListener="# {fichaIngresoNuevo.agregarMarginacion()}" value="Guardar" styleClass="btnStyle"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>-->
+
+        <p:dialog id="dlgMovimientoRegistral" header="Movimiento Registral Seleccionado" widgetVar="dlgMovRegSelec" 
+                  resizable="false" modal="true" closeOnEscape="true" width="800" height="400">
+            <h:form id="formMovRegSelec">
+                <p:fieldset legend="Datos de la Inscripcion">
+                    <p:panelGrid styleClass="noBorder" style="width: 100%;font-size: 12px;font-weight: bolder;">
+                        <p:row>
+                            <p:column>
+                                Num.Inscrip.:
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column>
+                                Fecha Inscrip.:
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column>
+                                Num.Rep.: 
+                                <p:outputLabel  value="#{fichaIngresoNuevo.movimiento.numRepertorio}"/>
+                            </p:column>
+                        </p:row>                  
+                        <p:row>
+                            <p:column>
+                                Libro: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.libro.nombre}"/>
+                            </p:column>
+                            <p:column colspan="2">
+                                Acto: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.acto.nombre}"/>
+                            </p:column>
+                        </p:row>                  
+                        <p:row>
+                            <p:column>
+                                Tomo: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.numTomo}"/>
+                            </p:column>
+                            <p:column>
+                                Folio Inicio: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.folioInicio}"/>
+                            </p:column>
+                            <p:column>
+                                Folio Fin: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.folioFin}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Canton: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.domicilio.nombre}"/>
+                            </p:column>
+                            <p:column>
+                                Fech/Otorg.:
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.fechaOto}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column>
+                                Not./Juz.: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.enteJudicial.nombre}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                Escri/Juicio/Resolu: 
+                                <p:outputLabel value="#{fichaIngresoNuevo.movimiento.escritJuicProvResolucion}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:fieldset>
+                <p:tabView id="tvMovimiento">
+                    <p:tab title="Intervinientes">
+                        <div align="right">
+                            <p:commandButton value="Cargar Propietarios" styleClass="btnStyle" 
+                                             actionListener="#{fichaIngresoNuevo.cargarPropietarios()}"/>
+                        </div>
+                        <p:dataTable emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" resizableColumns="true" 
+                                     value="#{fichaIngresoNuevo.modelo.listMovCli}" style="text-align: center" scrollHeight="230" 
+                                     selection="#{fichaIngresoNuevo.selects}" rowKey="#{inter.id}">
+                            <p:column selectionMode="multiple" width="20"/>
+                            <p:column headerText="C.I/R.U.C" width="130">
+                                <h:outputText value="#{inter.enteInterv.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombres">
+                                <h:outputText value="#{inter.enteInterv.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Papel" width="150">
+                                <h:outputText value="#{inter.papel.papel}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Bienes">
+                        <p:dataTable value="#{fichaIngresoNuevo.modelo.fichas}" var="fich" style="width: 100%;text-align: center" scrollable="true" 
+                                     scrollHeight="230" rowIndexVar="rowIndex" emptyMessage="No se encontraron elementos...">
+                            <p:column headerText="No" width="30">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column headerText="No Ficha" width="150">
+                                <p:outputLabel value="#{fich.numFicha}"/>
+                            </p:column>
+                            <p:column headerText="Parroquia">
+                                <p:outputLabel value="#{fich.parroquia.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Clave Catastral">
+                                <p:outputLabel value="#{fich.claveCatastral}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observacion">
+                        <p:inputTextarea value="#{fichaIngresoNuevo.movimiento.observacion}" readonly="true"
+                                         autoResize="false" scrollHeight="100" style="width: 100%; height: 150px"/>
+                    </p:tab>
+                    <p:tab title="Referencias">
+                        <p:dataTable style="text-align: center;width: 100%" scrollable="true" scrollHeight="230" scrollWidth="1000" rowIndexVar="indexMovRef"
+                                     value="#{fichaIngresoNuevo.modelo.listMovRef}" var="movRef" emptyMessage="Movimiento sin referencias." resizableColumns="true">
+                            <!--<p:column headerText="No" width="30"># {indexMovRef+1}</p:column>-->
+                            <p:column headerText="Acto">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.numInscripcion}"/>                                   
+                            </p:column>
+                            <p:column headerText="Fec.Insc." width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>                                   
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.numRepertorio}"/>                                   
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.libro.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Fichas del Movimiento" widgetVar="dlgFichasMovs" modal="true" width="600" resizable="false">
+            <h:form id="formFichasMovs">
+                <h:panelGrid columns="4" style="font-weight: bolder;font-size: 16px;">
+                    Inscripcion:
+                    <p:inputText value="#{fichaIngresoNuevo.movimiento.numInscripcion}" readonly="true"/>
+                    Fecha Insc.:
+                    <p:inputText value="#{fichaIngresoNuevo.movimiento.fechaInscripcion}" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                </h:panelGrid>
+                <p:outputLabel value="Este movimiento ya se encuentra enlazado con otra(s) ficha(s)."
+                               style="font-weight: bolder;font-size: 16px;color: #0033FF;"/> 
+                <p:dataTable value="#{fichaIngresoNuevo.movimiento.regMovimientoFichaCollection}" var="mfc" 
+                             scrollable="true" scrollHeight="250" resizableColumns="true">
+                    <p:column headerText="No de Ficha" width="100">
+                        <p:outputLabel value="#{mfc.ficha.numFicha}"/>
+                    </p:column>
+                    <p:column headerText="Parroquia" width="120">
+                        <p:outputLabel value="#{mfc.ficha.parroquia.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Descripcion" >
+                        <p:outputLabel id="txtDescFicha" value="#{mfc.ficha.descripcionBien}"/>
+                        <p:tooltip for="txtDescFicha" value="#{mfc.ficha.descripcionBien}" position="top" />
+                    </p:column>
+                </p:dataTable>
+                <center>
+                    <p:commandButton value="Aceptar" icon="pi pi-check" actionListener="#{fichaIngresoNuevo.addMovimientoFicha()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

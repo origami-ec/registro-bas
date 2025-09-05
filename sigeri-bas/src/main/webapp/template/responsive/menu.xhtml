@@ -1,0 +1,35 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pv="http://primefaces.org/paradise">
+
+    <div class="layout-menu-wrapper #{guestPreferences.darkMenu ? 'layout-menu-dark' : null}">
+        <script type="text/javascript">
+            function customfunction1(obj) {
+                console.log("Test item..." + obj);
+            }
+            function customMenu(evt) {
+                console.log("Test item... " + evt);
+            }
+        </script>
+        <div class="nano">
+            <div class="nano-content sidebar-scroll-content">
+                <div class="layout-menu-container">
+                    <h:form id="menuform">
+                        <div class="mobile-search">
+                            <i class="pi pi-search topbar-search-icon"></i>
+                            <input type="text" class="topbar-search" placeholder="Type your search here"/>
+                        </div>
+
+                        <p:remoteCommand actionListener="#{appMenu.onClic}" name="customfunction"  />
+                        <!--<p:remoteCommand actionListener="# {appMenu.onClicBtn}" name="btnLogFunction"  />-->
+                        <pv:menu id="tabMenuHome"  model="#{appMenu.model}" />
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+</ui:composition>    

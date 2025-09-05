@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Libro de Repertorio</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>ARCHIVO Y EMPASTE</h2></center>
+            <p:tabView>
+                <p:tab title="Repertorio Diario">
+                    <h:panelGrid styleClass="noBorder" columns="1" style="text-align: center;margin: 0 auto;">
+                        <h:outputText value="Tipo de Repertorio: " style="font-weight: bolder;font-size: 14px" rendered="false"/>
+                        <p:selectOneMenu value="#{reporteArchivo.tipoRepertorio}" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                            <f:selectItem itemLabel="REPERTORIO PROPIEDAD" itemValue="#{1}"/>
+                            <f:selectItem itemLabel="REPERTORIO MERCANTIL" itemValue="#{2}"/>
+                            <f:selectItem itemLabel="REPERTORIO VACIO PROPIEDAD" itemValue="#{3}"/>
+                            <f:selectItem itemLabel="REPERTORIO VACIO MERCANTIL" itemValue="#{4}"/>
+                        </p:selectOneMenu>
+                        <h:outputText value="Fecha Desde: " style="font-weight: bolder;font-size: 14px"/>
+                        <p:calendar value="#{reporteArchivo.fechaDesde}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                        <h:outputText value="Fecha Hasta: " style="font-weight: bolder;font-size: 14px"/>
+                        <p:calendar value="#{reporteArchivo.fechaHasta}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                        <p:spacer width="1" height="10"/>
+                        <p:commandButton value="Generar Repertorio PDF" icon="pi pi-file-pdf" 
+                                         actionListener="#{reporteArchivo.generarRepertorio()}" style="float: end"/>
+                        <!--<p:spacer width="1" height="10"/>
+                        <p:commandButton value="Generar Repertorio XLS" icon="fa fa-file-excel-o" styleClass="btnStyle" 
+                                         actionListener="# {reporteArchivo.generarRepertorioXls()}" style="float: end"/>
+                        <p:spacer width="1" height="10"/>
+                        <p:commandButton value="Generar Repertorio DOC" icon="fa fa-file-word-o" styleClass="btnStyle" 
+                                         actionListener="# {reporteArchivo.generarRepertorioWord()}" style="float: end"/>-->
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Acta de Inicio y Fin" rendered="false">
+                    <h:panelGrid id="pnlActas" styleClass="noBorder" columns="1" style="font-weight: bolder;margin: 0 auto;text-align: center;">
+                        Tipo de Acta:
+                        <p:selectOneMenu value="#{reporteArchivo.inicio}" >
+                            <f:selectItem itemLabel="ACTA DE INICIO" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="ACTA DE FIN" itemValue="#{false}"/>
+                            <p:ajax update="pnlActas" event="change"/>
+                        </p:selectOneMenu>
+                        Libro:
+                        <p:selectOneMenu value="#{reporteArchivo.libro}" filter="true">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                            <f:selectItems value="#{reporteArchivo.libros}" var="li" itemLabel="#{li.nombre}" itemValue="#{li.nombre}"/>
+                        </p:selectOneMenu>
+                        Fecha de Acta:
+                        <p:calendar value="#{reporteArchivo.fechaActa}" pattern="dd/MM/yyyy"/>
+                        <h:outputText value="Fojas:" style="font-weight: bolder;font-size: 14px" 
+                                      rendered="#{reporteArchivo.inicio}"/>
+                        <h:outputText value="Anotaciones:" style="font-weight: bolder;font-size: 14px"
+                                      rendered="#{!reporteArchivo.inicio}"/>
+                        <p:inputNumber value="#{reporteArchivo.folio}" decimalPlaces="0"/>
+                        <h:outputText value="Desde:" style="font-weight: bolder;font-size: 14px"
+                                      rendered="#{!reporteArchivo.inicio}"/>
+                        <p:inputNumber value="#{reporteArchivo.desde}" decimalPlaces="0"
+                                       rendered="#{!reporteArchivo.inicio}"/>
+                        <h:outputText value="Hasta:" style="font-weight: bolder;font-size: 14px"
+                                      rendered="#{!reporteArchivo.inicio}"/>
+                        <p:inputNumber value="#{reporteArchivo.hasta}" decimalPlaces="0"
+                                       rendered="#{!reporteArchivo.inicio}"/>
+                    </h:panelGrid>
+                    <h:panelGrid styleClass="noBorder" style="margin: 0 auto;" columns="1">
+                        <p:commandButton value="Generar Acta" icon="ui-icon-print" styleClass="btnStyle"
+                                         actionListener="#{reporteArchivo.imprimirActaInicio()}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Reportes de Indices">
+                    <h:panelGrid id="pnlIndices" style="margin: 0 auto;font-weight: bolder;text-align: center;" columns="1">
+                        Seleccionar:
+                        <p:selectOneMenu value="#{reporteArchivo.tipoIndice}" >
+                            <f:selectItem itemValue="#{0}" itemLabel="Seleccionar..."/>
+                            <f:selectItem itemValue="#{1}" itemLabel="Indice Específico"/>
+                            <f:selectItem itemValue="#{2}" itemLabel="Indice General Propiedad"/>
+                            <!--<f:selectItem itemValue="# {3}" itemLabel="Indice General Mercantil"/>-->
+                            <p:ajax update="pnlIndices" event="change"/>
+                        </p:selectOneMenu>
+                        <h:outputText value="Libro:" rendered="#{reporteArchivo.tipoIndice eq 1}"/>
+                        <p:selectOneMenu value="#{reporteArchivo.libroIndice}" filter="true" converter="entityConverter" 
+                                         rendered="#{reporteArchivo.tipoIndice eq 1}">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                            <f:selectItems value="#{reporteArchivo.libros}" var="li" itemLabel="#{li.nombre}" itemValue="#{li}"/>
+                        </p:selectOneMenu>
+                        <h:outputText value="Fecha Desde:" />
+                        <p:calendar value="#{reporteArchivo.desdeIndice}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" />
+                        <h:outputText value="Fecha Hasta:" />
+                        <p:calendar value="#{reporteArchivo.hastaIndice}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" />
+                        <!--<h:outputText value="Fecha Desde:" rendered="# {reporteArchivo.tipoIndice eq 1 or reporteArchivo.tipoIndice eq 3}"/>
+                        <p:calendar value="# {reporteArchivo.desdeIndice}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" 
+                                    rendered="# {reporteArchivo.tipoIndice eq 1 or reporteArchivo.tipoIndice eq 3}"/>
+                        <h:outputText value="Fecha Hasta:" rendered="# {reporteArchivo.tipoIndice eq 1 or reporteArchivo.tipoIndice eq 3}"/>
+                        <p:calendar value="# {reporteArchivo.hastaIndice}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" 
+                                    rendered="# {reporteArchivo.tipoIndice eq 1 or reporteArchivo.tipoIndice eq 3}"/>
+                        <h:outputText value="Nro Tomo:" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <p:inputNumber value="# {reporteArchivo.tomo}" decimalPlaces="0" thousandSeparator="" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <h:outputText value="Inscripcion Desde:" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <p:inputNumber value="# {reporteArchivo.inscripcionDesde}" decimalPlaces="0" thousandSeparator="" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <h:outputText value="Inscripcion Hasta:" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <p:inputNumber value="# {reporteArchivo.inscripcionHasta}" decimalPlaces="0" thousandSeparator="" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <h:outputText value="Año Periodo:" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <p:inputNumber value="# {reporteArchivo.anio}" decimalPlaces="0" thousandSeparator="" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <h:outputText value="Ordenar por:" rendered="# {reporteArchivo.tipoIndice eq 2}"/>
+                        <p:selectOneRadio value="# {reporteArchivo.tipoOrder}" rendered="# {reporteArchivo.tipoIndice eq 2}" >
+                            <f:selectItem itemLabel="Inscripcion" itemValue="# {1}" />
+                            <f:selectItem itemLabel="Nombres" itemValue="# {2}" />
+                        </p:selectOneRadio>-->
+                        <p:commandButton value="Generar Archivo PDF" icon="fa fa-file-pdf-o" styleClass="btnStyle" actionListener="#{reporteArchivo.reporteIndices()}"/>
+                        <!--<p:commandButton value="Generar Archivo XLS" icon="fa fa-file-excel-o" styleClass="btnStyle" 
+                                         action="# {reporteArchivo.reporteIndices()}" actionListener="# {reporteArchivo.setExcel(true)}"/> -->
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ticket" pageWidth="210" pageHeight="297" whenNoDataType="AllSectionsNoDetail" columnWidth="190" leftMargin="10" rightMargin="10" topMargin="0" bottomMargin="20" isIgnorePagination="true" uuid="aa1ebb37-e2f2-4d06-b103-65200ac1521b">
+	<property name="ireport.zoom" value="5.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID" class="java.lang.Long"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ht.fecha_creacion, ht.fecha_edicion, ht.num_tramite_rp, en.ci_ruc as documento,
+case en.es_persona when true then
+coalesce(en.nombres,'')||' '||coalesce(en.apellidos,'')
+else en.razon_social end AS solicitante,
+ht.inscripcion, ht.certificado, us.usuario as inscriptor, ht.fecha_ingreso
+from flow.regp_liquidacion ht
+left join app.cat_ente en on en.id = ht.beneficiario
+left join app.acl_user us on us.id = ht.inscriptor
+where ht.id = $P{ID}]]>
+	</queryString>
+	<field name="fecha_creacion" class="java.sql.Timestamp"/>
+	<field name="fecha_edicion" class="java.sql.Timestamp"/>
+	<field name="num_tramite_rp" class="java.lang.Long"/>
+	<field name="documento" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="inscripcion" class="java.lang.Boolean"/>
+	<field name="certificado" class="java.lang.Boolean"/>
+	<field name="inscriptor" class="java.lang.String"/>
+	<field name="fecha_ingreso" class="java.sql.Timestamp"/>
+	<title>
+		<band height="42" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="190" height="42" uuid="a3c68a5b-2bf1-45e3-91cb-5118312fef60"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Double"/>
+					<leftPen lineWidth="0.0" lineStyle="Double"/>
+					<bottomPen lineWidth="0.0" lineStyle="Double"/>
+				</box>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="54" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" isPrintRepeatedValues="false" x="0" y="24" width="190" height="30" uuid="4f661bf7-8425-4cc5-8d9e-31e509ff829a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="23" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_tramite_rp})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="12" width="190" height="12" uuid="b6c04de6-cfa0-4d8f-9689-9f80fac58c06"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ NRO. DE TRAMITE]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="190" height="12" uuid="2ac298cf-bd6d-46f7-9273-7e490282d9fa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inscripcion} ? "TRÁMITE DE INSCRIPCIÓN" : "TRÁMITE DE CERTIFICACIÓN"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="12" width="45" height="11" uuid="0ab22ce9-9734-476c-a690-317c0e5c6992"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="45" y="12" width="145" height="11" uuid="5ab839fd-5cd3-437d-895e-37d18b09c594"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_ingreso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="1" width="45" height="11" uuid="64d3065f-07ef-403c-94c3-73028579e124"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="45" y="1" width="145" height="11" isPrintWhenDetailOverflows="true" uuid="a540d3e6-99cb-4893-8907-d759c6358fc8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inscriptor}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

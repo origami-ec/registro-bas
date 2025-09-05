@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"> 
+    <ui:define name="title">Revisar Documentos</ui:define>
+    <ui:include src="styleTemplete.xhtml" />
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{editarDocumentoMB.doPreRenderView()}"/>
+            <f:viewParam name="transaccion" value="#{editarDocumentoMB.transaccion}" />
+            <f:viewParam name="tramite" value="#{editarDocumentoMB.tramite}" />
+            <f:viewParam name="indice" value="#{editarDocumentoMB.indice}" />
+        </f:metadata>
+    </ui:define>
+    <ui:define name="content">
+        <!--<center><h2>VISUALIZAR DOCUMENTOS</h2></center>-->
+        <h:form id="formMain">
+            <p:splitter widgetVar="splitter" >
+                <p:splitterPanel styleClass="flex align-items-center justify-content-center" size="20">
+                    <p:dataTable id="dtDocumentos" paginator="false" lazy="true" value="#{editarDocumentoMB.archivos}" 
+                                 var="docs" emptyMessage="No se han encontrado documentos." paginatorAlwaysVisible="false"
+                                 style="font-weight: bolder;" > 
+                        <p:column headerText="Documentos">
+                            <p:outputLabel value="ID: #{docs.id}" /><br/>
+                            <p:outputLabel value="FECHA: #{docs.fecha.subSequence(0, 16)}" /><br/>
+                            <p:outputLabel value="PAGS:  #{docs.numeroPaginas}"/><br/>
+                            <!--<p:outputLabel value="PESO:  # {docs.peso}"/><br/>-->
+                            <p:outputLabel value="USER:  #{docs.usuario.usuario}"/>
+                        </p:column>
+                        <p:column headerText="***" width="15">
+                            <p:commandLink actionListener="#{editarDocumentoMB.seleccionarImagenes(docs)}" 
+                                           update="formMain" title="Visualizar">
+                                <i class="pi pi-eye" style="font-size: 1.5em; margin-right: 5px;color: darkred;"></i>
+                            </p:commandLink><br/><br/>
+                            <p:commandLink actionListener="#{editarDocumentoMB.descargarDocumento(docs)}" 
+                                           update="formMain" title="Descargar">
+                                <i class="pi pi-download" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:splitterPanel>
+                <p:splitterPanel styleClass="flex align-items-center justify-content-center" size="80">
+                    <h:panelGrid style="margin: 0 auto;" columns="3">
+                        <p:outputLabel value="TIPO DE VISUALIZACIÓN:" 
+                                       style="font-size: 14px;font-weight: bolder;color: darkblue;"/>
+                        <p:spacer width="20" height="1"/>
+                        <p:selectOneRadio value="#{editarDocumentoMB.visualizacion}" style="font-size: 14px;font-weight: bolder;" >
+                            <f:selectItem itemLabel="Páginas" itemValue="1" />
+                            <f:selectItem itemLabel="Documento" itemValue="2" />
+                            <p:ajax event="change" update="formMain" />
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <h:panelGroup rendered="#{editarDocumentoMB.visualizacion eq 2}">
+                        <iframe id="visor" style="" width="100%" height="700" allowfullscreen="" webkitallowfullscreen="" 
+                                src="#{editarDocumentoMB.visorUrl}" />
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{editarDocumentoMB.visualizacion eq 1}">
+                        <h:panelGrid style="margin: 0 auto;" columns="3">
+                            <p:outputLabel value="OCR Habilitado:" style="font-size: 14px;font-weight: bolder;color: darkblue;"/> 
+                            <p:spacer width="10"/>
+                            <p:selectBooleanButton id="enabledOCR" value="#{editarDocumentoMB.enableOCR}" 
+                                                   style="font-weight: bolder;font-size: 14px;"
+                                                   onLabel="Si" offLabel="No" onIcon="pi pi-check" offIcon="pi pi-times">
+                                <p:ajax update="dgPaguinas" process="dgPaguinas" />
+                            </p:selectBooleanButton>
+                        </h:panelGrid>
+                        <p:dataGrid var="pagina1" value="#{editarDocumentoMB.imagenes}" columns="1" layout="grid" rows="1" 
+                                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                    paginator="true" id="dgPaguinas" rowStatePreserved="true" lazy="false" 
+                                    rendered="#{editarDocumentoMB.visualizacion eq 1}" >
+                            <p:ajax event="page" listener="#{editarDocumentoMB.selectPage}" />
+                            <div align="center" style="width: 100%; height: 100%; " >
+                                <!--<center>
+                                    <h:panelGroup style="z-index: 1000; float: top; vertical-align: top; padding-bottom: 5px" class="Wid100" >
+                                        <p:commandButton icon="pi pi-search-plus" onclick="PF('rotateAndResizeWidget').scale(1.1);return false;" 
+                                                         title="Aumentar imagen" style="height: 40px;width: 40px;" />
+                                        <p:spacer width="30" />
+                                        <p:commandButton icon="pi pi-search-minus" onclick="PF('rotateAndResizeWidget').scale(0.90);return false;" 
+                                                         title="Disminuir Imagen" style="height: 40px;width: 40px;" />
+                                        <p:spacer width="30" />
+                                        <p:commandButton icon="pi pi-arrows-v" onclick="PF('rotateAndResizeWidget').restoreDefaults();return false;" 
+                                                         title="Restaurar imagen original" style="height: 40px;width: 40px;" />
+                                    </h:panelGroup>
+                                </center>
+                                <poue:imageRotateAndResize id="rotateAndResize" for="imagen" widgetVar="rotateAndResizeWidget">
+                                    <poue:javascript event="resize" execute="PF('areaSelct').reload();  " />
+                                    <poue:javascript event="rotate" execute="PF('areaSelct').reload();  " />
+                                </poue:imageRotateAndResize>-->
+                                <p:graphicImage id="imagen" value="#{pagina1.apiUrl}" stream="false" style="border: 1px solid #f1f1f1; margin-top: 10px; width: 100%" />
+                                <poue:imageAreaSelect id="areaSelect" for="imagen" rendered="#{editarDocumentoMB.enableOCR}" widgetVar="areaSelct"
+                                                      autoHide="true" handles="false" movable="false" persistent="false" resizable="false" >
+                                    <p:ajax event="selectEnd" listener="#{editarDocumentoMB.selectAreaImage}" />
+                                </poue:imageAreaSelect>
+                            </div>
+                        </p:dataGrid>
+                    </h:panelGroup>
+                </p:splitterPanel>
+            </p:splitter>
+        </h:form>
+
+        <p:dialog modal="true" widgetVar="dlgTextSelect" resizable="false" height="350" width="750" position="center" 
+                  header="Texto Seleccionado" closeOnEscape="true" >
+            <h:form id="frmTextAux">
+                <h:panelGrid columns="1" style="text-align: center;width: 99%;">
+                    <p:inputTextarea value="#{editarDocumentoMB.textAux}" autoResize="false" readonly="true" style="width: 99%;" rows="18"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

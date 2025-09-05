@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DetalleDatosUsuario_inscs" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a1cd4f15-9808-4376-8506-1538fc500655">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.util.Date"/>
+	<parameter name="HASTA" class="java.util.Date"/>
+	<parameter name="USER" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select li.nombre as libro, ac.nombre as acto, mo.num_repertorio, mo.num_inscripcion,
+mo.fecha_inscripcion, ht.num_tramite from app.reg_movimiento mo
+left join app.reg_libro li on li.id = mo.libro
+left join app.reg_acto ac on ac.id = mo.acto
+left join app.acl_user us on us.id = mo.user_creador
+left join flow.regp_tareas_tramite tt on tt.id = mo.num_tramite
+left join flow.historico_tramites ht on ht.id = tt.tramite
+where mo.estado = 'AC' and mo.num_tramite is not null and mo.task_id is not null
+and us.usuario = $P{USER} and mo.fecha_ingreso between $P{DESDE} and $P{HASTA}
+order by ht.num_tramite]]>
+	</queryString>
+	<field name="libro" class="java.lang.String"/>
+	<field name="acto" class="java.lang.String"/>
+	<field name="num_repertorio" class="java.lang.Integer"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="fecha_inscripcion" class="java.sql.Timestamp"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="89a153c8-542a-4b0e-a041-30a65a4dcfeb" x="0" y="0" width="400" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INSCRIPCIONES REGISTRALES INGRESADAS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="19f6a347-c07a-4c67-8ee6-ef11da055879" x="35" y="0" width="60" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRAMITE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e7a84ba1-f966-4dd7-adc2-ec0e63f40d14" x="195" y="0" width="130" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ACTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9af06e4b-475d-42d3-8247-412cd0b43e78" x="325" y="0" width="65" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No REPERTORIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1114f2e5-1008-405e-bd1f-d9663be32a6f" x="390" y="0" width="65" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No INSCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="acffd52d-c513-4025-9b27-d0739cc7b4b2" x="455" y="0" width="100" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA INSC.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c87bcb80-0ee8-4b18-bc2a-0df1d29342a2" x="0" y="0" width="35" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ca987cf2-2684-48e0-a9b1-310e8934f0fe" x="95" y="0" width="100" height="12"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIBRO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="8d036eaf-f394-47c2-a679-ba66082551ba" x="35" y="0" width="60" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_tramite}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="0020bf72-a28d-45f2-b423-d48b7e87f798" x="195" y="0" width="130" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="551159df-b670-4a18-bec7-5feae13e58ff" x="325" y="0" width="65" height="12"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_repertorio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="78427f48-7e15-4e28-8883-d08cbfad3637" x="390" y="0" width="65" height="12"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm" isBlankWhenNull="true">
+				<reportElement uuid="362f809d-30a1-45b8-b510-45836b100d3e" x="455" y="0" width="100" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="f45953dc-8ca1-4d24-9cb2-7ceb02e722e3" x="0" y="0" width="35" height="12"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="97387445-cc68-4502-9340-f78664b32e7b" x="95" y="0" width="100" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{libro}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="6baf3c1e-8e76-4676-870d-1f3147cd13c0" x="0" y="0" width="75" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="9ec00a36-e2a8-4c75-bc94-c6b5c49966aa" x="75" y="0" width="60" height="14"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

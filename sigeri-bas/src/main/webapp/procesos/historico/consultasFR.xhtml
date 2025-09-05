@@ -1,0 +1,298 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Consulta FR Histórico</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <p:tabView id="tbViewHistorico">
+                <p:tab title="Consulta de Indices Históricos">
+                    <h:panelGrid columns="8" style="width: 100%;font-size: 14px;font-weight: bolder;">
+                        CI/RUC:
+                        <p:inputText value="#{consultasFR.cedula}"/>
+                        Nombre 1:
+                        <p:inputText value="#{consultasFR.nombre}"/>
+                        Nombre 2:
+                        <p:inputText value="#{consultasFR.nombre2}"/>
+                        Contrato:
+                        <p:inputText value="#{consultasFR.contrato}"/>
+                        Contratante:
+                        <p:inputText value="#{consultasFR.contratante}"/>
+                        M.I.:
+                        <p:inputNumber value="#{consultasFR.mi}" decimalPlaces="0" thousandSeparator="" />
+                        No Insc.:
+                        <p:inputNumber value="#{consultasFR.inscripcion}" decimalPlaces="0" thousandSeparator="" />
+                        No Rep.:
+                        <p:inputNumber value="#{consultasFR.repertorio}" decimalPlaces="0" thousandSeparator="" />
+                        Certificado:
+                        <p:inputNumber value="#{consultasFR.certificado}" decimalPlaces="0" thousandSeparator="" />
+                        Desde:
+                        <p:inputNumber value="#{consultasFR.desde}" decimalPlaces="0" thousandSeparator="" />
+                        Hasta:
+                        <p:inputNumber value="#{consultasFR.hasta}" decimalPlaces="0" thousandSeparator="" />
+                        Fecha:
+                        <p:calendar value="#{consultasFR.fecha}" pattern="dd-MM-yyyy" mask="dd-MM-yyyy"/>
+                        <p:spacer width="20" height="1" />
+                        <p:spacer width="20" height="1" />
+                        <!--InsActoMI:
+                        <p:calendar value="# {consultasFR.fmi}" pattern="dd/MM/yyyy"/>
+                        Mostrar Certificados:
+                        <p:selectBooleanCheckbox value="# {consultasFR.solvencia}"/>-->
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" styleClass="noBorder" style="margin: 0 auto;">
+                        <p:commandButton value="Consultar Indices" icon="pi pi-search" styleClass="btnStyle" actionListener="#{consultasFR.updateFilters()}"/>
+                        <p:spacer width="40" height="1" />
+                        <p:commandButton value="Reporte Indices" icon="pi pi-file" styleClass="btnStyle" actionListener="#{consultasFR.reporteIndices()}"/>
+                    </h:panelGrid>
+                    <p:dataTable id="dtIndices" paginator="true" lazy="true" rows="100" rowsPerPageTemplate="100,200,300" filterEvent="enter" scrollable="true" scrollWidth="97%"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{consultasFR.indices}" var="ind" emptyMessage="No se encontro ningun indice..." resizableColumns="true" scrollHeight="500"
+                                 rowIndexVar="indexInd" selectionMode="single" selection="#{consultasFR.select}" rowKey="#{ind.indId}" >
+                        <p:ajax event="rowSelect" listener="#{consultasFR.showDlgIndice()}"/>
+                        <p:column headerText="No" width="40">
+                            <h:outputText value="#{indexInd+1}" />
+                        </p:column>
+                        <p:column headerText="Nombre" width="300" sortBy="#{ind.indNombre}">
+                            <h:outputText value="#{ind.indNombre}"/>
+                        </p:column>
+                        <p:column headerText="Contrato" width="200" sortBy="#{ind.indContrato}">
+                            <h:outputText value="#{ind.indContrato}"/>
+                        </p:column>
+                        <p:column headerText="Contratante" width="150" sortBy="#{ind.indContratante}">
+                            <h:outputText value="#{ind.indContratante}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Ins." width="100" sortBy="#{ind.indFecha}">
+                            <h:outputText value="#{ind.indFecha}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                        </p:column>
+                        <!--<p:column headerText="Anio" width="50" sortBy="# {ind.indAnio}">
+                            <h:outputText value="# {ind.indAnio}"/>
+                        </p:column>-->
+                        <p:column headerText="No Ins." width="75" sortBy="#{ind.indInscripcion}">
+                            <h:outputText value="#{ind.indInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="No Rep." width="75" sortBy="#{ind.indRepertorio}">
+                            <h:outputText value="#{ind.indRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fojas" width="75">
+                            <h:outputText value="#{ind.indFojas}"/>
+                        </p:column>
+                        <p:column headerText="M.I." width="75" sortBy="#{ind.indMi}">
+                            <h:outputText value="#{ind.indMi}"/>
+                        </p:column>
+                        <!--<p:column headerText="Ins Acto MI" width="100" sortBy="# {ind.indFmi}">
+                            <h:outputText value="# {ind.indFmi}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                        </p:column>-->
+                        <p:column headerText="Certificado" width="100" sortBy="#{ind.indNlinea}">
+                            <h:outputText value="#{ind.indNlinea}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Cel." width="100">
+                            <h:outputText value="#{ind.indFechacel}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="No Juicio" width="100">
+                            <h:outputText value="#{ind.indNumJuicio}"/>
+                        </p:column>
+                        <p:column headerText="Observacion" width="500">
+                            <h:outputText value="#{ind.indObserva}"/>
+                        </p:column>
+                        <p:column headerText="Descripcion" width="500">
+                            <h:outputText value="#{ind.indDescripcion}"/>
+                        </p:column>
+                        <p:column headerText="CI/RUC" width="100">
+                            <h:outputText value="#{ind.indCedula}" />
+                        </p:column>
+                        <p:column headerText="Parroquia" width="120">
+                            <h:outputText value="#{ind.indParroquia}"/>
+                        </p:column>
+                        <p:column headerText="Libro" width="50">
+                            <h:outputText value="#{ind.indLibro}"/>
+                            <!--<h:outputText value="# {consultasFR.getNameLibro(ind.indLibro)}"/>-->
+                        </p:column>
+                        <!--<p:column headerText="Notaria" width="100">
+                            <h:outputText value="# {ind.indNotaria}"/>
+                        </p:column>-->
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="M.I. Antiguos" rendered="false">
+                    <p:panelGrid styleClass="noBorder" columns="3">
+                        No de M.I.:
+                        <p:inputText value="#{consultasFR.antiguo}"/>
+                        <p:commandButton value="Buscar M.I." icon="ui-icon-search" styleClass="btnStyle" actionListener="#{consultasFR.downLoadMiOld()}"/>
+                    </p:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog header="Indices de Propiedades" widgetVar="dlgIndice" resizable="false" modal="true" position="top" >
+            <h:form id="formIndice">
+                <p:panelGrid styleClass="ui-panelgrid-blank" columns="2" >
+                    <p:panelGrid styleClass="ui-panelgrid-blank" columns="2" style="font-weight: bolder;">
+                        Fecha:
+                        <p:inputText value="#{consultasFR.select.indFecha}" readonly="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputText>
+                        Parroquia:
+                        <p:inputText value="#{consultasFR.select.indParroquia}" readonly="true"/>
+                        Contrato:
+                        <p:inputText value="#{consultasFR.select.indContrato}" readonly="true" size="40"/>
+                        Libro:
+                        <p:inputText value="#{consultasFR.select.indLibro}" readonly="true"/>
+                        No Repertorio:
+                        <p:inputText value="#{consultasFR.select.indRepertorio}" readonly="true"/>
+                        No Inscripcion:
+                        <p:inputText value="#{consultasFR.select.indInscripcion}" readonly="true"/>
+                        M.I.:
+                        <p:inputText value="#{consultasFR.select.indMi}" readonly="true"/>
+                        Contratante:
+                        <p:inputText value="#{consultasFR.select.indContratante}" readonly="true"/>
+                        Cedula:
+                        <p:inputText value="#{consultasFR.select.indCedula}" readonly="true"/>
+                        Nombre:
+                        <p:inputText value="#{consultasFR.select.indNombre}" readonly="true" size="40"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" style="font-weight: bolder;">
+                        Observacion:
+                        <p:inputTextarea value="#{consultasFR.select.indObserva}" readonly="true" cols="35" rows="5" autoResize="false"/>
+                        Descripcion:
+                        <p:inputTextarea value="#{consultasFR.select.indDescripcion}" readonly="true" cols="35" rows="5" autoResize="false"/>
+                        <p:commandButton value="VER DETALLES" icon="pi pi-user" actionListener="#{consultasFR.selectTypeFile(6)}"/>
+                    </p:panelGrid>
+                    <!--<p:panelGrid styleClass="noBorder" columns="1">
+                        <p:commandButton value="DETALLES" icon="pi pi-user" actionListener="# {consultasFR.selectTypeFile(6)}"/>
+                        <p:commandButton value="Ver ACTA" disabled="true" icon="pi pi-book" actionListener="# {consultasFR.selectTypeFile(1)}"/>
+                        <p:commandButton value="Ver RAZON" disabled="true" icon="pi pi-book" actionListener="# {consultasFR.selectTypeFile(2)}"/>
+                        <p:commandButton value="Ver PDF" disabled="true" icon="pi pi-book" actionListener="# {consultasFR.selectTypeFile(3)}"/>
+                        <p:commandButton value="Ver Certificado" disabled="true" icon="pi pi-book" actionListener="# {consultasFR.selectTypeFile(4)}"/>
+                        <p:commandButton value="Ver M.I." disabled="true" icon="pi pi-book" actionListener="# {consultasFR.selectTypeFile(5)}"/>
+                    </p:panelGrid>-->
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Informacion MI" widgetVar="dlgInfoMi" resizable="false" closeOnEscape="true" width="900" height="500">
+            <h:form id="formInfoMi">
+                <!--<p:tabView>
+                    <p:tab title="Compra y Detalles">
+                        <p:panelGrid styleClass="noBorder" columns="1" style="width: 100%;">
+                            COMPRA:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerCompra}" readonly="true" autoResize="false" rows="9" style="width: 100%;color: #000000;font-size: 12px;"/>
+                            DETALLE DEL BIEN INMUEBLE:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerDetalle}" readonly="true" autoResize="false" rows="9" style="width: 100%;color: #000000;font-size: 12px;"/>
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Clausulas e Historial">
+                        <p:panelGrid styleClass="noBorder" columns="1" style="width: 100%;">
+                            CLAUSULAS U OTROS:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerCo}" readonly="true" autoResize="false" rows="9" style="width: 100%;color: #000000;font-size: 12px;"/>
+                            HISTORIA DEL BIEN INMUEBLE:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerHistoria}" readonly="true" autoResize="false" rows="9" style="width: 100%;color: #000000;font-size: 12px;"/>
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Estado Actual">
+                        <p:panelGrid styleClass="noBorder" columns="1" style="width: 100%;">
+                            ESTADO ACTUAL DEL BIEN:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerEstado}" readonly="true" autoResize="false" rows="20" style="width: 100%;color: #000000;font-size: 12px;"/>
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Marginacion, Responsables y Fecha">
+                        <p:panelGrid styleClass="noBorder" columns="1" style="width: 100%;">
+                            MARGINACIONES:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerMargina}" readonly="true" autoResize="false" rows="7" style="width: 100%;color: #000000;font-size: 12px;"/>
+                            Responsables:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerResp}" readonly="true" autoResize="false" rows="7" style="width: 100%;color: #000000;font-size: 12px;"/>
+                            Fecha de Emision:
+                            <p:inputText value="# {consultasFR.cercontrato.cerFechaemi}" readonly="true" style="width: 100%;font-size: 12px;color: #000000;"/>
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Testamento">
+                        <p:panelGrid styleClass="noBorder" columns="1" style="width: 100%;">
+                            CERTIFICADO DE TESTAMENTO:
+                            <p:inputTextarea value="# {consultasFR.cercontrato.cerTestamento}" readonly="true" autoResize="false" rows="20" style="width: 100%;color: #000000;font-size: 12px;"/>                            
+                        </p:panelGrid>
+                    </p:tab>
+                </p:tabView>-->
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgEditor" widgetVar="dlgEditCert" header="Documento" resizable="false" position="center">
+            <h:form id="formEdit">
+                <!--<p:editor widgetVar="obsEditor" height="330" value="# {consultasFR.texto}" />-->
+                <p:inputTextarea value="#{consultasFR.texto}" cols="100" rows="20" autoResize="false" 
+                                 readonly="true" style="color: #000000;font-size: 12px;"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgMovimientos" header="Detalle de Indices" widgetVar="dlgMovimientoRegistral" resizable="false" closeOnEscape="true" width="70%" height="20%" >
+            <h:form id="formMovimientoRegistral">
+                <p:dataTable value="#{consultasFR.detalles}" var="mc" emptyMessage="No se Encontro Ningun Detalle" resizableColumns="true"
+                             scrollable="true" scrollWidth="97%" scrollHeight="240" style="width: 100%;text-align: center;" rowIndexVar="rowIndex">
+                    <p:column headerText="N°" width="30">
+                        #{rowIndex+1}
+                    </p:column>
+                    <p:column headerText="Nombre" width="300">
+                        <h:outputText value="#{mc.indNombre}"/>
+                    </p:column>
+                    <p:column headerText="Contrato" width="200">
+                        <h:outputText value="#{mc.indContrato}"/>
+                    </p:column>
+                    <p:column headerText="Contratante" width="150">
+                        <h:outputText value="#{mc.indContratante}"/>
+                    </p:column>
+                    <p:column headerText="Fecha Ins." width="100">
+                        <h:outputText value="#{mc.indFecha}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                    </p:column>
+                    <!--<p:column headerText="Anio" width="50" sortBy="# {ind.indAnio}">
+                        <h:outputText value="# {ind.indAnio}"/>
+                    </p:column>-->
+                    <p:column headerText="No Ins." width="75">
+                        <h:outputText value="#{mc.indInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="No Rep." width="75">
+                        <h:outputText value="#{mc.indRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Fojas" width="75">
+                        <h:outputText value="#{mc.indFojas}"/>
+                    </p:column>
+                    <p:column headerText="M.I." width="75">
+                        <h:outputText value="#{mc.indMi}"/>
+                    </p:column>
+                    <!--<p:column headerText="Ins Acto MI" width="100">
+                        <h:outputText value="# {mc.indFmi}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                    </p:column>-->
+                    <p:column headerText="Certificado" width="100">
+                        <h:outputText value="#{mc.indNlinea}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Cel." width="100">
+                        <h:outputText value="#{mc.indFechacel}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                    </p:column>
+                    <p:column headerText="No Juicio" width="100">
+                        <h:outputText value="#{mc.indNumJuicio}"/>
+                    </p:column>
+                    <p:column headerText="Observacion" width="500">
+                        <h:outputText value="#{mc.indObserva}"/>
+                    </p:column>
+                    <p:column headerText="Descripcion" width="500">
+                        <h:outputText value="#{mc.indDescripcion}"/>
+                    </p:column>
+                    <p:column headerText="CI/RUC" width="100">
+                        <h:outputText value="#{mc.indCedula}" />
+                    </p:column>
+                    <p:column headerText="Parroquia" width="120">
+                        <h:outputText value="#{mc.indParroquia}"/>
+                    </p:column>
+                    <p:column headerText="Libro" width="50">
+                        <h:outputText value="#{mc.indLibro}"/>
+                        <!--<h:outputText value="# {consultasFR.getNameLibro(ind.indLibro)}"/>-->
+                    </p:column>
+                    <!--<p:column headerText="Notaria" width="100">
+                        <h:outputText value="# {mc.indNotaria}"/>
+                    </p:column>-->
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

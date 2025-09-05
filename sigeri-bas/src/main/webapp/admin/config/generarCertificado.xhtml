@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Documentos Firmados</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>DOCUMENTOS CON FIRMA DIGITAL</h1></center>
+            <h:panelGrid columns="7" style="text-align: center;margin: 0 auto;font-weight: bolder;font-size: 16px;">
+                <p:outputLabel value="Seleccionar: "/>
+                <p:selectOneMenu value="#{generarCertificados.tipo}" style="width: 170px;" disabled="true" >
+                    <f:selectItem itemLabel="TODOS" itemValue="0"/>
+                    <f:selectItem itemLabel="1. CERTIFICADOS" itemValue="1"/>
+                    <f:selectItem itemLabel="2. INSCRIPCIONES" itemValue="2"/>
+                    <p:ajax update="mainForm" />
+                </p:selectOneMenu>
+                <p:spacer width="40" height="1"/>
+                <p:outputLabel value="N° de Trámite: "/>
+                <p:inputText value="#{generarCertificados.numeroTramite}"/>
+                <p:spacer width="40" height="1"/>
+                <p:commandButton rendered="#{generarCertificados.tipo eq 0}" value="Buscar" icon="pi pi-search" 
+                                 actionListener="#{generarCertificados.findAllDocumentos()}" update="mainForm" style="font-size: 16px;"/>
+                <p:commandButton id="btncert" rendered="#{generarCertificados.tipo eq 1}" value="Buscar" icon="pi pi-search" 
+                                 actionListener="#{generarCertificados.findCertificados()}" update="mainForm" style="font-size: 16px;"/>
+                <p:commandButton id="btnMov" rendered="#{generarCertificados.tipo eq 2}" value="Buscar" icon="pi pi-search" 
+                                 actionListener="#{generarCertificados.findRegMovimientos()}" update="mainForm" style="font-size: 16px;"/>
+            </h:panelGrid>
+            <p:spacer width="10" height="50"/>
+            <p:dataTable id="dtCertificados" var="cer" value="#{generarCertificados.certificados}" rendered="#{generarCertificados.certificados.size() gt 0}"
+                         rowIndexVar="index" emptyMessage="No se encontraron certificados para este trámite." style="text-align: center;">
+                <f:facet name="header">CERTIFICADOS DEL TRAMITE</f:facet>
+                <p:column headerText="N°" width="30">
+                    #{index+1}
+                </p:column>
+                <p:column headerText="N° Certificado">
+                    <p:outputLabel value="#{cer.numCertificado}"/>
+                </p:column>
+                <p:column headerText="Fecha de Emision">
+                    <p:outputLabel value="#{cer.fechaEmision}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Tipo de Certificado">
+                    <p:outputLabel value="#{cer.claseCertificado}" />
+                </p:column>
+                <p:column headerText="N° Ficha">
+                    <p:outputLabel value="#{cer.ficha.numFicha}" />
+                </p:column>
+                <!--<p:column headerText="Solicitante">
+                    <p:outputLabel value="# {cer.nombreSolicitante}" />
+                </p:column>-->
+                <p:column headerText="Estado">
+                    <p:outputLabel value="#{cer.documento eq null ? 'NO Firmado':'Firmado'}" />
+                </p:column>
+                <p:column headerText="Cod. Verificación">
+                    <p:outputLabel value="#{cer.codVerificacion}" />
+                </p:column>
+                <p:column headerText="Down" width="40">
+                    <p:commandLink actionListener="#{generarCertificados.descargarCertificado(cer)}" update="dtCertificados" 
+                                   title="Descarga Certificado Nro #{cer.numCertificado}">
+                        <p:graphicImage value="/resources/icons/reporte.png" height="24"/>   
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+            <br/><br/>
+            <p:dataTable id="dtMovimientos" var="mov" value="#{generarCertificados.movimientos}" rendered="#{generarCertificados.movimientos.size() gt 0}"
+                         rowIndexVar="index" emptyMessage="No se encontraron certificados para este trámite." style="text-align: center;">
+                <f:facet name="header">INSCRIPCIONES DEL TRAMITE</f:facet>
+                <p:column headerText="N°" width="30">
+                    #{index+1}
+                </p:column>
+                <p:column headerText="N° Inscripción" width="100">
+                    <p:outputLabel value="#{mov.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="F.Inscripción" width="100">
+                    <p:outputLabel value="#{mov.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="N° Repertorio">
+                    <p:outputLabel value="#{mov.numRepertorio}"/>
+                </p:column>
+                <!--<p:column headerText="N° Tomo">
+                    <p:outputLabel value="# {mov.numTomo}"/>
+                </p:column>-->
+                <p:column headerText="Libro">
+                    <p:outputLabel value="#{mov.libro.nombre}"/>
+                </p:column>
+                <p:column headerText="Contrato">
+                    <p:outputLabel value="#{mov.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Razon Firmada" width="60">
+                    <p:outputLabel value="#{mov.documento eq null ? 'NO':'SI'}" />
+                </p:column>
+                <p:column headerText="Acta Firmada" width="60" rendered="false" >
+                    <p:outputLabel value="#{mov.documentoActa eq null ? 'NO':'SI'}" />
+                </p:column>
+                <p:column headerText="Cod. Verificación" width="100">
+                    <p:outputLabel value="#{mov.codVerificacion}" />
+                </p:column>
+                <p:column headerText="Acta" width="40" rendered="false">
+                    <p:commandLink actionListener="#{generarCertificados.descargarActa(mov)}" title="Descarga Acta">
+                        <p:graphicImage value="/resources/icons/reporte.png" height="24"/>   
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+            <p:spacer width="1" height="50"/>
+            <center>
+                <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;font-size: 18px;" 
+                             rendered="#{generarCertificados.movimientos.size() gt 0}" >
+                    <p:outputLabel value="Descargar Razón"/>
+                    <p:commandLink actionListener="#{generarCertificados.descargarRazon()}" title="Descargar">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="50"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </center>
+            <center>
+                <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;font-size: 18px;" 
+                             rendered="#{generarCertificados.certificados.size() gt 0 or generarCertificados.movimientos.size() gt 0}" >
+                    <p:outputLabel value="Reenviar Correo"/>
+                    <p:commandLink actionListener="#{generarCertificados.showDlgCorreo()}" title="Reenviar Correo">
+                        <p:graphicImage value="/resources/icons/gmail.png" height="50"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </center>
+        </h:form>
+
+        <p:dialog widgetVar="dlgReenvioCorreo" header="Reenviar Documentos Trámite" modal="true" width="600" resizable="false" position="center">
+            <h:form id="formEnvioMail">
+                <h:panelGroup>
+                    <p:outputLabel value="Nro. Trámite:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{generarCertificados.numeroTramite}" style="font-weight: bold; font-size: 18px;"/><br/>  
+                </h:panelGroup>
+                <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                    <p:outputLabel value="Correo a enviar:" style="font-weight: bolder;font-size: 16px"/>
+                    <p:inputText value="#{generarCertificados.correo}" style="width: 100%" maxlength="99"/>
+                    <p:commandButton value="Reenviar" icon="pi pi-envelope" actionListener="#{generarCertificados.reenviarDocsEmail()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

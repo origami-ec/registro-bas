@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DetalleDatosUsuario" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="07bed789-0652-43e9-8649-8618efa2daa0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.util.Date"/>
+	<parameter name="HASTA" class="java.util.Date"/>
+	<parameter name="HASTA_STRING" class="java.lang.String"/>
+	<parameter name="USER" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Anyelo\\Desktop\\NetBeansProjects\\rpp\\src\\main\\webapp\\reportes\\workflow\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="NAME_USER" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select au.id as id_user, en.apellidos || ' ' || en.nombres as nombre
+from app.acl_user au left join app.cat_ente en on en.id = au.ente
+where au.usuario = $P{USER}]]>
+	</queryString>
+	<field name="id_user" class="java.lang.Long"/>
+	<field name="nombre" class="java.lang.String"/>
+	<title>
+		<band height="50" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="de54f24a-5a91-4402-a27d-765a70e1b485" x="0" y="0" width="555" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMPRESA PÚBLICA MUNICIPAL DEL REGISTRO DE LA PROPIEDAD DEL CANTÓN PORTOVIEJO EP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9c31e2e6-f6d6-4509-afb7-0d6d88baa836" x="0" y="14" width="555" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE DETALLE DE DATOS INGRESADOS POR USUARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3a68243a-2ad9-4bc0-b385-4dcf3d8aefde" x="1" y="30" width="45" height="14" isPrintWhenDetailOverflows="true"/>
+				<box bottomPadding="1">
+					<bottomPen lineWidth="5.0" lineStyle="Double"/>
+				</box>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0e5dcb0a-6842-49ba-83c7-96e17a0a1fc2" x="146" y="30" width="43" height="14" isPrintWhenDetailOverflows="true"/>
+				<box bottomPadding="1">
+					<bottomPen lineWidth="5.0" lineStyle="Double"/>
+				</box>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cdb7b358-d997-4089-a1fa-fd6fb3d235a6" x="289" y="30" width="54" height="14" isPrintWhenDetailOverflows="true"/>
+				<box bottomPadding="1">
+					<bottomPen lineWidth="5.0" lineStyle="Double"/>
+				</box>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="ea54294f-5d91-4697-8bf2-8fc9368ad542" x="189" y="30" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+				<box bottomPadding="1">
+					<bottomPen lineWidth="5.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{HASTA_STRING}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="f5e1b2c0-35dc-48c6-acb6-eefe48bef5be" x="46" y="30" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+				<box bottomPadding="1">
+					<bottomPen lineWidth="5.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="f7020840-daff-4a8d-8e64-a271c9db0835" x="343" y="30" width="212" height="14" isPrintWhenDetailOverflows="true"/>
+				<box bottomPadding="1">
+					<bottomPen lineWidth="5.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="95" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="c4f0ddf0-3a78-4c68-9914-e7d677f739cf" positionType="Float" x="0" y="0" width="555" height="20" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USER">
+					<subreportParameterExpression><![CDATA[$P{USER}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DetalleDatosUsuario_fichas.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="cdf4376e-af3a-4196-8f7b-2238ef8b3511" positionType="Float" x="0" y="24" width="555" height="20" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USER">
+					<subreportParameterExpression><![CDATA[$P{USER}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DetalleDatosUsuario_movs.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="9d394718-6975-4897-a9b6-eb349ceba48d" positionType="Float" x="0" y="48" width="555" height="20" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USER">
+					<subreportParameterExpression><![CDATA[$P{USER}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DetalleDatosUsuario_inscs.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="a13eeb06-6ff0-4943-93fc-a355ca05e335" positionType="Float" x="0" y="72" width="555" height="20" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USER">
+					<subreportParameterExpression><![CDATA[$P{USER}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DetalleDatosUsuario_certs.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement uuid="d1c750e8-035a-467f-982b-705dc3a9314f" x="435" y="0" width="80" height="14"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Pag. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="e005ac99-425d-4bf4-b410-bd07db790eb5" x="515" y="0" width="40" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="9570e364-aba3-4634-94cf-bb10fe2139bc" x="86" y="1" width="129" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6dfcb15b-275b-4e9d-8b27-f081564fd0a0" x="1" y="1" width="85" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Impresión:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="28bdc9d4-2856-4866-a031-13c3edcb2f02" x="215" y="1" width="65" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="b7fe73dc-67a6-4864-bba9-b820040b77d4" x="280" y="1" width="100" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NAME_USER}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

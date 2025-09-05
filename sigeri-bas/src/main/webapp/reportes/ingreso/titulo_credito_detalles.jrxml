@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="titulo_credito_detalles" language="groovy" pageWidth="535" pageHeight="421" orientation="Landscape" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fb9e8db-f0d9-4e7e-9221-eae9023560ba">
+	<property name="ireport.zoom" value="2.253944402704733"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="VALOR_STRING" class="java.lang.String"/>
+	<parameter name="DESCUENTO" class="java.math.BigDecimal"/>
+	<parameter name="TOTAL_PAGAR" class="java.math.BigDecimal"/>
+	<parameter name="GASTO_GENERAL" class="java.math.BigDecimal"/>
+	<parameter name="SUB_TOTAL" class="java.math.BigDecimal"/>
+	<parameter name="ADICIONAL" class="java.math.BigDecimal"/>
+	<queryString>
+		<![CDATA[select ac.nombre as acto, de.cuantia, de.avaluo, de.valor_unitario,
+de.valor_total, de.recargo, de.cantidad, exo.concepto as nombre_descuento,
+de.descuento, de.reingreso, ac.solvencia
+from flow.regp_liquidacion_detalles de
+left join app.reg_acto ac on (ac.id = de.acto)
+left join flow.regp_exoneracion exo on exo.id = de.exoneracion
+where de.liquidacion = $P{LIQUIDACION} order by de.fecha_ingreso]]>
+	</queryString>
+	<field name="acto" class="java.lang.String"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="recargo" class="java.math.BigDecimal"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="nombre_descuento" class="java.lang.String"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="reingreso" class="java.lang.Boolean"/>
+	<field name="solvencia" class="java.lang.Boolean"/>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="35" y="0" width="245" height="22" uuid="1da92584-511b-403e-8450-88b717ecf948"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[CONTRATO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="330" y="0" width="50" height="22" uuid="22a0bed3-7085-4e33-95fa-f1fbb0392b4f"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[VALOR UNITAR.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="430" y="0" width="50" height="22" uuid="2b978f07-a875-4c9b-a465-226d42013a54"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[DESC.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="480" y="0" width="55" height="22" uuid="cf6ef809-eb31-4fa1-848a-78256d3d160d"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[VALOR CONTRATO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="380" y="0" width="50" height="22" uuid="4da19d62-f503-476a-94d3-bc7a44d16255"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[GASTOS GEN.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="35" height="22" uuid="1610c03f-4ec6-4487-ab5e-b067bf8be6a4"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[CANT.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="280" y="0" width="50" height="22" uuid="c2ca5482-3fe2-4e27-a0b9-17570d5ba45c"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[BASE  IMPONIBLE]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="35" y="0" width="245" height="12" uuid="8ed552db-dd6f-4ef6-b40e-0e7ceab82c58"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}
+]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="330" y="0" width="50" height="12" uuid="959a0674-296b-4e9c-befa-fa2b16cc2dc1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="430" y="0" width="50" height="12" uuid="7549f560-cf06-454e-895c-667cd63b0738"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="55" height="12" uuid="a9c4eb9b-7b83-4fe7-8e85-b823f553c944"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="380" y="0" width="50" height="12" uuid="f2cf316a-e0c2-4b62-b1b4-cd5f6e18cf42"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{recargo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="35" height="12" uuid="bb29c97f-be9d-4cd9-9b64-9ed0a0670b32"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="280" y="0" width="50" height="12" uuid="582a6317-4f17-4f70-94ff-2d544c488122"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cuantia}.compareTo($F{avaluo})  == 0 ? $F{cuantia} : $F{avaluo}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{nombre_descuento} != null ]]></printWhenExpression>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="35" height="12" uuid="a4875716-85c4-4215-b010-f80887eba184"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="55" height="12" uuid="a9ae1862-f6b7-4953-a7d1-26d476ba3003"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="35" y="0" width="245" height="12" uuid="c5d37fb7-c8ed-4a8d-bc32-8b13d596bfa1"/>
+				<box leftPadding="5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(" + $F{nombre_descuento} + ")" ]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="34" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="14" width="355" height="19" isPrintWhenDetailOverflows="true" uuid="e45e0ec8-98c5-4200-9941-d3676efcf991"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{VALOR_STRING} + " DÓLARES AMERICANOS"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="355" y="0" width="102" height="33" uuid="5ae0c073-5d4c-4fec-8743-2bdd27fc6468"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[TOTAL A PAGAR:]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" x="457" y="0" width="78" height="33" isPrintWhenDetailOverflows="true" uuid="bed77945-b5f3-4acb-8e21-75390acf3758"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{TOTAL_PAGAR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="0" width="355" height="14" uuid="328c0306-e6d7-43d7-9aaa-623ea3628dfe"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[VALOR EN LETRAS:]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+</jasperReport>

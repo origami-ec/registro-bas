@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Cambio de Registrador</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>CAMBIO DEL REGISTRADOR</h1></center>
+            <h:panelGrid columns="1" style="width: 100%; text-align: right;">
+                <p:commandButton icon="pi pi-user" value="Ingresar Cambio" styleClass="btnStyle" actionListener="#{mantenimientos.showDlgNewReg()}"/>
+            </h:panelGrid>
+            <p:dataTable id="dtRegistradores" style="margin: 0 auto;text-align: center" paginator="true" lazy="true" resizableColumns="false"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rows="10" emptyMessage="Sin elementos..." value="#{mantenimientos.registradores}" var="reg">
+                <p:column headerText="Firma en los Reportes">
+                    <h:outputText value="#{reg.nombreCompleto}"/>
+                </p:column>
+                <p:column headerText="Titulo en los Reportes">
+                    <h:outputText value="#{reg.tituloCompleto}"/>
+                </p:column>
+                <!--<p:column headerText="Delegación">
+                    <h:outputText value="# {reg.razonReporte}"/>
+                </p:column>
+                <p:column headerText="Fecha Creacion" width="100">
+                    <h:outputText value="# {reg.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>-->
+                <p:column headerText="Ruta firma elec.">
+                    <h:outputText value="#{reg.fileSign}"/>
+                </p:column>
+                <p:column headerText="Estado Actual" width="50" >
+                    <h:outputText value="SI" rendered="#{reg.actual}"/>
+                    <h:outputText value="NO" rendered="#{!reg.actual}"/>
+                </p:column>
+                <p:column headerText="Firma Electrónica" width="60">
+                    <h:outputText value="SI" rendered="#{reg.firmaElectronica}"/>
+                    <h:outputText value="NO" rendered="#{!reg.firmaElectronica}"/>
+                </p:column><h1>title</h1>
+                <p:column headerText="Editar" width="50">
+                    <p:commandButton icon="pi pi-pencil" actionListener="#{mantenimientos.showDlgEditReg(reg)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Nombre del Registrador" widgetVar="dlgRegistrador" resizable="false" modal="true" position="center">
+            <h:form id="frmReg">
+                <h:panelGrid columns="1" style="font-weight: bolder;">
+                    Nombre en Reportes:
+                    <p:inputText value="#{mantenimientos.registrador.nombreCompleto}" size="70"/>
+                    Titulo en Reportes:
+                    <p:inputText value="#{mantenimientos.registrador.tituloCompleto}" size="70"/>
+                    Ruta de Archivo Certificado Digital:
+                    <h:panelGrid columns="2" style="font-weight: bolder;">
+                        <p:inputText id="inputtextkey" value="#{mantenimientos.registrador.fileSign}" size="50" readonly="true"/>
+                        <p:commandButton icon="pi pi-key" value="Cargar Firma" actionListener="#{mantenimientos.showDlgUpload()}"/>
+                    </h:panelGrid>
+                    Clave de Archivo Certificado Digital:
+                    <p:password value="#{mantenimientos.registrador.passSign}" toggleMask="true" redisplay="true" />
+                    Delegación:
+                    <p:inputTextarea value="#{mantenimientos.registrador.razonReporte}" style="width: 100%;" autoResize="false" rows="5"/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar Cambios" icon="pi pi-save" styleClass="btnStyle" style="margin: 0 auto;" 
+                                     actionListener="#{mantenimientos.cambiarRegistrador()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgUploadKey" header="Cargar Firma Electronica" modal="true" width="700" height="200" 
+                  resizable="false" position="center" >
+            <h:form id="formUploadKey">
+                <h:panelGrid columns="1" style="width: 100%;">
+                    <p:fileUpload listener="#{mantenimientos.handleUploadKey}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(p12)$/" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui" >
+     <cc:interface >
+        <cc:attribute name="label" required="true"/>
+        <cc:attribute name="symbol" required="false" default=""/>
+        <cc:attribute name="symbolPosition" required="false" default="R"/>
+        <cc:attribute name="onkeypress" required="false" default=""/>
+        <cc:attribute name="onkeyup" required="false" default=""/>
+        <cc:attribute name="disabled" required="false" default="false"/>
+        <cc:attribute name="required" required="false" default="false"/>
+        <cc:attribute name="readonly" required="false" default="false"/>
+        <cc:attribute name="decimalPlaces" required="false" default="5"/>
+        <cc:attribute name="value" required="true" />
+        <cc:attribute name="tooltip" required="false" default="#{cc.attrs.label}"/>
+        <cc:attribute name="minValue" required="false" default="-9999999999999"/>
+        <!--clientBehavior Permite escuchar el ajax en el componente-->
+        <cc:clientBehavior name="blur" targets="inputNumber"  />
+    </cc:interface>
+    <cc:implementation>
+        <h:panelGroup layout="block" class="Responsive100 Responsive" id="#{cc.attrs.id}-container" rendered="#{cc.attrs.rendered}"  >
+            <p:outputLabel for="inputNumber" id="#{cc.attrs.id}-label" value="#{cc.attrs.label}" class="DispBlock Wid100 FontBold" style="margin-bottom: 3px;"/>
+            <p:inputNumber id="inputNumber" value="#{cc.attrs.value}" decimalPlaces="#{cc.attrs.decimalPlaces}" readonly="#{cc.attrs.readonly}"
+                           title="#{cc.attrs.tooltip}" minValue="#{cc.attrs.minValue}" symbol=" #{cc.attrs.symbol}" inputStyleClass="inputWidth190"
+                           symbolPosition="#{cc.attrs.symbolPosition}" onkeypress="#{cc.attrs.onkeypress}" 
+                           onkeyup="#{cc.attrs.onkeyup}" 
+                           style="width: if(min-width: 300px, 1fr 1fr, 1fr);"
+                           thousandSeparator="" required="#{cc.attrs.required}" >
+            </p:inputNumber>
+        </h:panelGroup>
+    </cc:implementation>
+</html>

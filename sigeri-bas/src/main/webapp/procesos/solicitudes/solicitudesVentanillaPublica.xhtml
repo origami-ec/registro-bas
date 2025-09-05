@@ -1,0 +1,508 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/bpmTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="page_title">Solicitudes Ventanilla Pública</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <style>
+                .ui-widget-header{
+                    background: white !important;
+                    color: black  !important;
+                }
+                .ui-paginator .ui-paginator-pages .ui-paginator-page{
+                    color: black  !important;
+                }
+            </style>
+            <div class="card card-w-title">
+                <center><h2>Solicitudes Ventanilla Pública</h2></center>
+
+                <br></br>
+                <br></br>
+                <p:dataTable id="dtTareasDinardap" reflow="true" paginator="true" lazy="true" 
+                             rows="20" rowsPerPageTemplate="20,50,100" resizableColumns="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             value="#{solicitudVentanillaPublica.pubSolicitudVentanillas}" 
+                             var="solicitud" emptyMessage="Sin elementos..." filterEvent="enter" 
+                             style="text-align: center;">
+
+                    <p:column headerText="Trámite" filterBy="#{solicitud.tramite.numTramite}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{solicitud.tramite.numTramite}"/>
+                    </p:column>
+                    <p:column headerText="Asignado" >
+                        <p:repeat value="#{solicitud.tramite.regpLiquidacionCollection}" var="liquidacion">
+                            #{liquidacion.inscriptor.usuario}
+                        </p:repeat>
+                    </p:column>
+                    <p:column headerText="Apellidos" filterBy="#{solicitud.solApellidos}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{solicitud.solApellidos}"/>
+                    </p:column>
+                    <p:column headerText="Nombres" filterBy="#{solicitud.solNombres}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{solicitud.solNombres}"/>
+                    </p:column>
+                    <p:column headerText="Tipo de Solicitud"  filterStyle="width: 95%">
+                        <p:outputLabel value="#{solicitudVentanillaPublica.getActo(solicitud.tipoSolicitud)}" rendered="#{solicitud.tipoSolicitud gt 0}"/>
+                        <p:outputLabel value="INSCRIPCIÓN" rendered="#{solicitud.tipoSolicitud eq 0}"/>
+                    </p:column>
+                    <p:column headerText="Uso del Documento" >
+                        <p:outputLabel value="#{solicitudVentanillaPublica.getMotivo(solicitud.motivoSolicitud)}" rendered="#{solicitud.motivoSolicitud ne 193}" />
+                        <p:outputLabel value="#{solicitud.otroMotivo}" rendered="#{solicitud.motivoSolicitud eq 193}"/>
+                    </p:column>
+                    <p:column headerText="Fecha de Ingreso"  >
+                        <p:outputLabel value="#{solicitud.tramite.fechaIngreso}"/>
+                    </p:column>
+                    <p:column headerText="Información">
+                        <p:commandLink actionListener="#{solicitudVentanillaPublica.infoSolicitud(solicitud)}">
+                            <p:graphicImage value="/resources/icons/abrir.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+        </h:form>
+
+        <p:dialog widgetVar="dlgSolicitud" showEffect="explode" modal="true" 
+                  showHeader="false" position="top"
+                  closeOnEscape="true" closable="true">
+            <h:form id="frmFormulario">
+
+
+                <br/>
+                <center>
+                    <h:panelGrid columns="2">
+                        <h:panelGroup>
+                            <p:outputLabel value="Trámite: #{solicitudVentanillaPublica.solicitud.tramite.numTramite}" 
+                                           style="font-weight: bolder; font-size: 15px"  /><br></br>
+                            <p:outputLabel value="#{solicitudVentanillaPublica.getActo(solicitudVentanillaPublica.solicitud.tipoSolicitud)} - " 
+                                           style="font-weight: bolder; font-size: 15px"  />
+                            <p:spacer width="10" />
+                            <p:outputLabel value="#{solicitudVentanillaPublica.getMotivo(solicitudVentanillaPublica.solicitud.motivoSolicitud)}" 
+                                           rendered="#{solicitudVentanillaPublica.solicitud.motivoSolicitud ne 193}"
+                                           style="font-weight: bolder; font-size: 15px"  />
+                            <p:outputLabel value="#{solicitudVentanillaPublica.solicitud.otroMotivo}"
+                                           rendered="#{solicitudVentanillaPublica.solicitud.motivoSolicitud eq 193}"
+                                           style="font-weight: bolder; font-size: 15px"  />
+                            <p:spacer width="20" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandLink actionListener="#{solicitudVentanillaPublica.documentoSolicitud()}" rendered="#{solicitudVentanillaPublica.tieneDocumento()}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="30"/>
+                            </p:commandLink>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+                </center>
+                <br/>
+                <p:tabView id="tabFormulario" >
+                    <p:tab title="1. Datos  del Solicitante">
+                        <h:panelGrid  columns="1" styleClass="ui-panelgrid-blank" style="margin: 0 auto; font-weight: bolder; ">
+                            <h:panelGroup>
+                                <p:outputLabel for="cantidad" value="Cantidad de Certificados:"  /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.cantidad}" id="cantidad" size="20"
+                                             required="true" readonly="true" style="text-align: center">
+                                </p:inputText>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br/>
+                        <h:panelGrid id="pnlSolicitante" columns="2" style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel for="solTipoPersona" value="Tipo Documento:"  /> <br/>
+                                <p:selectOneMenu id="solTipoPersona" value="#{solicitudVentanillaPublica.solicitud.solTipoDoc}" disabled="true">
+                                    <f:selectItem itemLabel="Cédula" itemValue="C"/>
+                                    <f:selectItem itemLabel="Ruc" itemValue="J"/>
+                                    <f:selectItem itemLabel="Pasaporte" itemValue="P"/>
+                                    <p:ajax update="pnlSolicitante"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel for="cedRuc" value="Identificación:"  /> <br/>
+                                <p:inputText id="cedRuc" value="#{solicitudVentanillaPublica.solicitud.solCedula}" size="40"  required="true" readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel for="nombres" value="Nombres:" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J'}"/>
+                                <p:outputLabel for="nombres" value="Razón Social:" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc eq 'J'}"/> <br/>
+                                <p:inputText id="nombres" value="#{solicitudVentanillaPublica.solicitud.solNombres}" size="40"   required="true" readonly="true" 
+                                             style="text-transform: uppercase"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J'}">
+                                <p:outputLabel for="apellidos" value="Apellidos:"  /> <br/>
+                                <p:inputText id="apellidos" value="#{solicitudVentanillaPublica.solicitud.solApellidos}" size="40"  style="text-transform: uppercase" required="true" readonly="true"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup >
+                                <p:outputLabel for="direccion" value="Dirección:"/> <br/>
+                                <p:inputText id="direccion" value="#{solicitudVentanillaPublica.solicitud.solProvincia}" size="40" style="text-transform: uppercase" required="true" readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel value="Celular:"  /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.solCelular}" size="40" required="true" readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel for="correo1" value="Correo:"  /> <br/>
+                                <p:inputText id="correo1" value="#{solicitudVentanillaPublica.solicitud.solCorreo}" size="40" required="true" readonly="true"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup>
+
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+                        <h:panelGrid id="pnlConyugue" columns="2" style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup id="propConyugueCedula" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J' and solicitudVentanillaPublica.solicitud.solEstadoCivil eq 'C'}">
+                                <p:outputLabel value="Cédula Cónyuge:" /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.propConyugueCedula}" size="40" style="text-transform: uppercase" />
+                            </h:panelGroup>
+
+                            <h:panelGroup id="propConyugueNombres" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J'  and solicitudVentanillaPublica.solicitud.solEstadoCivil eq 'C'}">
+                                <p:outputLabel value="Nombres Cónyuge:" /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.propConyugueNombres}" size="40" style="text-transform: uppercase" />
+                            </h:panelGroup>
+
+                            <h:panelGroup id="propConyugueApellidos" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J'  and solicitudVentanillaPublica.solicitud.solEstadoCivil eq 'C'}">
+                                <p:outputLabel value="Apellidos Cónyuge:" /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.propConyugueApellidos}" size="40" style="text-transform: uppercase"/>
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+                        <h:panelGrid  columns="1" styleClass="ui-panelgrid-blank" style="margin: 0 auto; font-weight: bolder; ">
+                            <h:panelGroup>
+                                <p:outputLabel value="Observación a la Solicitud:"  /> <br/>
+                                <p:inputTextarea value="#{solicitudVentanillaPublica.solicitud.observacion}"
+                                                 readonly="true" style="text-transform: uppercase"
+                                                 cols="90" rows="5" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                    </p:tab>
+                    <p:tab title="2. Información de la Propiedad">
+                        
+                        <h:panelGrid id="pnlPropiedad" columns="3" styleClass="ui-panelgrid-blank"
+                                     style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel for="tipoInmueble" value="Tipo de Inmueble:"  /> <br/>
+                                <p:inputText id="tipoInmueble" value="#{solicitudVentanillaPublica.solicitud.tipoInmueble}"  
+                                             size="25"  
+                                             required="true" readonly="true" style="text-align: center; text-transform: uppercase">
+                                </p:inputText>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="anioInscripcion" value="Año de Inscripción:" /> <br/>
+                                <p:inputText id="anioInscripcion" value="#{solicitudVentanillaPublica.solicitud.anioInscripcion}" size="25" required="true" readonly="true" placeholder="Año de Inscripción" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="numInscripcion" value="* # Inscripción:"  /> <br/>
+                                <p:inputText id="numInscripcion" value="#{solicitudVentanillaPublica.solicitud.numInscripcion}" size="25"
+                                             required="true" readonly="true"
+                                             placeholder="# Inscripción" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="# Ficha Registral:"  /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.numeroFicha}" size="15" readonly="true"
+                                             placeholder="# Ficha Registral" />
+                                <p:commandButton  icon="fa fa-file-pdf-o"   
+                                                  actionListener="#{solicitudVentanillaPublica.imprimirFichaRegistral()}" />
+                            </h:panelGroup>
+                        </h:panelGrid> 
+                    </p:tab>
+                    <p:tab title="3. Datos del Propietario">
+                        <br/>
+                        <h:panelGrid id="pnlPropietario" columns="2" styleClass="ui-panelgrid-blank"
+                                     style="margin: 0 auto; font-weight: bolder" rendered="#{solicitudVentanillaPublica.solicitud.propTipoPersona eq null}">
+                            <h:panelGroup>
+                                <p:outputLabel for="propTipoPersona" value="Tipo Documento"  /> <br/>
+                                <p:selectOneMenu id="propTipoPersona" value="#{solicitudVentanillaPublica.solicitud.propTipoDoc}" required="true" disabled="true">
+                                    <f:selectItem itemLabel="Cédula" itemValue="C"/>
+                                    <f:selectItem itemLabel="RUC" itemValue="J"/>
+                                    <f:selectItem itemLabel="Pasaporte" itemValue="P"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel for="propCedula" value="Identificación:"  /> <br/>
+                                <p:inputText id="propCedula" value="#{solicitudVentanillaPublica.solicitud.propCedula}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel for="propNombres" value="Nombres del Propietario:" rendered="#{solicitudVentanillaPublica.solicitud.propTipoDoc ne 'J'}"/>
+                                <p:outputLabel for="propNombres" value="Razón Social:" rendered="#{solicitudVentanillaPublica.solicitud.propTipoDoc eq 'J'}"/> <br/>
+                                <p:inputText id="propNombres" value="#{solicitudVentanillaPublica.solicitud.propNombres}" size="40" required="true" readonly="true" style="text-transform: uppercase"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{solicitudVentanillaPublica.solicitud.propTipoDoc ne 'J' and solicitudVentanillaPublica.solicitud.propEstadoCivil eq 'C'}">
+                                <p:outputLabel value="Cédula Cónyuge:" /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.propConyugueCedula}" size="40" readonly="true" style="text-transform: uppercase"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{solicitudVentanillaPublica.solicitud.propTipoDoc ne 'J' and solicitudVentanillaPublica.solicitud.propEstadoCivil eq 'C'}">
+                                <p:outputLabel value="Nombres Cónyuge:" /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.propConyugueNombres}" size="40" readonly="true" style="text-transform: uppercase"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{solicitudVentanillaPublica.solicitud.propTipoDoc ne 'J' and solicitudVentanillaPublica.solicitud.propEstadoCivil eq 'C'}">
+                                <p:outputLabel value="Apellidos Cónyuge:" /> <br/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.propConyugueApellidos}" size="40" readonly="true" style="text-transform: uppercase"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="pnlPropietariosFichas" columns="1" styleClass="ui-panelgrid-blank"
+                                     style="margin: 0 auto; font-weight: bolder" rendered="#{solicitudVentanillaPublica.solicitud.propTipoPersona ne null}">
+                            <h:panelGroup >
+                                <p:outputLabel value="Propietarios:" /> <br/>
+                                <p:inputTextarea value="#{solicitudVentanillaPublica.solicitud.propTipoPersona}" cols="110" rows="5" readonly="true"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                    </p:tab>
+                    <p:tab title="4. Factura y motivo de Solicitud">
+                        <h:panelGrid id="pnlMotivo" style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup >
+                                <p:outputLabel value="* Motivo: "/> <br/>
+
+                                <p:inputText value="#{solicitudVentanillaPublica.getMotivo(solicitudVentanillaPublica.solicitud.motivoSolicitud)}" 
+                                             rendered="#{solicitudVentanillaPublica.solicitud.motivoSolicitud ne 193}"
+                                             size="40"
+                                             readonly="true"/>
+                                <p:inputText value="#{solicitudVentanillaPublica.solicitud.otroMotivo}" 
+                                             rendered="#{solicitudVentanillaPublica.solicitud.motivoSolicitud eq 193}"
+                                             size="40"
+                                             readonly="true"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br/>
+
+                        <p:outputLabel value="Datos para de la Factura" style="margin: 0 auto; font-weight: bolder"/><br/>
+                        <h:panelGrid id="pnlBeneficiario" columns="2" styleClass="ui-panelgrid-blank"
+                                     style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel for="benTipoDoc" value="Tipo Documento"  /> <br/>
+                                <p:selectOneMenu id="benTipoDoc" value="#{solicitudVentanillaPublica.solicitud.benTipoDoc}" required="true" disabled="true">
+                                    <f:selectItem itemLabel="Cédula" itemValue="N"/>
+                                    <f:selectItem itemLabel="Jurídica" itemValue="J"/>
+                                    <f:selectItem itemLabel="Pasaporte" itemValue="P"/>
+                                    <p:ajax update="pnlBeneficiario"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benDocumento" value="Identificación:" /> <br/>
+                                <p:inputText id="benDocumento" value="#{solicitudVentanillaPublica.solicitud.benDocumento}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benNombres" value="Nombres:" /> <br/>
+                                <p:inputText id="benNombres" value="#{solicitudVentanillaPublica.solicitud.benNombres}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benApellidos" value="Apellidos:" /> <br/>
+                                <p:inputText id="benApellidos" value="#{solicitudVentanillaPublica.solicitud.benApellidos}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+
+                            <h:panelGroup>
+                                <p:outputLabel for="benDireccion" value="Dirección:" /> <br/>
+                                <p:inputText id="benDireccion" value="#{solicitudVentanillaPublica.solicitud.benDireccion}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benTelefono" value="Teléfono:" /> <br/>
+                                <p:inputText id="benTelefono" value="#{solicitudVentanillaPublica.solicitud.benTelefono}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benCorreo" value="Correo:" /> <br/>
+                                <p:inputText id="benCorreo" value="#{solicitudVentanillaPublica.solicitud.benCorreo}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Información registral">
+                        <h:panelGrid  columns="2" styleClass="ui-panelgrid-blank" columnClasses="top-alignment" style="margin: 0 auto; " >
+                            <h:panelGroup>
+                                <p:dataList paginator="true" rows="5"   style="text-align: left; width: 500px"
+                                            paginatorPosition="bottom"
+                                            paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            value="#{solicitudVentanillaPublica.certificados}" var="f"  >
+                                    <f:facet name="header" >
+                                        Certificados emitidos
+                                    </f:facet>
+                                    <p:column headerText="**" width="10">
+                                        <h:outputText value="#{f.claseCertificado}"  style="font-weight: bolder"/><br/>
+                                        <h:outputText  value="Certificado: " style="font-weight: bolder"/><h:outputText  value="#{f.numCertificado}"/><br/>
+                                        <h:outputText  value="Trámite: " style="font-weight: bolder"/><h:outputText  value="#{f.numTramite}"/> <br/>
+                                        <p:commandButton  icon="fa fa-file-pdf-o"  value="Ver certificado"
+                                                          actionListener="#{solicitudVentanillaPublica.generarCertificadoBorrador(f)}" />
+                                    </p:column> 
+                                </p:dataList>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:dataList paginator="true" rows="5"   style="text-align: left; width: 500px"
+                                            paginatorPosition="bottom"
+                                            paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            value="#{solicitudVentanillaPublica.movimientos}" var="f"  >
+                                    <f:facet name="header" >
+                                        <p:outputLabel value="Movimientos registrales de Año: #{solicitudVentanillaPublica.solicitud.anioInscripcion} Número: #{solicitudVentanillaPublica.solicitud.numInscripcion}" />
+                                    </f:facet>
+                                    <p:column headerText="**" width="10">
+                                        <h:outputText  value="Acto: " style="font-weight: bolder"/><h:outputText  value="#{f.acto.nombre}"/><br/>
+                                        <h:outputText  value="Repertorio: " style="font-weight: bolder"/><h:outputText  value="#{f.numRepertorio}"/> <br/>
+                                        <p:commandButton  icon="fa fa-file-pdf-o"  value="Ver digitalización"
+                                                          actionListener="#{solicitudVentanillaPublica.visualizaDocuments(f)}" />
+                                    </p:column> 
+                                </p:dataList>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:tab>
+                </p:tabView>
+                <br></br>
+                <center>
+                    <p:commandButton value="Cerrar" onclick="PF('dlgSolicitud').hide();"  type="button"/>         
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgSolicitudInscripcion" showEffect="explode" modal="true" 
+                  showHeader="false" position="center" width="600" height="400"
+                  closeOnEscape="true" closable="true">
+            <h:form id="frmSolicitudInscripcion">
+                <br/>
+                <center>
+                    <h:panelGroup>
+                        <p:outputLabel value="Solicitud en linea actos a inscribir" style="font-weight: bolder"/> <br></br>
+                        <p:dataList id="dtActos"  styleClass="noBorders"  var="acto" value="#{solicitudVentanillaPublica.actos}" rowIndexVar="index" >
+                            <p:column headerText="Requisito">
+                                <p:outputLabel value="#{acto.acto.nombre}"  />   
+                            </p:column> 
+                        </p:dataList>
+                    </h:panelGroup> 
+                </center>
+
+                <p:tabView id="tabFormulario" >
+                    <p:tab title="1. Datos  del Solicitante">
+
+                        <h:panelGroup> 
+                            <p:panelGrid   columns="2" layout="grid" styleClass="ui-panelgrid-blank" >
+                                <h:panelGroup>
+                                    <p:outputLabel  value="Tipo Documento:"  /> <br/>
+                                    <p:inputText  value="CEDULA" size="40"  rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc eq 'C'}" readonly="true"/>
+                                    <p:inputText  value="RUC" size="40"  rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc eq 'J'}" readonly="true"/>
+                                    <p:inputText  value="PASAPORTE" size="40"  rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc eq 'P'}" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="cedRuc" value="Identificación:"  /> <br/>
+                                    <p:inputText id="cedRuc" value="#{solicitudVentanillaPublica.solicitud.solCedula}" size="40"  required="true" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="nombres" value="Nombres:" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J'}"/>
+                                    <p:outputLabel for="nombres" value="Razón Social:" rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc eq 'J'}"/> <br/>
+                                    <p:inputText id="nombres" value="#{solicitudVentanillaPublica.solicitud.solNombres}" size="40"   required="true" readonly="true" 
+                                                 style="text-transform: uppercase"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{solicitudVentanillaPublica.solicitud.solTipoDoc ne 'J'}">
+                                    <p:outputLabel for="apellidos" value="Apellidos:"  /> <br/>
+                                    <p:inputText id="apellidos" value="#{solicitudVentanillaPublica.solicitud.solApellidos}" size="40"  style="text-transform: uppercase" required="true" readonly="true"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup >
+                                    <p:outputLabel for="direccion" value="Dirección:"/> <br/>
+                                    <p:inputText id="direccion" value="#{solicitudVentanillaPublica.solicitud.solProvincia}" size="40" style="text-transform: uppercase" required="true" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel value="Celular:"  /> <br/>
+                                    <p:inputText value="#{solicitudVentanillaPublica.solicitud.solCelular}" size="40" required="true" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="correo1" value="Correo:"  /> <br/>
+                                    <p:inputText id="correo1" value="#{solicitudVentanillaPublica.solicitud.solCorreo}" size="40" required="true" readonly="true"/>
+                                </h:panelGroup>
+
+                            </p:panelGrid>
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Observación a la Solicitud:"   style="font-weight: bolder"/> <br/>
+                                <p:inputTextarea value="#{solicitudVentanillaPublica.solicitud.observacion}"
+                                                 readonly="true" style="text-transform: uppercase"
+                                                 cols="60" rows="5" />
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty solicitudVentanillaPublica.solicitud.notificacion}">
+                                <p:textEditor id="notificacion" widgetVar="editor2"  readonly="true" value="#{solicitudVentanillaPublica.solicitud.notificacion}"  
+                                              style="height: 100%; width: 95%" height="150" >
+                                    <f:facet name="toolbar">
+                                        <span class="ql-formats">
+
+                                        </span> 
+                                    </f:facet>
+                                </p:textEditor>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                        <p:dataTable id="dtRequisitos" var="req" value="#{solicitudVentanillaPublica.requisitos}"   rowIndexVar="index" >
+                            <p:column headerText="Fecha" width="50" >
+                                <center>
+                                    <p:outputLabel value="#{req.fecha}"  />   
+                                </center>
+                            </p:column>
+                            <p:column headerText="Requisito"  width="50">
+                                <p:outputLabel value="#{req.requisito.requisito}"  />   
+                            </p:column>
+
+                            <p:column headerText="Descargar"  width="50" >
+
+                                <p:commandLink actionListener="#{solicitudVentanillaPublica.downLoadDocument(req.documento)}">
+                                    <p:graphicImage value="/resources/icons/documento.png" height="20" width="20"/>   
+                                </p:commandLink>
+
+                            </p:column>
+                        </p:dataTable>
+
+
+
+
+                    </p:tab>
+                    <p:tab title="2. Datos para la factura ">
+                        <h:panelGrid id="pnlBeneficiario" columns="2" styleClass="ui-panelgrid-blank"
+                                     style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel for="benTipoDoc" value="Tipo Documento"  /> <br/>
+                                <p:selectOneMenu id="benTipoDoc" value="#{solicitudVentanillaPublica.solicitud.benTipoDoc}" required="true" disabled="true">
+                                    <f:selectItem itemLabel="Cédula" itemValue="N"/>
+                                    <f:selectItem itemLabel="Jurídica" itemValue="J"/>
+                                    <f:selectItem itemLabel="Pasaporte" itemValue="P"/>
+                                    <p:ajax update="pnlBeneficiario"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benDocumento" value="Identificación:" /> <br/>
+                                <p:inputText id="benDocumento" value="#{solicitudVentanillaPublica.solicitud.benDocumento}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benNombres" value="Nombres:" /> <br/>
+                                <p:inputText id="benNombres" value="#{solicitudVentanillaPublica.solicitud.benNombres}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benApellidos" value="Apellidos:" /> <br/>
+                                <p:inputText id="benApellidos" value="#{solicitudVentanillaPublica.solicitud.benApellidos}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+
+                            <h:panelGroup>
+                                <p:outputLabel for="benDireccion" value="Dirección:" /> <br/>
+                                <p:inputText id="benDireccion" value="#{solicitudVentanillaPublica.solicitud.benDireccion}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benTelefono" value="Teléfono:" /> <br/>
+                                <p:inputText id="benTelefono" value="#{solicitudVentanillaPublica.solicitud.benTelefono}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="benCorreo" value="Correo:" /> <br/>
+                                <p:inputText id="benCorreo" value="#{solicitudVentanillaPublica.solicitud.benCorreo}" size="40" required="true" readonly="true" />
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+
+                    </p:tab>
+
+                </p:tabView>
+                <center>
+                    <p:commandButton value="Cerrar" onclick="PF('dlgSolicitudInscripcion').hide();"  type="button"/>     
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

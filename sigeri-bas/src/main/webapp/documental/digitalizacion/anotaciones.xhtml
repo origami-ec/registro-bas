@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:panelGroup rendered="#{editarDocumentoMB.notaSeleccionada ne null and editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA' or  editarDocumentoMB.notaSeleccionada.tipo eq 'LINEA'}"
+                  style="
+                  background-color: #{editarDocumentoMB.notaSeleccionada.color};
+                  width: #{editarDocumentoMB.notaSeleccionada.ancho}px;
+                  height: #{editarDocumentoMB.notaSeleccionada.alto}px;
+                  margin-left: #{editarDocumentoMB.notaSeleccionada.posicionX1}px;
+                  margin-top: #{editarDocumentoMB.notaSeleccionada.posicionY1}px;
+                  margin-right: #{editarDocumentoMB.notaSeleccionada.posicionX1}px;
+                  margin-bottom: #{editarDocumentoMB.notaSeleccionada.posicionY1}px;
+                  border-radius: 25px;
+                  border: 2px solid captiontext;
+                  position: absolute; "
+
+                  >
+        <br/>
+
+        <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.titulo}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder"  rendered="#{editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA'}"/><br/>
+        <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.fecha}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA'}"/><br/>
+        <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.usuario.nombres}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA'}" /><br/><br/>
+        <center>
+            <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.nota}" escape="false" style="color: black" /><br/>
+        </center>
+    </h:panelGroup>
+
+
+    <h:panelGroup rendered="#{editarDocumentoMB.notaSeleccionada ne null and editarDocumentoMB.notaSeleccionada.tipo eq 'SELLOS'}"
+                  style="
+                  background-color: #{editarDocumentoMB.notaSeleccionada.color};
+                  width: #{editarDocumentoMB.notaSeleccionada.ancho}px;
+                  height: #{editarDocumentoMB.notaSeleccionada.alto}px;
+                  margin-left: #{editarDocumentoMB.notaSeleccionada.posicionX1}px;
+                  margin-top: #{editarDocumentoMB.notaSeleccionada.posicionY1}px;
+                  margin-right: #{editarDocumentoMB.notaSeleccionada.posicionX1}px;
+                  margin-bottom: #{editarDocumentoMB.notaSeleccionada.posicionY1}px;
+                  position: absolute; "
+
+                  >
+        <br/>
+
+        <center>
+            <p:graphicImage value="#{editarDocumentoMB.notaSeleccionada.nota}"  style="color: black;  width: #{editarDocumentoMB.notaSeleccionada.ancho}px;  height: #{editarDocumentoMB.notaSeleccionada.alto}px;"/>
+        </center>
+    </h:panelGroup>
+
+
+    <h:panelGroup rendered="#{editarDocumentoMB.notaSeleccionada ne null and editarDocumentoMB.notaSeleccionada.tipo eq 'REMARCADO'}"
+                  style="
+                  background-color: #{editarDocumentoMB.notaSeleccionada.color};
+                  width: #{editarDocumentoMB.notaSeleccionada.ancho}px;
+                  height: #{editarDocumentoMB.notaSeleccionada.alto}px;
+                  margin-left: #{editarDocumentoMB.notaSeleccionada.posicionX1}px;
+                  margin-top: #{editarDocumentoMB.notaSeleccionada.posicionY1}px;
+                  margin-right: #{editarDocumentoMB.notaSeleccionada.posicionX1}px;
+                  margin-bottom: #{editarDocumentoMB.notaSeleccionada.posicionY1}px;
+                  border-radius: 10px; 
+                  opacity: 0.5;
+                  position: absolute; "
+                  >
+        <br/>
+
+        <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.titulo}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder"  rendered="#{editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA'}"/><br/>
+        <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.fecha}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA'}"/><br/>
+        <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.usuario.nombres}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{editarDocumentoMB.notaSeleccionada.tipo eq 'NOTA'}" /><br/><br/>
+        <center>
+            <h:outputLabel value="#{editarDocumentoMB.notaSeleccionada.nota}" escape="false" style="color: black" /><br/>
+        </center>
+    </h:panelGroup>
+
+
+
+</html>
+

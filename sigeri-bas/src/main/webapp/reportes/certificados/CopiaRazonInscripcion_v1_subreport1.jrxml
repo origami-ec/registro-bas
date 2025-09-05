@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CopiaRazonInscripcion _v1_subreport1" language="groovy" pageWidth="495" pageHeight="802" columnWidth="495" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="88773629-9b88-4112-bf86-e388e19de471">
+	<property name="ireport.zoom" value="1.9965000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_MOVIMIENTO" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select m.movimiento, to_char(m.fecha_inscripcion,'yyyy') as anio, m.fecha_inscripcion,
+m.fecha_repertorio,
+m.repertorio as num_repertorio, m.tomo as num_tomo, m.fecha_celebracion, m.folio_inicio,
+m.folio_fin, m.inscripcion as num_inscripcion, m.acto, m.libro, m.es_negativa,
+m.observacion as anexo_negativa, m.notaria,
+(select id from app.reg_movimiento_capital where movimiento = m.movimiento limit 1) as capitales,
+(select id from app.reg_movimiento_representante where movimiento = m.movimiento limit 1) as representantes,
+(select id from app.reg_movimiento_socios where movimiento = m.movimiento limit 1) as socios
+from app.reg_certificado_movimiento m
+where m.id = $P{ID_MOVIMIENTO}]]>
+	</queryString>
+	<field name="movimiento" class="java.lang.Long"/>
+	<field name="anio" class="java.lang.String"/>
+	<field name="fecha_inscripcion" class="java.sql.Timestamp"/>
+	<field name="fecha_repertorio" class="java.sql.Timestamp"/>
+	<field name="num_repertorio" class="java.lang.Integer"/>
+	<field name="num_tomo" class="java.lang.String"/>
+	<field name="fecha_celebracion" class="java.sql.Timestamp"/>
+	<field name="folio_inicio" class="java.lang.Integer"/>
+	<field name="folio_fin" class="java.lang.Integer"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="acto" class="java.lang.String"/>
+	<field name="libro" class="java.lang.String"/>
+	<field name="es_negativa" class="java.lang.Boolean"/>
+	<field name="anexo_negativa" class="java.lang.String"/>
+	<field name="notaria" class="java.lang.String"/>
+	<field name="capitales" class="java.lang.Long"/>
+	<field name="representantes" class="java.lang.Long"/>
+	<field name="socios" class="java.lang.Long"/>
+	<detail>
+		<band height="72" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="14" width="80" height="14" uuid="966a7f16-8bc0-4c1e-a210-ffbc2215ba6e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Inscripción:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="252" y="14" width="110" height="14" uuid="0b3e434c-71c7-4d50-b7e2-455f2a171340"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha Repertorio:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="362" y="14" width="133" height="14" uuid="4c23f9cd-90f5-49bc-ad6d-47885036d8f6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_repertorio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="495" height="14" backcolor="#CCCCCC" uuid="07e80f36-90ba-4d6d-8002-3a59ed74749b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="80" y="14" width="100" height="14" uuid="a9b30a6a-213d-49e4-8f05-5fd7736a0742"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="80" y="28" width="100" height="14" isPrintWhenDetailOverflows="true" uuid="cf13d7e9-de15-40a0-816f-75fe0816b98e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_repertorio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="28" width="80" height="14" uuid="d97123b1-ec38-4aed-a2da-e9416877ea3e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Repertorio:]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" positionType="Float" x="252" y="28" width="110" height="14" uuid="9cdae52a-eb46-4961-ad79-fd67adb90f23"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{acto}.contains("HORIZONTAL")) ? "Fec. Protocolización:" :
+$F{notaria}.contains("JUZGADO") ? "Fec. de Disposición:" : "Fec. de Celebración:"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="362" y="28" width="133" height="14" uuid="7b5e4839-8e44-4505-8747-cf869422545d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_celebracion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="56" width="80" height="14" uuid="9a87abf7-e4fd-4015-9c9c-5db24146efba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Naturaleza:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="42" width="80" height="14" uuid="a331c0e8-58be-4b7a-a8a7-77fd867864e8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Registro de:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="42" width="415" height="14" uuid="83575153-a194-4004-9535-36e22e2e138b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{libro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="80" y="56" width="415" height="14" isPrintWhenDetailOverflows="true" uuid="9523b8f7-861b-4570-a1df-a952aaebc89c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="30" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="0" width="495" height="27" isPrintWhenDetailOverflows="true" uuid="a2f704b1-136f-478b-a1a1-6e4dd94b7619"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["EL INFRASCRITO REGISTRADOR DE LA PROPIEDAD DEL CANTÓN, CERTIFICA QUE en esta fecha" +
+" queda legalmente inscrito el acto o contrato: " + $F{acto}.toUpperCase() + " en el Libro de Registro de " + $F{libro} +
+", con el número de inscripción " + $F{num_inscripcion} +
+" del año " + $F{anio} + " y anotada en el Repertorio General con el número " + $F{num_repertorio} + ", en donde intervienen:"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="18" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="495" height="13" uuid="c95026e3-ff27-4ddd-a804-fc233e512a5e"/>
+				<subreportParameter name="ID_MOVIMIENTO">
+					<subreportParameterExpression><![CDATA[$P{ID_MOVIMIENTO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "RazonDetalleInterv.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="18" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="495" height="13" uuid="3cffebf5-8d5b-4c41-b6f0-48d6c2f97c4c"/>
+				<subreportParameter name="ID_MOVIMIENTO">
+					<subreportParameterExpression><![CDATA[$P{ID_MOVIMIENTO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "RazonDetalleFichas.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="495" height="19" isRemoveLineWhenBlank="true" uuid="6285fe5d-8574-454d-b2ad-e8a30e706033">
+					<printWhenExpression><![CDATA[$F{es_negativa}]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{anexo_negativa}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Consulta Dinarp</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>CONSULTA DINARP</h1></center>
+            <!--<center><h3 style="font-weight: bolder;">CONSULTA DINARP</h3></center>-->
+            <h:panelGrid columns="4" style="font-weight: bolder;font-size: 16px;margin: 0 auto;" >
+                <p:outputLabel value="Identificacion:" />
+                <p:spacer height="1" width="20"/>
+                <p:inputText value="#{consultaDinardap.identificacion}"/>
+                <p:commandButton value="Buscar" icon="pi pi-search" update="mainForm" actionListener="#{consultaDinardap.buscarDinardap()}"/>
+            </h:panelGrid>
+            <br/><br/>
+            <h:panelGrid columns="4" style="font-weight: bolder;font-size: 16px;margin: 0 auto;" 
+                         rendered="#{consultaDinardap.persona.ciRuc.length() ne 13}" >
+
+                <p:outputLabel value="CI/RUC/ID.:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.ciRuc}" size="50"/>
+                <p:spacer height="1" width="1"/>
+
+                <p:outputLabel value="Nombres:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.apellidos}" size="50"/>
+                <p:spacer height="1" width="1"/>
+
+                <p:outputLabel value="Direccion:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.direccion}" size="50"/>
+                <p:spacer height="1" width="1"/>
+
+                <p:outputLabel value="Fecha Nacimiento:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.fechaNacimiento}" size="50"/>
+                <p:outputLabel value="(dd/MM/yyyy)"/>
+
+                <p:outputLabel value="Condicion Ciudadano:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.condicionCiudadano}" size="50"/>
+                <p:spacer height="1" width="1"/>
+
+                <p:outputLabel value="Estado Civil:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.estadoCivilText}" size="50"/>
+                <p:spacer height="1" width="1"/>
+
+                <p:outputLabel value="Conyuge:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.conyuge}" size="50"/>
+                <p:spacer height="1" width="1"/>
+
+            </h:panelGrid>
+
+            <h:panelGrid columns="4" style="font-weight: bolder;font-size: 16px;margin: 0 auto;" 
+                         rendered="#{consultaDinardap.persona.ciRuc.length() eq 13}" >
+
+                <p:outputLabel value="CI/RUC/ID.:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.ciRuc}" size="50"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="Razon Social:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.razonSocial}" size="50"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="Fecha Inicio Actividades:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.fechaInicioActividades}" size="50"/>
+                <p:outputLabel value="(yyyy-MM-dd)"/>
+                
+                <p:outputLabel value="Correo:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.correo1}" size="50"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="Cargo Representante:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.cargoRepresentante}" size="50"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="CI Representante:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.identificacionRepresentante}" size="50"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="Nombre Representante:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputText readonly="true" value="#{consultaDinardap.persona.apellidos}" size="50"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="Direccion:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputTextarea readonly="true" value="#{consultaDinardap.persona.direccion}" cols="51" rows="3"/>
+                <p:spacer height="1" width="1"/>
+                
+                <p:outputLabel value="Actividad General:" />
+                <p:spacer height="1" width="32"/>
+                <p:inputTextarea readonly="true" value="#{consultaDinardap.persona.actividadEconomica}" cols="51" rows="3" />
+                <p:spacer height="1" width="1"/>
+
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>

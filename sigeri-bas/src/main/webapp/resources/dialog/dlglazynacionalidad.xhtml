@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Nacionalidad UAFE</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable value="#{dlgLazyNacionalidad.lazy}" var="nac" style="text-align: center" paginator="true" lazy="true"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rows="10" rowsPerPageTemplate="10,20,50" emptyMessage="No hay elementos." filterEvent="enter">
+                <p:column headerText="Codigo" sortBy="#{nac.codigo}" filterBy="#{nac.codigo}" filterStyle="width: 75%" width="100">
+                    <p:outputLabel value="#{nac.codigo}" />
+                </p:column>
+                <p:column headerText="Descripcion" sortBy="#{nac.descripcion}" filterStyle="width: 75%" filterBy="#{nac.descripcion}">
+                    <p:outputLabel value="#{nac.descripcion}" />
+                </p:column>
+                <p:column headerText="**" width="40">
+                    <p:commandLink actionListener="#{dlgLazyNacionalidad.selectObject(nac)}">
+                        <p:graphicImage value="/resources/icons/selection.png"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

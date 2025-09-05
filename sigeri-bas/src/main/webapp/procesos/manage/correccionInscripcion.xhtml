@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                 >
+    <ui:define name="top"><h3>Datos de Inscripción</h3></ui:define>
+    <ui:define name="content">
+        <h:form  id="formNuevInsc">
+            <p:tabView id="tVdetalle">
+                <p:tab title="Inscripcion">
+                    <p:panelGrid styleClass="noBorder" columns="2">
+                        Libro:
+                        <p:selectOneMenu value="#{inscripcionEdicion.movimiento.libro}" converter="entityConverter" disabled="#{inscripcionEdicion.movimiento.taskId != null}">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                            <f:selectItems value="#{inscripcionEdicion.regLibroList}" var="libro" itemLabel="#{libro.nombre}" itemValue="#{libro}"/>  
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="6">
+                        No.Inscripcion:
+                        <p:inputText value="#{inscripcionEdicion.movimiento.numInscripcion}" disabled="#{inscripcionEdicion.movimiento.taskId != null}"/>
+                        No.Repertorio:
+                        <p:inputText value="#{inscripcionEdicion.movimiento.numRepertorio}" disabled="#{inscripcionEdicion.movimiento.taskId != null}"/>
+                        Fech.Inscripcion:
+                        <p:calendar value="#{inscripcionEdicion.movimiento.fechaInscripcion}" pattern="dd/MM/yyyy" maxdate="sysdate" disabled="#{inscripcionEdicion.movimiento.taskId != null}"/>
+                        No.Tomo:
+                        <p:inputText value="#{inscripcionEdicion.movimiento.numTomo}"/>
+                        Folio Inicial:
+                        <p:inputText value="#{inscripcionEdicion.movimiento.folioInicio}"/>
+                        Folio Final:
+                        <p:inputText value="#{inscripcionEdicion.movimiento.folioFin}"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder">
+                        <p:row>
+                            <p:column>
+                                Canton: 
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu  value="#{inscripcionEdicion.movimiento.domicilio}" converter="entityConverter">  
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                                    <f:selectItems value="#{inscripcionEdicion.domicilios}" var="can" itemLabel="#{can.nombre}" itemValue="#{can}"/>  
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                Fecha Otorgamiento: 
+                            </p:column>
+                            <p:column>
+                                <p:calendar value="#{inscripcionEdicion.movimiento.fechaOto}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" maxdate="sysdate"/>
+                            </p:column>
+                            <p:column>
+                                Inscripcion Realizada por Orden Judicial:
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu  value="#{inscripcionEdicion.movimiento.ordJud}">  
+                                    <f:selectItem itemLabel="SI" itemValue="#{true}"/>  
+                                    <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Fech.Resolucion:
+                            </p:column>
+                            <p:column>
+                                <p:calendar value="#{inscripcionEdicion.movimiento.fechaResolucion}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" maxdate="sysdate"/>
+                            </p:column>
+                            <p:column>
+                                Escrit/Juic/Provi/Resolucion:
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:inputText value="#{inscripcionEdicion.movimiento.escritJuicProvResolucion}" style="width: 100%"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Acto:
+                            </p:column>
+                            <p:column colspan="5">
+                                <p:inputText id="actonombabrev" value="#{inscripcionEdicion.acto.abreviatura}" style="width: 75px" placeholder="Abreviatura">
+                                    <p:ajax event="change" listener="#{inscripcionEdicion.buscarActoAbrev()}" update="actonombabrev, actonomb"/>
+                                </p:inputText>
+                                <p:spacer width="20" height="1"/>
+                                <p:inputText id="actonomb" value="#{inscripcionEdicion.acto.nombre}" readonly="true" style="width: 300px"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton value="Buscar Acto" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{inscripcionEdicion.showDlg('/resources/dialog/dlglazyactos')}">
+                                    <p:ajax event="dialogReturn" listener="#{inscripcionEdicion.selectObjectActo}" update="actonombabrev, actonomb"/>
+                                </p:commandButton>
+                            </p:column> 
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Notaria/Juzg : 
+                            </p:column>
+                            <p:column colspan="5">
+                                <p:inputText id="enteJudnombabrev" value="#{inscripcionEdicion.enju.abreviatura}" style="width: 75px" placeholder="Abreviatura">
+                                    <p:ajax event="change" listener="#{inscripcionEdicion.buscarNotariaAbrev()}" update="enteJudnombabrev, enteJudnomb"/>
+                                </p:inputText>
+                                <p:spacer width="20" height="1"/>
+                                <p:inputText id="enteJudnomb" value="#{inscripcionEdicion.enju.nombre}" style="width: 300px" readonly="true"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton value="Buscar Not/Juzg" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{inscripcionEdicion.showDlg('/resources/dialog/dlglazynotarias')}">
+                                    <p:ajax event="dialogReturn" listener="#{inscripcionEdicion.selectObjectJudicial}" update="enteJudnombabrev, enteJudnomb"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab title="Intervinientes">
+                    <div style="width: 100%;">
+                        <p:commandButton icon="ui-icon-search" value="Buscar Interviniente" styleClass="btnStyle" style="float: left;"
+                                         actionListener="#{inscripcionEdicion.showDlg('/resources/dialog/dlglazyinterv')}">
+                            <p:ajax event="dialogReturn" listener="#{inscripcionEdicion.selectInterv}" update="dtInterviniente"/>
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-plus" value="Nuevo Interviniente" styleClass="btnStyle" style="float: right;"
+                                         actionListener="#{inscripcionEdicion.showDlgNewInterv()}"/>
+                    </div>
+                    <p:spacer height="35" width="0"/>
+                    <p:dataTable id="dtInterviniente" value="#{inscripcionEdicion.mcs}" var="inter" emptyMessage="Agregar Intervinientes"
+                                 resizableColumns="true" liveResize="true" scrollable="true" scrollHeight="250" style="text-align: center" rowIndexVar="indexCli">
+                        <p:column headerText="Papel">
+                            <p:outputLabel value="#{inter.papel.papel}"/>
+                        </p:column>
+                        <p:column headerText="C.I/R.U.C" >
+                            <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado" >
+                            <p:outputLabel value="#{inter.estado}"/>
+                        </p:column>
+                        <p:column headerText="C.I./R.U.C.">
+                            <p:outputLabel value="#{inter.cedula}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.nombres}"/>
+                        </p:column>
+                        <p:column headerText="Edit" width="40">
+                            <p:commandLink actionListener="#{inscripcionEdicion.showDlgEditInterv(indexCli)}">
+                                <p:graphicImage value="/resources/icons/edit.png"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del" width="40">
+                            <p:commandLink update="dtInterviniente" actionListener="#{inscripcionEdicion.deleteInterv(indexCli)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Observacion">
+                    <p:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder;">
+                        Motivacion:
+                        <p:selectOneMenu value="#{inscripcionEdicion.movimiento.esNegativa}">
+                            <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:inputTextarea value="#{inscripcionEdicion.movimiento.observacion}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                    <p:spacer height="5"/>
+                </p:tab>
+                <p:tab title="Bienes">
+                    <p:panelGrid style="width: 75%;margin: 0 auto;" styleClass="noBorder">
+                        <p:row>
+                            <p:column><p:outputLabel value="No.Ficha:"/></p:column>
+                            <p:column><p:inputNumber value="#{inscripcionEdicion.numFicha}" decimalPlaces="0"/></p:column>
+                            <p:column>
+                                <p:commandButton icon="ui-icon-search" value="Buscar Ficha" update="dtFichas" styleClass="btnStyle" 
+                                                 actionListener="#{inscripcionEdicion.buscarByNumFicha()}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:dataTable id="dtFichas" value="#{inscripcionEdicion.mfs}" var="f" rowIndexVar="rowIndex" emptyMessage="Agregar fichas registrales."
+                                 scrollable="true" scrollHeight="250" style="text-align: center;width: 75%;margin: 0 auto;">
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="No Ficha">
+                            <p:outputLabel value="#{f.ficha.numFicha}"/>
+                        </p:column>
+                        <p:column headerText="Clave Catastral">
+                            <p:outputLabel value="#{f.ficha.claveCatastral}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="150">
+                            <p:outputLabel value="#{f.ficha.estado.valor}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink update="dtFichas" actionListener="#{inscripcionEdicion.deleteFicha(rowIndex)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Referencia">
+                    <div style="float: right">
+                        <p:commandButton icon="ui-icon-plus" value="Agregar Referencias Mov." styleClass="btnStyle" actionListener="#{inscripcionEdicion.showDlg('/resources/dialog/dlglazymov')}">
+                            <p:ajax event="dialogReturn" listener="#{inscripcionEdicion.selectObjectReferencia}" update="dtMovimientosReff"/>
+                        </p:commandButton>
+                    </div>
+                    <div style="clear: both;width: 100%"/>
+                    <p:spacer width="0" height="5"/>
+                    <p:dataTable id="dtMovimientosReff" value="#{inscripcionEdicion.mrs}" var="m" emptyMessage="No se ha Agregado Ninguna Referencia" 
+                                 scrollable="true" scrollHeight="250" rowIndexVar="rowIndex" style="text-align: center">
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{m.movimientoReferencia.libro.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{m.movimientoReferencia.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Inscripcion" width="120">
+                            <p:outputLabel value="#{m.movimientoReferencia.fechaInscripcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Del." width="50">
+                            <p:commandLink update="dtMovimientosReff" actionListener="#{inscripcionEdicion.deleteMovsRef(rowIndex)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Marginacion">
+                    <div>
+                        <p:commandButton icon="ui-icon-plus" value="Nueva Marginacion" styleClass="btnStyle" actionListener="#{inscripcionEdicion.showDlgNewMarginacion()}"/>
+                    </div>
+                    <p:dataTable id="dtMarginacion" value="#{inscripcionEdicion.mma}" var="mg" emptyMessage="No se ha Agregado Ninguna Marginacion" 
+                                 scrollable="true" scrollHeight="250" rowIndexVar="indMarg" style="text-align: center">
+                        <p:column headerText="No" width="45">
+                            #{indMarg+1}
+                        </p:column>
+                        <p:column headerText="Fecha" width="100">
+                            <p:outputLabel value="#{mg.fechaIngreso}"><f:convertDateTime pattern="dd-MM-yyyy"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Marginacion" style="text-align: left;">
+                            <p:outputLabel value="#{mg.observacion}"/>
+                        </p:column>
+                        <!--<p:column headerText="Ver" width="50">
+                            <p:commandLink actionListener="# {inscripcionEdicion.showDlgViewMarginacion(mg)}">
+                                <p:graphicImage value="/resources/icons/abrir.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>-->
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Informacion Adicional">
+                    <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="4">
+                        Hay Escrituras?
+                        <p:selectOneMenu value="#{inscripcionEdicion.movimiento.escrituras}">
+                            <f:selectItem itemLabel="SI" itemValue="#{true}"/>  
+                            <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                        Finalizada?
+                        <p:selectOneMenu value="#{inscripcionEdicion.movimiento.editable}">
+                            <f:selectItem itemLabel="NO" itemValue="#{true}"/>  
+                            <f:selectItem itemLabel="SI" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="1">
+                        Detalle de Ingreso del Libro:
+                        <p:inputTextarea value="#{inscripcionEdicion.movimiento.obsCancela}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                    </p:panelGrid>
+                </p:tab>
+            </p:tabView><br/>
+            <div align="center">
+                <p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{inscripcionEdicion.corregirMovimiento()}" />
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgCrearInterv" header="Ingreso de Interviniente" widgetVar="dlgCrearInterviniente" resizable="false" modal="true" width="500">
+            <h:form id="formCreaInterv">
+                <p:panelGrid id="pnlBlockInter" columns="2" styleClass="noBorder" style="width: 100%">
+
+                    <p:outputLabel value="Tipo Persona: " style="font-weight: bolder; font-size: 12px"/>
+                    <p:selectOneMenu value="#{inscripcionEdicion.re.tipoInterv}">
+                        <f:selectItem itemLabel="Natural" itemValue="N" />
+                        <f:selectItem itemLabel="Juridica" itemValue="J" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="CI/RUC : " style="font-weight: bolder; font-size: 12px"/>
+                    <p:inputText value="#{inscripcionEdicion.re.cedRuc}"/>
+
+                    <p:outputLabel value="Nombres : " style="font-weight: bolder; font-size: 12px"/>
+                    <p:inputText value="#{inscripcionEdicion.re.nombre}" size="45"/>
+
+                </p:panelGrid>
+                <br/>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" actionListener="#{inscripcionEdicion.guardarInterviniente()}" icon="ui-icon-disk"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgEditInterviniente" header="Informacion de Interviniente" widgetVar="dlgEditInter" resizable="false" modal="true" position="center" width="500">
+            <h:form id="formEditInterv">
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;">
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:outputLabel value="** En el modulo de Mantenimiento de Intervinientes se pueden editar los nombres del interviniente." style="color: #0033FF"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>Papel:</p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{inscripcionEdicion.interv.papel}" converter="entityConverter" style="width: 90%">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                <f:selectItems value="#{inscripcionEdicion.papeles}" var="p" itemLabel="#{p.papel}" itemValue="#{p}"/>  
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>**C.I./R.U.C.:</p:column>
+                        <p:column>
+                            <p:inputText value="#{inscripcionEdicion.interv.enteInterv.cedRuc}" size="45" readonly="true"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>**Nombres:</p:column>
+                        <p:column>
+                            <p:inputText value="#{inscripcionEdicion.interv.enteInterv.nombre}" size="45" readonly="true"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>Domicilio:</p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{inscripcionEdicion.interv.domicilio}" converter="entityConverter">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                                <f:selectItems value="#{inscripcionEdicion.domicilios}" var="dom" itemLabel="#{dom.nombre}" itemValue="#{dom}"/>  
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:fieldset legend="Relaciones">
+                    <p:panelGrid id="pngInterEdit" styleClass="noBorder" style="width: 100%;font-weight: bolder;" >
+                        <p:row>
+                            <p:column colspan="2" style="text-align: center;">
+                                <p:commandButton value="Limpiar Datos" styleClass="btnStyle" actionListener="#{inscripcionEdicion.limpiarDatos()}"
+                                                 update="pngInterEdit" icon="ui-icon-refresh"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>C.I.:</p:column>
+                            <p:column>
+                                <p:inputText value="#{inscripcionEdicion.interv.cedula}"/><p:spacer width="10" height="1"/>
+                                <p:commandButton icon="ui-icon-search" actionListener="#{inscripcionEdicion.buscarInterviniente()}" 
+                                                 update="pngInterEdit" styleClass="btnStyle"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Nombre: " style="font-weight: bolder" /> 
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{inscripcionEdicion.interv.nombres}" size="40" readonly="true"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Estado: " style="font-weight: bolder" /> 
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{inscripcionEdicion.interv.estado}" size="40" readonly="true"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Mostrar Relacion de:" style="font-weight: bolder"/>
+                                <br/>
+                                <p:selectOneMenu value="#{inscripcionEdicion.interv.conyugue}">
+                                    <f:selectItem itemLabel="Conyugue" itemValue="#{true}"/>
+                                    <f:selectItem itemLabel="Representante" itemValue="#{false}"/>
+                                    <p:ajax update="pngInterEdit" event="change"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="Estado Civil:" style="font-weight: bolder" rendered="#{inscripcionEdicion.interv.conyugue}"/>
+                                <h:outputText value="Cargo:" style="font-weight: bolder" rendered="#{!inscripcionEdicion.interv.conyugue}"/>
+                                <br/>
+                                <p:selectOneMenu value="#{inscripcionEdicion.interv.item}" converter="entityConverter" rendered="#{inscripcionEdicion.interv.conyugue}">  
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                    <f:selectItems value="#{inscripcionEdicion.estadosCivil}" var="e" itemLabel="#{e.valor}" itemValue="#{e}"/>  
+                                </p:selectOneMenu>
+                                <p:selectOneMenu value="#{inscripcionEdicion.interv.item}" converter="entityConverter" rendered="#{!inscripcionEdicion.interv.conyugue}">  
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                    <f:selectItems value="#{inscripcionEdicion.cargosRep}" var="carg" itemLabel="#{carg.valor}" itemValue="#{carg}"/>  
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{inscripcionEdicion.agregarListaIntervEdit()}" styleClass="btnStyle"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObsvMarginacion" widgetVar="dlgMarginacion" header="Marginacion" modal="true" resizable="false" position="center">
+            <h:form id="formMarginacion">
+                <p:panelGrid styleClass="noBorder" columns="1" style="text-align: center">
+                    <p:inputTextarea value="#{inscripcionEdicion.marg.observacion}" cols="60" rows="10" autoResize="false"/>
+                    <p:commandButton value="Agregar" rendered="#{inscripcionEdicion.marg.id eq null}" styleClass="btnStyle"
+                                     actionListener="#{inscripcionEdicion.agregarMarginacion()}"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog widgetVar="dlgViewMarginacion" header="Marginacion" modal="true" resizable="false" position="center">
+            <h:form id="formViewMarginacion">
+                <p:panelGrid styleClass="noBorder" columns="1" style="text-align: center">
+                    <p:inputTextarea value="#{inscripcionEdicion.marg.observacion}" cols="60" rows="10" readonly="true" autoResize="false"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

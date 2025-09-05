@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Fichas Duplicadas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>FICHAS REGISTRALES CON ESTADO DUPLICADO</h1></center>
+            <p:dataTable paginator="true" lazy="true" rows="15" style="text-align: center" rowsPerPageTemplate="15,30,50" 
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords}" resizableColumns="true" 
+                         value="#{fichasReutilizables.fichasLazy}" var="f" emptyMessage="No se encontró Fichas" filterEvent="enter">
+                <p:column headerText="No Ficha" filterBy="#{f.numFicha}" sortBy="#{f.numFicha}" width="150" filterStyle="width: 95%">
+                    <h:outputText  value="#{f.numFicha}"/>
+                </p:column>
+                <p:column headerText="Edit." width="30">
+                    <p:commandLink actionListener="#{fichasReutilizables.redirectEditarFicha(f)}">
+                        <p:graphicImage value="/resources/icons/edit.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>
+                <p:column headerText="Sel." width="30">
+                    <p:commandLink actionListener="#{fichasReutilizables.showDlgFichaSelect(f)}">
+                        <p:graphicImage value="/resources/icons/abrir.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>
+                <p:column headerText="Doc." width="30">
+                    <p:commandLink actionListener="#{fichasReutilizables.imprimirFichaRegistral(f)}" title="#{f.numFicha}">
+                        <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>
+                <p:column headerText="Fecha de Creación" sortBy="#{f.fechaApe}" width="100">
+                    <h:outputText value="#{f.fechaApe}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Clave Catastral" filterBy="#{f.claveCatastral}" width="200" filterStyle="width: 95%">
+                    <h:outputText  value="#{f.claveCatastral}"/>
+                </p:column>
+                <p:column headerText="Parroquia" filterBy="#{f.parroquia.descripcion}" filterStyle="width: 95%">
+                    <h:outputText value="#{f.parroquia.descripcion}"/>
+                </p:column>
+                <p:column headerText="Estado" width="80">
+                    <h:outputText value="#{f.estado.valor}"/>
+                </p:column>
+                <p:column headerText="Informacion" width="80">
+                    <h:outputText value="#{f.informacionFicha.valor}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgInformacionFicha" header="Informacion: Ficha Registral" widgetVar="dlgFichaSelect" 
+                  resizable="false" modal="true" closeOnEscape="true" height="450" width="760">
+            <h:form id="formFichaSelect">
+                <h:panelGrid style="font-weight: bolder;margin: 0 auto;" columns="6">
+                    Nº FICHA:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.numFicha}" readonly="true"/>
+                    Parroquia:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.parroquia.descripcion}" readonly="true"/>
+                    Sector:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.sector}" readonly="true"/>
+                    Cod.Predial:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.claveCatastral}" readonly="true"/>
+                    Cod.Anterior:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.claveCatastralOld}" readonly="true"/>
+                    Direccion:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.direccionBien}" readonly="true"/>
+                    Área Terreno:
+                    <p:inputNumber value="#{fichasReutilizables.fichaSel.areaTerreno}" decimalPlaces="4" readonly="true"/>
+                    Área Constr.:
+                    <p:inputNumber value="#{fichasReutilizables.fichaSel.areaConstruccion}" decimalPlaces="4" readonly="true"/>
+                    Un.Medida:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.unidadMedida.valor}" readonly="true"/>
+                    Alícuota T.:
+                    <p:inputNumber value="#{fichasReutilizables.fichaSel.alicuotaEscritura}" decimalPlaces="4" readonly="true"/>
+                    Alícuota C.:
+                    <p:inputNumber value="#{fichasReutilizables.fichaSel.alicuotaConstruccion}" decimalPlaces="4" readonly="true"/>
+                    Tipo Bien:
+                    <p:inputText value="#{fichasReutilizables.fichaSel.uafTipoBien.descripcion}" readonly="true"/>
+                </h:panelGrid>
+                <p:tabView>
+                    <p:tab title="Linderos Registrales">
+                        <p:panel header="Descripcion del Bien">
+                            <p:inputTextarea value="#{fichasReutilizables.fichaSel.descripcionBien}" style="width: 100%;" rows="2" readonly="true"
+                                             autoResize="false"/>
+                        </p:panel>
+                        <p:panel header="Linderos Registrales">
+                            <p:inputTextarea value="#{fichasReutilizables.fichaSel.linderos}" style="width: 100%;" rows="6" readonly="true"
+                                             autoResize="false"/>
+                        </p:panel>
+                    </p:tab>
+                    <p:tab title="Movimientos Registrales">
+                        <p:dataTable id="dtMov" value="#{fichasReutilizables.fichaSel.regMovimientoFichaCollection}" scrollable="true" 
+                                     scrollHeight="240" var="mov" rowIndexVar="rowIndex" reflow="true" style="text-align: center;" >
+                            <p:column headerText="No" width="30">
+                                #{rowIndex + 1}
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{mov.movimiento.libro.nombre}" />
+                            </p:column>
+                            <p:column headerText="Acto">
+                                <p:outputLabel value="#{mov.movimiento.acto.nombre}" />
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80">
+                                <p:outputLabel value="#{mov.movimiento.numRepertorio}" />
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="80">
+                                <p:outputLabel value="#{mov.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fec.Insc." width="80">
+                                <p:outputLabel value="#{mov.movimiento.fechaInscripcion}" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Propietarios">
+                        <p:dataTable value="#{fichasReutilizables.fichaSel.regFichaPropietariosCollection}" var="pro" rowIndexVar="rowIndexProp" 
+                                     resizableColumns="true" style="text-align: center" scrollable="true" scrollHeight="240">
+                            <p:column headerText="No" width="30">
+                                #{rowIndexProp+1}
+                            </p:column>
+                            <p:column headerText="CI/RUC" width="150">
+                                <p:outputLabel value="#{pro.propietario.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" >
+                                <p:outputLabel value="#{pro.propietario.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

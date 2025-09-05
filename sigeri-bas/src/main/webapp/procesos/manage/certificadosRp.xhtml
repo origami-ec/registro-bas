@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Certificados Emitidos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>CERTIFICADOS GENERADOS</h1></center>
+            <p:dataTable paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" style="text-align: center;"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{certificadosRp.certificados}" var="f" filterEvent="enter" resizableColumns="true">
+                <p:column headerText="No Certificado" filterBy="#{f.numCertificado}" sortBy="#{f.numCertificado}" 
+                          width="150" filterStyle="width: 95%">
+                    <h:outputText  value="#{f.numCertificado}"/>
+                </p:column>
+                <p:column headerText="No Ficha" filterBy="#{f.ficha.numFicha}" width="150" filterStyle="width: 95%">
+                    <h:outputText  value="#{f.ficha.numFicha}"/>
+                </p:column>
+                <p:column headerText="No Tramite" filterBy="#{f.numTramite}" sortBy="#{f.numTramite}" width="150" 
+                          filterStyle="width: 95%">
+                    <h:outputText  value="#{f.numTramite}"/>
+                </p:column>
+                <p:column headerText="Fecha de Emision" sortBy="#{f.fechaEmision}">
+                    <h:outputText value="#{f.fechaEmision}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Tipo Certificado">
+                    <h:outputText value="#{f.claseCertificado}"/>
+                </p:column>
+                <p:column headerText="Acciones" width="140">
+                    <p:commandButton icon="pi pi-file-pdf" actionListener="#{certificadosRp.generarCertificadoBorrador(f)}" title="Imprimir Certificado"/>
+                    <p:spacer width="10" height="1"/>
+                    <p:commandButton icon="pi pi-pencil" actionListener="#{certificadosRp.editCertificado(f)}" title="Editar Certificado"/>
+                    <p:spacer width="10" height="1"/>
+                    <p:commandButton icon="pi pi-user-edit" actionListener="#{certificadosRp.firmarDocumentoCertificado(f)}" 
+                                     title="Firmar Certificado" rendered="#{certificadosRp.habilitarFirma}" />
+                    <p:spacer width="10" height="1"/>
+                    <p:commandButton icon="pi pi-check-square" actionListener="#{certificadosRp.showDlgEditar(f)}" title="Habilitar Edición" 
+                                     rendered="#{certificadosRp.habilitarEdicion}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgViewContent" widgetVar="dlgViewCert" header="Visualizar Certificado" resizable="false" position="center">
+            <h:form id="formView">
+                <p:panelGrid styleClass="noBorder" columns="6">
+                    No Certificado:
+                    <p:inputText value="#{certificadosRp.cert.numCertificado}" readonly="true"/>
+                    No Tramite:
+                    <p:inputText value="#{certificadosRp.cert.numTramite}" readonly="true"/>
+                    Fecha de Emision:
+                    <p:inputText value="#{certificadosRp.cert.fechaEmision}" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="1">
+                    <p:inputTextarea value="#{certificadosRp.cert.observacion}" cols="100" rows="10" autoResize="false" 
+                                     style="color: #000000;font-size: 12px;" readonly="true"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="dlgHabilitarEdicion" widgetVar="dlgHabilitarEdicion" header="Habilitar Edición de Certificado"
+                  closeOnEscape="true" closable="true" resizable="false" modal="true" position="center">
+            <h:form id="formHabilitar">
+                <h:panelGrid columns="3" style="font-weight: bolder">
+                    <h:panelGroup>
+                        <p:outputLabel value="No Certificado:" /> <br></br>
+                        <p:inputText value="#{certificadosRp.cert.numCertificado}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="No Tramite:" /> <br></br>
+                        <p:inputText value="#{certificadosRp.cert.numTramite}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value=" Fecha de Emision:" /> <br></br>
+                        <p:inputText value="#{certificadosRp.cert.fechaEmision}" readonly="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="font-weight: bolder;width: 100%;">
+                    <h:panelGroup>
+                        <p:outputLabel for="observacion" value="Observación" /> <br></br>
+                        <p:inputTextarea id="observacion" required="true" value="#{certificadosRp.observacion}" rows="5"
+                                         autoResize="false" style="width: 100%;" maxlength="900"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <p:commandButton icon="pi pi-check" value="Aceptar" actionListener="#{certificadosRp.aceptarEdicion()}" update="formHabilitar"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgCertificado" header="Seleccionar" modal="true" resizable="false" position="center" width="350">
+            <h:form id="formCertf">
+                <h:panelGrid columns="1" style="text-align: center;width: 100%;font-weight: bolder;font-size: 14px;">
+                    Tipo de Certificación:
+                    <p:selectOneMenu  value="#{certificadosRp.tipo}" converter="entityConverter">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                        <f:selectItems value="#{certificadosRp.tiposCertificados}" var="tip" 
+                                       itemLabel="#{tip.valor}" itemValue="#{tip}"/> 
+                    </p:selectOneMenu>
+                    <p:spacer height="1" width="10"/>
+                    <p:commandButton value="Aceptar" icon="pi pi-thumbs-up" 
+                                     actionListener="#{certificadosRp.reditectCertificado()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

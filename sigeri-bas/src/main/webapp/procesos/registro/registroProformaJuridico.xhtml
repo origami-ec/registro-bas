@@ -1,0 +1,448 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                >
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h1>
+                <center><p:outputLabel value="#{registroProformaJuridico.taskDataByTaskID.name}" style="text-transform: uppercase;"/></center>
+                <center><p:outputLabel value="Nº DE TRAMITE: #{registroProformaJuridico.ht.numTramite}" style="text-transform: uppercase;color: #005f9c;"/></center>
+            </h1>
+            <p:accordionPanel id="accPanelRP">
+                <p:tab title="DATOS DEL CONTRIBUYENTE" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:panel id="pnlSolicitante" header="SOLICITANTE" style="width: 49%; float: left;">
+                        <p:panelGrid styleClass="noBorder" columns="2">
+                            BUSCAR:
+                            <p:commandButton value="Buscar Solicitante" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{registroProformaJuridico.showDlg('/resources/dialog/dlglazyente')}">
+                                <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectSolicitante}" update="pnlSolicitante"/>
+                            </p:commandButton>
+                            CI/RUC:
+                            <p:inputText value="#{registroProformaJuridico.solicitante.ciRuc}" readonly="true" size="60"/>
+                            NOMBRES:
+                            <p:inputText value="#{registroProformaJuridico.solicitante.nombreCompleto}" readonly="true" size="60" style="text-transform: uppercase;"/>
+                            DIRECCION:
+                            <p:inputText value="#{registroProformaJuridico.solicitante.direccion}" size="60" style="text-transform: uppercase;"/>
+                            CORREO
+                            <p:inputText value="#{registroProformaJuridico.solicitante.correo1}" size="60"/>
+                            TELEFONO:
+                            <p:inputText value="#{registroProformaJuridico.solicitante.telefono1}"  size="60"/>
+                            <!--                            Actualizar Datos
+                                                        <p:commandLink  style="text-align: right" actionListener="#{registroProformaJuridico.actualizarDatosSolicitante()}"  update="pnlSolicitante">
+                                                            <p:graphicImage value="/resources/icons/refres.png" style="text-align: right" height="16" />
+                                                        </p:commandLink>-->
+                        </p:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandLink  title="Actualizar Datos Solicitante" actionListener="#{registroProformaJuridico.actualizarDatosSolicitante()}" update="pnlSolicitante">
+                                <p:graphicImage value="/resources/icons/refres.png" style="text-align: right" height="30"/>
+                            </p:commandLink>
+                        </center>
+                    </p:panel>
+                    <p:panel id="pnlBeneficiario" header="BENEFICIARIO" style="width: 49%; float: right;">
+                        <p:panelGrid styleClass="noBorder" columns="2">
+                            BUSCAR:
+                            <h:panelGrid  columns="3">
+                                <p:commandButton value="Buscar Beneficiario" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{registroProformaJuridico.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectBeneficiario}" update="pnlBeneficiario"/>
+                                </p:commandButton>    
+                                <p:spacer width="10" />
+                                <p:selectBooleanCheckbox value="#{registroProformaJuridico.beneficiarioEsSolicitante}" >
+                                    <p:ajax update="pnlBeneficiario" listener="#{registroProformaJuridico.actualizarBeneficiarioEsSolicitante()}" />
+                                </p:selectBooleanCheckbox>
+                            </h:panelGrid>
+
+                            CI/RUC:
+                            <p:inputText value="#{registroProformaJuridico.beneficiario.ciRuc}" readonly="true" size="60"/>
+                            NOMBRES:
+                            <p:inputText value="#{registroProformaJuridico.beneficiario.nombreCompleto}" readonly="true" size="60" style="text-transform: uppercase;"/>
+                            DIRECCION:
+                            <p:inputText value="#{registroProformaJuridico.beneficiario.direccion}" size="60" style="text-transform: uppercase;"/>
+                            CORREO
+                            <p:inputText value="#{registroProformaJuridico.beneficiario.correo1}" size="60"/>
+                            TELEFONO:
+                            <p:inputText value="#{registroProformaJuridico.beneficiario.telefono1}" size="60"/>
+                            <!--                            Actualizar Datos
+                                                        <p:panelGrid columns="1" style="float: center;">
+                                                            
+                                                        </p:panelGrid>-->
+
+                        </p:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandLink title="Actualizar Datos Beneficiario" actionListener="#{registroProformaJuridico.actualizarDatosBeneficiario()}" update="pnlBeneficiario">
+                                <p:graphicImage value="/resources/icons/refres.png" style="text-align: right" height="30"/>
+                            </p:commandLink>
+                        </center>
+                    </p:panel>
+                    <p:panel id="pnlUnidadJudicial" header="Unidad Judicial" style="width: 49%; float: left;">
+                        <h:panelGrid styleClass="noBorder" columns="3">
+                            <h:panelGroup>
+                                <p:outputLabel value="Abrv. " style="font-weight: bold" /><br></br>    
+                                <p:inputText value="#{registroProformaJuridico.enju.abreviatura}"  size="60"/>
+                            </h:panelGroup>      
+                            <p:spacer width="20" />
+                            <h:panelGroup>
+                                <p:outputLabel value="Nombre: " style="font-weight: bold" /><br></br>    
+                                <p:inputText value="#{registroProformaJuridico.enju.nombre}"  size="50"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                    </p:panel>
+                </p:tab>
+                <p:tab title="DATOS DE ESCRITURA" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;" rendered="false">
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                Canton: 
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu  value="#{registroProformaJuridico.liquidacion.domicilio}" converter="entityConverter">  
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                                    <f:selectItems value="#{registroProformaJuridico.domicilios}" var="can" itemLabel="#{can.nombre}" itemValue="#{can}"/>  
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                Orden Judicial:
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu  value="#{registroProformaJuridico.liquidacion.ordJud}">  
+                                    <f:selectItem itemLabel="SI" itemValue="#{true}"/>  
+                                    <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                Fecha de Celebracion: 
+                            </p:column>
+                            <p:column>
+                                <p:calendar value="#{registroProformaJuridico.liquidacion.fechaOto}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" maxdate="sysdate"/>
+                            </p:column>
+                            <p:column>
+                                Fech.Resolucion:
+                            </p:column>
+                            <p:column>
+                                <p:calendar value="#{registroProformaJuridico.liquidacion.fechaResolucion}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" maxdate="sysdate"/>
+                            </p:column>
+                            <p:column>
+                                N° de Juicio:
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:inputText value="#{registroProformaJuridico.liquidacion.escritJuicProvResolucion}" style="width: 100%"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Notaria/Juzgado: 
+                            </p:column>
+                            <p:column colspan="5">
+                                <p:inputText id="enteJudnombabrev" value="#{registroProformaJuridico.enju.abreviatura}" style="width: 75px" placeholder="Abreviatura">
+                                    <p:ajax event="change" listener="#{registroProformaJuridico.buscarNotariaAbrev()}" update="enteJudnombabrev, enteJudnomb"/>
+                                </p:inputText>
+                                <p:spacer width="20" height="1"/>
+                                <p:inputText id="enteJudnomb" value="#{registroProformaJuridico.enju.nombre}" style="width: 300px" readonly="true"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton value="Buscar Not/Juzg" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{registroProformaJuridico.showDlg('/resources/dialog/dlglazynotarias')}">
+                                    <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectObjectJudicial}" update="enteJudnombabrev, enteJudnomb"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab title="CONTRATOS DEL TRAMITE" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGroup id="pnlActos" style="width: 45%;float: left;">
+                        <p:panelGrid styleClass="noBorder" columns="3" rendered="false">
+                            Contrato:
+                            <p:inputText value="#{registroProformaJuridico.nombre}" size="40" onkeypress="if (event.keyCode == 13) {
+                                        return false;
+                                    }">
+                                <!--                                      <p:ajax event="keypress"  listener="# {registroProformaJuridico.buscarActos()}" update="dtActos" />-->
+                            </p:inputText>
+                            <p:commandButton value="Buscar" icon="ui-icon-search" styleClass="btnStyle" update="dtActos" 
+                                             actionListener="#{registroProformaJuridico.buscarActos()}"/>
+                        </p:panelGrid>
+                        <p:dataTable id="dtActos" var="ac" value="#{registroProformaJuridico.actos}" selectionMode="single" selection="#{registroProformaJuridico.acto}"
+                                     rowKey="#{ac.id}" emptyMessage="Sin elementos..." scrollable="true" scrollHeight="520" filterEvent="enter">
+                            <p:ajax event="rowSelect" listener="#{registroProformaJuridico.onRowSelect()}"/>
+                            <f:facet name="header">
+                                <h:outputText value="ACTOS O CONTRATOS" />
+                            </f:facet>
+                            <p:column headerText="LIBRO" filterBy="#{ac.libro.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{ac.libro.nombre}"/>
+                            </p:column>
+                            <p:column headerText="NOMBRE" filterBy="#{ac.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{ac.nombre}"/>
+                            </p:column>
+                            <p:column headerText="VALOR" width="150">
+                                <h:outputText value="#{registroProformaJuridico.valorArancel(ac)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                    <h:panelGroup id="pnlValores" style="width: 55%;float: right">
+                        <p:panel id="pnlContratos">
+                            <p:dataTable id="dtSubTotal" value="#{registroProformaJuridico.actosPorPagar}" var="det" 
+                                         rowIndexVar="rowIndex" resizableColumns="true"
+                                         emptyMessage="Sin Contratos" scrollable="true" scrollHeight="200">
+                                <f:facet name="header">CONTRATOS SELECCIONADOS</f:facet>
+                                <p:column headerText="**" width="20">
+                                    <p:outputLabel value="#{rowIndex + 1}"/>
+                                </p:column>
+                                <p:column headerText="Acto" footerText="SUBTOTALES:">
+                                    <p:outputLabel id="actoContra" value="#{det.acto.nombre}"/>
+                                    <p:tooltip for="actoContra" value="#{det.acto.nombre}" position="top" />
+                                </p:column>
+                                <p:column headerText="Valor" width="65" footerText="#{registroProformaJuridico.subTotal}"
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorUnitario}" />
+                                </p:column>
+                                <p:column headerText="Cant." width="65" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.cantidad}" />
+                                </p:column>
+                                <p:column headerText="Desc." width="65" footerText="#{registroProformaJuridico.descPorLey}"
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.descuento}" />
+                                </p:column>
+                                <p:column headerText="Total" width="65" footerText="#{registroProformaJuridico.subTotalDesc}"
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorTotal}" />
+                                </p:column>
+                                <p:column headerText="Edit" width="20">
+                                    <p:commandLink actionListener="#{registroProformaJuridico.showDlgEditActo(rowIndex)}">
+                                        <p:graphicImage value="/resources/icons/edit.png" height="16"/>
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column headerText="Del" width="20" >
+                                    <p:commandLink actionListener="#{registroProformaJuridico.eliminarDetalle(rowIndex)}" update="dtSubTotal">
+                                        <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                            <br/>
+                            <div align="right">
+                                <p:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder;text-align: right;">
+                                    <p:outputLabel value="Desc.Ley: $"/>
+                                    <p:inputText value="#{registroProformaJuridico.descPorLey}" readonly="true" style="color: red;"/>
+                                    <p:outputLabel value="SUBTOTAL: $"/>
+                                    <p:inputText value="#{registroProformaJuridico.subTotal}" readonly="true"/>
+                                    <p:outputLabel value="TOTAL: $"/>
+                                    <p:inputText value="#{registroProformaJuridico.totalPagar}" readonly="true"/>
+                                </p:panelGrid>
+                            </div>
+                        </p:panel>
+                        <p:panel id="pnlUsoDoc">
+                            <p:panelGrid style="font-weight: bolder;margin: 0 auto;">
+                                <p:row>
+                                    <p:column>Oficio/Memo:</p:column>
+                                    <p:column><p:inputText value="#{registroProformaJuridico.liquidacion.oficioMemoReferencia}" size="30"/></p:column>
+                                    <p:column>Tramite por Reingreso:</p:column>
+                                    <p:column><p:selectBooleanCheckbox value="#{registroProformaJuridico.liquidacion.reingreso}"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>Uso Documento:</p:column>
+                                    <p:column>
+                                        <p:selectOneMenu value="#{registroProformaJuridico.usoDocumento}" converter="entityConverter" filter="true">  
+                                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                            <f:selectItems value="#{registroProformaJuridico.usosDocumentos}" var="it" itemLabel="#{it.valor}" itemValue="#{it}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column colspan="2">
+                                        <p:commandButton value="Nuevo" icon="ui-icon-plus" actionListener="#{registroProformaJuridico.showDlgUsoDoc()}"/>
+                                        <p:commandButton value="Editar" icon="ui-icon-pencil" actionListener="#{registroProformaJuridico.showDlgEditUsoDoc()}"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                            <center>
+                                <p:commandButton value="Generar Proforma" icon="ui-icon-disk" styleClass="btnStyle" 
+                                                 actionListener="#{registroProformaJuridico.guardarLiquidacion()}" disabled="#{registroProformaJuridico.block}">
+                                    <p:confirm header="Confirmación" message="Estas Seguro?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                                <p:confirmDialog global="true">
+                                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                    <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                </p:confirmDialog>
+                            </center>
+                        </p:panel>
+                    </h:panelGroup>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog id="dglIngresoCuantia" widgetVar="dlgCuantia" header="Información del Contrato" resizable="false" 
+                  modal="true" width="900" closable="true" closeOnEscape="true" >
+            <h:form id="formCuantia">
+                <p:panel header="#{registroProformaJuridico.rld.acto.nameTruncate2}">
+                    <p:panelGrid styleClass="noBorder" columns="8" style="margin: 0 auto;">
+                        <p:outputLabel value="Avalúo: $" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{registroProformaJuridico.avaluo}" decimalPlaces="2" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Cuantía: $" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{registroProformaJuridico.cuantia}" decimalPlaces="2" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Nro. Intervinientes: "/>
+                        <p:inputText value="#{registroProformaJuridico.rld.cantidadIntervinientes}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="Nro. Certificados: " rendered="#{registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:inputText value="#{registroProformaJuridico.rld.cantidad}" rendered="#{registroProformaJuridico.rld.acto.solvencia}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        Reingreso:
+                        <p:selectBooleanCheckbox value="#{registroProformaJuridico.rld.reingreso}"/>
+                        <p:outputLabel value="No de Lotes:" rendered="#{registroProformaJuridico.tipocalculo eq 1}"/>
+                        <p:inputNumber value="#{registroProformaJuridico.rld.numPredio}" decimalPlaces="0" rendered="#{registroProformaJuridico.tipocalculo eq 1}"/>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <h:panelGrid columns="5">
+                            <h:panelGroup>
+                                <p:outputLabel value="Agregar Solicitante" style="font-weight: bold" /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox id="agregaSolicitante" value="#{registroProformaJuridico.agregaSolicitante}" >
+                                        <p:ajax update="dtIntervinientes, formCuantia:agregaSolicitante" 
+                                                listener="#{registroProformaJuridico.agregarSolicitanteInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+                            <h:panelGroup>
+                                <p:outputLabel value="Agregar Beneficiario" style="font-weight: bold"  /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox id="agregaBeneficiario" value="#{registroProformaJuridico.agregaBeneficiario}" >
+                                        <p:ajax update="dtIntervinientes, formCuantia:agregaBeneficiario" 
+                                                listener="#{registroProformaJuridico.agregarBeneficiarioInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+                            <h:panelGroup>
+                                <p:commandButton value="Agregar Intervieniente" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{registroProformaJuridico.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectInterv}" update="dtIntervinientes"/>
+                                </p:commandButton>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </div>
+                    <br></br>
+                    <p:dataTable id="dtIntervinientes" value="#{registroProformaJuridico.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140" rendered="#{!registroProformaJuridico.rld.acto.solvencia}">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Pap." width="40" rendered="#{!registroProformaJuridico.rld.acto.solvencia}">
+                            <p:commandLink actionListener="#{registroProformaJuridico.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:graphicImage value="/resources/icons/agregar.png" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectObjectPapel}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descuento" width="85">
+                            <p:outputLabel value="#{inter.exoneracion.porcentaje}"/>
+                        </p:column>
+                        <p:column headerText="Desc." width="40">
+                            <p:commandLink actionListener="#{registroProformaJuridico.showDlgPapel('/resources/dialog/dlglazyexoneracion', index)}">
+                                <p:graphicImage value="/resources/icons/descuento.jpg" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectObjectExo}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink actionListener="#{registroProformaJuridico.eliminarInterviniente(index)}" update="dtIntervinientes">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{registroProformaJuridico.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglEditCuantia" widgetVar="dglEditCuantia" header="Información del Contrato" 
+                  resizable="false" modal="true" width="900" closable="false" closeOnEscape="false">
+            <h:form id="formEditCuantia">
+                <p:panel header="#{registroProformaJuridico.rld.acto.nameTruncate2}">
+                    <p:panelGrid styleClass="noBorder" columns="8" style="margin: 0 auto;">
+                        <p:outputLabel value="Avalúo: $" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{registroProformaJuridico.avaluo}" decimalPlaces="2" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Cuantía: $" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{registroProformaJuridico.cuantia}" decimalPlaces="2" rendered="#{!registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Nro. Intervinientes: "/>
+                        <p:inputText value="#{registroProformaJuridico.rld.cantidadIntervinientes}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="Nro. Certificados: " rendered="#{registroProformaJuridico.rld.acto.solvencia}"/>
+                        <p:inputText value="#{registroProformaJuridico.rld.cantidad}" rendered="#{registroProformaJuridico.rld.acto.solvencia}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        Reingreso:
+                        <p:selectBooleanCheckbox value="#{registroProformaJuridico.rld.reingreso}"/>
+                        <p:outputLabel value="No de Lotes:" rendered="#{registroProformaJuridico.tipocalculo eq 1}"/>
+                        <p:inputNumber value="#{registroProformaJuridico.rld.numPredio}" decimalPlaces="0" rendered="#{registroProformaJuridico.tipocalculo eq 1}"/>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <p:commandButton value="Agregar Intervieniente" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{registroProformaJuridico.showDlg('/resources/dialog/dlglazyente')}">
+                            <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectInterv}" update="dtEditIntrv"/>
+                        </p:commandButton>
+                    </div>
+                    <p:dataTable id="dtEditIntrv" value="#{registroProformaJuridico.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Pap." width="40">
+                            <p:commandLink actionListener="#{registroProformaJuridico.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:graphicImage value="/resources/icons/agregar.png" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectObjectPapel}" update="dtEditIntrv"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descuento" width="85">
+                            <p:outputLabel value="#{inter.exoneracion.porcentaje}"/>
+                        </p:column>
+                        <p:column headerText="Desc." width="40">
+                            <p:commandLink actionListener="#{registroProformaJuridico.showDlgPapel('/resources/dialog/dlglazyexoneracion', index)}">
+                                <p:graphicImage value="/resources/icons/descuento.jpg" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{registroProformaJuridico.selectObjectExo}" update="dtEditIntrv"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink actionListener="#{registroProformaJuridico.eliminarInterviniente(index)}" update="dtEditIntrv">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{registroProformaJuridico.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglUsoDoc" widgetVar="usoDocumento" header="Uso Documento" resizable="false" modal="true">
+            <h:form id="formUsoDoc">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nombre:" style="font-weight: bolder;font-size: 12px"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{registroProformaJuridico.nuevoUsoDoc.valor}" size="40" maxlength="50"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{registroProformaJuridico.guardarUsoDoc()}"/></center>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

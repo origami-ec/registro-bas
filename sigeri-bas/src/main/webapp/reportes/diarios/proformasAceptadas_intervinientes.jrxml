@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proformasAceptadas_intervinientes" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a9c6943c-9e14-4692-850f-2fb9a6e4bb65">
+	<property name="ireport.zoom" value="2.253944402704735"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[SELECT CASE en.es_persona WHEN TRUE THEN coalesce(en.apellidos,'')||' '||coalesce(en.nombres,'') ELSE en.razon_social END AS parte, pa.papel
+FROM flow.regp_intervinientes rin
+left join app.cat_ente en on en.id = rin.ente
+left join app.reg_papel pa on pa.id = rin.papel
+WHERE rin.liquidacion = $P{LIQUIDACION}]]>
+	</queryString>
+	<field name="parte" class="java.lang.String"/>
+	<field name="papel" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="518cf07d-9a5a-438c-b211-769ea7f0f56b" x="10" y="0" width="120" height="12" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{parte} + " - " + $F{papel}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8b0ba131-7803-4ed9-bca8-6cabd27e81fa" x="0" y="0" width="10" height="12"/>
+				<box leftPadding="3"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[*]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

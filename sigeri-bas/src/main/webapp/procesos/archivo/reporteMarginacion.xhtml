@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="content">
+        <h:form  id="formFolios">
+            <style>
+                #marginacion {
+                    position: absolute;
+                    /*top: 100%;*/
+                    margin: -50px auto;
+                    width: 100%;
+                    height: auto;
+                    transform: rotate(270deg);
+                    transform-origin: 0 0;
+                    text-align: start; 
+                }
+                .marginado {
+                    background-color: #ABEBC6 !important;
+                    color: #192a37 !important;
+                }
+                .marginadoMov {
+                    background-color: #D5F5E3 !important;
+                    color: #192a37 !important;
+                }
+            </style>
+            <center><h2>Reporte de marginaciones</h2></center>
+            <h:panelGrid columns="5" width="60%" style="margin: 0 auto;">
+                <co:inputSelect label="Inscriptor" value="#{reporteMarginacion.inscriptor}" catalogo="#{reporteMarginacion.inscriptores}" var="ins1" itemLabel="#{ins1.ente.nombres} - #{ins1.usuario}" itemValue="#{ins1}"/> 
+                <co:inputDate label="F. Inscripción Desde:" value="#{reporteMarginacion.inscripcionDesde}"  />
+                <co:inputDate label="F. Inscripción Hasta:" value="#{reporteMarginacion.inscripcionHasta}" /> 
+                <p:commandButton value="Consultar" actionListener="#{reporteMarginacion.consultar()}" icon="fa fa-search" styleClass="btnStyle" update="formFolios"/>
+                <p:commandButton value="Generar Reporte" actionListener="#{reporteMarginacion.generarReporte()}" icon="fa fa-file-pdf-o" styleClass="btnStyle" />
+            </h:panelGrid>
+            <p:dataTable id="dtRefMarginacion" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,40,100" rowIndexVar="index"
+                         value="#{reporteMarginacion.lazyReferencia}" var="mvrf1" emptyMessage="No se encontró ningún Item."
+                         style="text-align: center;" filterEvent="enter" paginatorAlwaysVisible="false" 
+                         >
+                <f:facet name="header">
+                    Movimientos Referencias
+                </f:facet>
+                <!--                <p:column headerText="***" style="width: 25px;">
+                                    <p:rowToggler   />
+                                </p:column>-->
+                <p:column headerText="No" style="width: 40px;">
+                    #{index+1} 
+                </p:column>
+                <p:column headerText="Contrato" >
+                    <h:outputText  value="#{mvrf1.movimiento1}"/>
+                </p:column>
+                <p:column headerText="Contrato" >
+                    <h:outputText  value="#{mvrf1.movimientoReferencia.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Repertorio" width="100">
+                    <h:outputText value="#{mvrf1.movimientoReferencia.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Fec.Repertorio" width="100">
+                    <h:outputText value="#{mvrf1.movimientoReferencia.fechaRepertorio}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Inscripcion" width="100" filterBy="#{mvrf1.movimientoReferencia.numInscripcion}">
+                    <h:outputText value="#{mvrf1.movimientoReferencia.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Fec.Inscripcion" width="100">
+                    <h:outputText value="#{mvrf1.movimientoReferencia.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+<!--                <p:column headerText="Opci." width="7%">
+                    <p:commandButton title="Marginar" icon="fa fa-save" actionListener="# {reporteMarginacion.dlfMarginacion(mvrf1.movimientoReferencia, null)}" />
+                </p:column>-->
+                <!--                <p:rowExpansion >
+                                    # {reporteMarginacion.getReferencias(folio.movimiento)}
+                                    <p:dataTable id="dtDetReferencias" reflow="true" paginator="true" rows="20" rowsPerPageTemplate="20,30,50,100" rowIndexVar="index"
+                                                 value="#{folios.regMovimientoReferenciaCollection}" var="ref1" emptyMessage="No se encontró ningún Item."
+                                                 style="text-align: center;" filterEvent="enter" resizableColumns="true" paginatorAlwaysVisible="false" 
+                                                 rowStyleClass="#{ref1.movimientoReferencia.marginado eq true? 'marginadoMov' : null}">
+                                                                <p:column headerText="Marginacion" >
+                                                                    <h:outputText value="# {ref1.movimientoReferencia.getDescripcionMarginacion(folio)}" />
+                                                                </p:column>
+                                        <p:column headerText="Contrato" width="20%" >
+                                            <h:outputText  value="#{ref1.movimientoReferencia.acto.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Repertorio" width="9%">
+                                            <h:outputText value="#{ref1.movimientoReferencia.numRepertorio}"/>
+                                        </p:column>
+                                        <p:column headerText="Inscripcion" width="9%">
+                                            <h:outputText value="#{ref1.movimientoReferencia.numInscripcion}"/>
+                                        </p:column>
+                                        <p:column headerText="Fec.Inscripcion" width="9%">
+                                            <h:outputText value="#{ref1.movimientoReferencia.fechaInscripcion}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Opci." width="7%">
+                                            <p:commandButton title="Marginar" icon="fa fa-save" actionListener="#{reporteMarginacion.dlfMarginacion(ref1.movimientoReferencia, folio)}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:rowExpansion>-->
+            </p:dataTable>
+
+        </h:form>
+
+        
+    </ui:define>
+</ui:composition>

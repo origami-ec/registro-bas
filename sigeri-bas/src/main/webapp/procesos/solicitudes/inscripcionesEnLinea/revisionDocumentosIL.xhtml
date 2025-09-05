@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h1><center>#{revisionSolicitudInscripcionMB.taskDataByTaskID.name}</center></h1>
+            <h:panelGrid  columns="4" style="font-size: 16px;font-weight: bolder;"> 
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                #{revisionSolicitudInscripcionMB.ht.numTramite}
+                <p:outputLabel value="Responsable:" style="font-weight: bolder;color: #005f9c"/>
+                #{revisionSolicitudInscripcionMB.taskDataByTaskID.assignee}
+            </h:panelGrid>
+            <br></br>
+
+            <p:tabView id="tabFormulario" >
+                <p:tab title="1. Datos  del Solicitante">
+                    <p:panelGrid id="pnlSolicitante" styleClass="ui-panelgrid-blank"   columns="2" layout="grid" >
+                        <h:panelGroup> 
+                            <p:panelGrid   columns="2" layout="grid" styleClass="ui-panelgrid-blank" >
+                                <h:panelGroup>
+                                    <p:outputLabel  value="Tipo Documento:"  /> <br/>
+                                    <p:inputText  value="CEDULA" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc eq 'C'}" readonly="true"/>
+                                    <p:inputText  value="RUC" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc eq 'J'}" readonly="true"/>
+                                    <p:inputText  value="PASAPORTE" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc eq 'P'}" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="cedRuc" value="Identificación:"  /> <br/>
+                                    <p:inputText id="cedRuc" value="#{revisionSolicitudInscripcionMB.solicitud.solCedula}" size="40"  required="true" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="nombres" value="Nombres:" rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc ne 'J'}"/>
+                                    <p:outputLabel for="nombres" value="Razón Social:" rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc eq 'J'}"/> <br/>
+                                    <p:inputText id="nombres" value="#{revisionSolicitudInscripcionMB.solicitud.solNombres}" size="40"   required="true" readonly="true" 
+                                                 style="text-transform: uppercase"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc ne 'J'}">
+                                    <p:outputLabel for="apellidos" value="Apellidos:"  /> <br/>
+                                    <p:inputText id="apellidos" value="#{revisionSolicitudInscripcionMB.solicitud.solApellidos}" size="40"  style="text-transform: uppercase" required="true" readonly="true"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup >
+                                    <p:outputLabel for="direccion" value="Dirección:"/> <br/>
+                                    <p:inputText id="direccion" value="#{revisionSolicitudInscripcionMB.solicitud.solProvincia}" size="40" style="text-transform: uppercase" required="true" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel value="Celular:"  /> <br/>
+                                    <p:inputText value="#{revisionSolicitudInscripcionMB.solicitud.solCelular}" size="40" required="true" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="telefono2" value="Convencional:"  /> <br/>
+                                    <p:inputText id="telefono2" value="#{revisionSolicitudInscripcionMB.solicitud.solConvencional}" maxlength="10" size="40" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel for="correo1" value="Correo:"  /> <br/>
+                                    <p:inputText id="correo1" value="#{revisionSolicitudInscripcionMB.solicitud.solCorreo}" size="40" required="true" readonly="true"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{revisionSolicitudInscripcionMB.solicitud.solTipoDoc ne 'J'}">
+                                    <p:outputLabel  value="Estado Civil:"  /> <br/>
+                                    <p:inputText  value="Soltero" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solEstadoCivil eq 'S'}" readonly="true"/>
+                                    <p:inputText  value="Casado" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solEstadoCivil eq 'C'}" readonly="true"/>
+                                    <p:inputText  value="Divorciado" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solEstadoCivil eq 'D'}" readonly="true"/>
+                                    <p:inputText  value="Unión Libre" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solEstadoCivil eq 'U'}" readonly="true"/>
+                                    <p:inputText  value="Viudo" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solEstadoCivil eq 'V'}" readonly="true"/>
+                                    <p:inputText  value="Célibe" size="40"  rendered="#{revisionSolicitudInscripcionMB.solicitud.solEstadoCivil eq 'E'}" readonly="true"/>
+                                    
+                                </h:panelGroup>
+                            </p:panelGrid>
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Actos a inscribir" style="font-weight: bolder"/> <br></br>
+                                <p:dataList id="dtActos"  styleClass="noBorders"  var="acto" value="#{revisionSolicitudInscripcionMB.actos}" rowIndexVar="index" >
+                                    <p:column headerText="Requisito">
+                                        <p:outputLabel value="#{acto.acto.nombre}"  />   
+                                    </p:column> 
+                                </p:dataList>
+                            </h:panelGroup> 
+                            <h:panelGroup>
+                                <p:outputLabel value="Observación a la Solicitud:"   style="font-weight: bolder"/> <br/>
+                                <p:inputTextarea value="#{revisionSolicitudInscripcionMB.solicitud.observacion}"
+                                                 readonly="true" style="text-transform: uppercase"
+                                                 cols="60" rows="5" />
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty revisionSolicitudInscripcionMB.solicitud.notificacion}">
+                                <p:textEditor id="notificacion" widgetVar="editor2"  readonly="true" value="#{revisionSolicitudInscripcionMB.solicitud.notificacion}"  
+                                              style="height: 100%; width: 95%" height="150" >
+                                    <f:facet name="toolbar">
+                                        <span class="ql-formats">
+
+                                        </span> 
+                                    </f:facet>
+                                </p:textEditor>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </p:panelGrid>
+
+
+                </p:tab>
+                <p:tab title="2. Datos para la factura ">
+                    <h:panelGrid id="pnlBeneficiario" columns="2" styleClass="ui-panelgrid-blank"
+                                 style="margin: 0 auto; font-weight: bolder">
+                        <h:panelGroup>
+                            <p:outputLabel for="benTipoDoc" value="Tipo Documento"  /> <br/>
+                            <p:selectOneMenu id="benTipoDoc" value="#{revisionSolicitudInscripcionMB.solicitud.benTipoDoc}" required="true" disabled="true">
+                                <f:selectItem itemLabel="Cédula" itemValue="N"/>
+                                <f:selectItem itemLabel="Jurídica" itemValue="J"/>
+                                <f:selectItem itemLabel="Pasaporte" itemValue="P"/>
+                                <p:ajax update="pnlBeneficiario"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="benDocumento" value="Identificación:" /> <br/>
+                            <p:inputText id="benDocumento" value="#{revisionSolicitudInscripcionMB.solicitud.benDocumento}" size="40" required="true" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="benNombres" value="Nombres:" /> <br/>
+                            <p:inputText id="benNombres" value="#{revisionSolicitudInscripcionMB.solicitud.benNombres}" size="40" required="true" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="benApellidos" value="Apellidos:" /> <br/>
+                            <p:inputText id="benApellidos" value="#{revisionSolicitudInscripcionMB.solicitud.benApellidos}" size="40" required="true" readonly="true" />
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <p:outputLabel for="benDireccion" value="Dirección:" /> <br/>
+                            <p:inputText id="benDireccion" value="#{revisionSolicitudInscripcionMB.solicitud.benDireccion}" size="40" required="true" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="benTelefono" value="Teléfono:" /> <br/>
+                            <p:inputText id="benTelefono" value="#{revisionSolicitudInscripcionMB.solicitud.benTelefono}" size="40" required="true" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="benCorreo" value="Correo:" /> <br/>
+                            <p:inputText id="benCorreo" value="#{revisionSolicitudInscripcionMB.solicitud.benCorreo}" size="40" required="true" readonly="true" />
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+
+                </p:tab>
+                <p:tab title="3. Requisitos">
+
+                    <p:dataTable id="dtRequisitos" var="req" value="#{revisionSolicitudInscripcionMB.requisitos}" rowIndexVar="index" >
+                        <f:facet name="header">
+                            <center>
+                                Requisitos
+                            </center>
+                        </f:facet>
+                        <p:column headerText="***" width="30">
+                            <center>
+                                <p:outputLabel value="#{index + 1}"  />   
+                            </center>
+                        </p:column> 
+                        <p:column headerText="Fecha" width="80">
+                            <center>
+                                <p:outputLabel value="#{req.fecha}"  />   
+                            </center>
+                        </p:column>
+                        <p:column headerText="Requisito">
+                            <p:outputLabel value="#{req.requisito.requisito}"  />   
+                        </p:column>
+
+                        <p:column headerText="Descargar" width="100">
+
+                            <p:commandLink actionListener="#{revisionSolicitudInscripcionMB.downLoadDocument(req.documento)}">
+                                <p:graphicImage value="/resources/icons/documento.png" height="20" width="20"/>   
+                            </p:commandLink>
+
+                        </p:column>
+                    </p:dataTable>
+
+                </p:tab>
+
+
+
+            </p:tabView>
+            <br/>
+            <br/>
+            <center>
+                <h:panelGrid id="pnlAprobacion" columns="3" style="font-size: 16px;" >
+                    <p:commandButton value="Aprobar" icon="ui-icon-check"  
+                                     actionListener="#{revisionSolicitudInscripcionMB.showDlgAprobado(true)}">
+                        <p:confirm header="Confirmación" message="Esta seguro de continuar conla GENERACIÓN DE LA PROFORMA?" ></p:confirm>
+                    </p:commandButton>
+                    <p:spacer width="10" />
+                    <p:commandButton value="Rechazar"  icon="fa fa-trash" 
+                                     actionListener="#{revisionSolicitudInscripcionMB.showDlgAprobado(false)}"
+                                     >
+                        <p:confirm header="Confirmación" message="Esta seguro de que desea rechazar esta solicitud?"></p:confirm>
+                    </p:commandButton>
+                </h:panelGrid>
+            </center>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+            </p:confirmDialog>     
+
+
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Notificar tramite" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <center>
+                    <p:outputLabel value="Ingrese una observación" style="font-weight: bolder;font-size: 16px; color: green"/>
+                </center>
+                <br></br>
+                <p:inputTextarea value="#{revisionSolicitudInscripcionMB.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="900"/>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Aceptar"   icon="ui-icon-check"
+                                     actionListener="#{revisionSolicitudInscripcionMB.completarTarea()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+
+    </ui:define>
+</ui:composition>

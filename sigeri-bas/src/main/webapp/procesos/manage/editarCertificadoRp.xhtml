@@ -1,0 +1,438 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Editar Certificado Nro. #{editarCertificadoRp.certificado.numCertificado}</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;text-transform: uppercase;">*** Trámite: #{editarCertificadoRp.certificado.numTramite} - Certificado #{editarCertificadoRp.certificado.numCertificado} ***</h3></center>
+
+            <!-- CERTIFICADO DE FICHA REGISTRAL / HISTORIA DE DOMINIO -->
+            <p:panel id="pnlCertificado" header="#{editarCertificadoRp.tt.detalle.acto.nombre}" rendered="#{editarCertificadoRp.render eq 1}">
+                <p:fieldset legend="INFORMACIÓN DE LA FICHA REGISTRAL" style="height: 770px;">
+                    <h:panelGrid style="width: 100%;">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Nº FICHA:" style="font-weight: bolder; font-size: 14px;"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:inputText value="#{editarCertificadoRp.numFicha}"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton value="Buscar Ficha" icon="pi pi-search" actionListener="#{editarCertificadoRp.buscarFichaRegistral()}"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Borrar Listas" icon="pi pi-trash" style="float: right;" 
+                                                 actionListener="#{editarCertificadoRp.borrarListas()}" update="mainForm:pnlCertificado">
+                                    <p:confirm header="Seguro de borrar todo?" message="Utilizar esta opción con cuidado." icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </h:panelGrid>
+                    <p:panel header="Linderos Registrales">
+                        **Nota: Solo modificar cuando no se pueden determinar los linderos.
+                        <p:inputTextarea value="#{editarCertificadoRp.certificado.linderosRegistrales}" style="width: 100%;" rows="6" autoResize="false"/>
+                    </p:panel>
+                    <p:dataTable id="dtPropS" value="#{editarCertificadoRp.propietarios}" var="props" scrollable="true" scrollHeight="100" 
+                                 rowIndexVar="indexP" emptyMessage="Sin Propietarios." resizableColumns="true">
+                        <f:facet name="header">Propietarios del Bien Inmueble</f:facet>
+                        <p:column headerText="No" width="20">
+                            #{indexP+1}
+                        </p:column>
+                        <p:column headerText="CI/RUC/PAS">
+                            <p:outputLabel value="#{props.documento}"/>
+                        </p:column>
+                        <p:column headerText="NOMBRES">
+                            <p:outputLabel value="#{props.nombres}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="20">
+                            <p:commandButton icon="pi pi-trash" title="Borrar" update="mainForm:pnlCertificado" actionListener="#{editarCertificadoRp.eliminarProp(indexP)}" >
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable id="dtHistoriaS" value="#{editarCertificadoRp.historia}" var="movs" scrollable="true" scrollHeight="200" 
+                                 rowIndexVar="index" emptyMessage="Sin Movimientos." resizableColumns="true">
+                        <f:facet name="header">Movimientos Registrales</f:facet>
+                        <p:column headerText="No" width="20">
+                            #{index+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{movs.movimiento.libro.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{movs.movimiento.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Observacion">
+                            <p:outputLabel id="obMov" value="#{movs.movimiento.observacion}"/>
+                            <p:tooltip for="obMov" value="#{movs.movimiento.observacion}" position="top" />
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80">
+                            <p:outputLabel value="#{movs.movimiento.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="80">
+                            <p:outputLabel value="#{movs.movimiento.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fech.Insc." width="80">
+                            <p:outputLabel value="#{movs.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Del." width="20">
+                            <p:commandButton icon="pi pi-trash" title="Borrar" update="mainForm:pnlCertificado" actionListener="#{editarCertificadoRp.eliminarMovimiento(index)}" >
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+                <p:fieldset legend="CONTENIDO DEL CERTIFICADO">
+                    <h:panelGrid columns="1">
+                        <p:outputLabel value="SOLVENCIA:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:selectOneRadio value="#{editarCertificadoRp.contenido}" layout="responsive" columns="1" converter="entityConverter">
+                            <f:selectItems value="#{editarCertificadoRp.contenidos}" var="con" itemLabel="#{con.valor}" itemValue="#{con}" />
+                            <p:ajax event="change" listener="#{editarCertificadoRp.updateSolvencia()}" update="pnlCertificado"/>
+                        </p:selectOneRadio>
+                        <p:inputTextarea id="textSolvencia" value="#{editarCertificadoRp.solvencia}"  rows="5" cols="100" autoResize="true" />
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" rendered="false">
+                        <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{editarCertificadoRp.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                        <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{editarCertificadoRp.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                    </h:panelGrid>
+                </p:fieldset><br/>
+                <center>
+                    <p:commandButton value="Guardar" actionListener="#{editarCertificadoRp.guardarCertificadoConficha()}" icon="pi pi-save"/>
+                </center>
+            </p:panel>
+
+            <!-- CERTIFICADO DE BIENES -->
+            <p:panel id="pnlGravamen" header="#{editarCertificadoRp.certificado.claseCertificado}" rendered="#{editarCertificadoRp.render eq 2}">
+                <center>
+                    <p:commandButton icon="pi pi-database" value="Buscar en Sistema"
+                                     actionListener="#{editarCertificadoRp.showDlg('/resources/dialog/dlglazymov')}">
+                        <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectMov}" update="pnlGravamen"/>
+                    </p:commandButton>
+                    <!--<p:spacer width="20" height="1"/>
+                    <p:commandButton icon="pi pi-file" value="Buscar en Documents"
+                                     actionListener="# {editarCertificadoRp.showDlgDocuments('/resources/dialog/dlglazydocuments')}">
+                        <p:ajax event="dialogReturn" listener="# {editarCertificadoRp.selectObjectMov}" update="pnlGravamen"/>
+                    </p:commandButton>-->
+                </center><br/>
+                <p:dataTable id="dtAntecendetes" value="#{editarCertificadoRp.historia}" var="movsr" scrollable="true" scrollHeight="200"
+                             rowIndexVar="indexR" emptyMessage="Sin Movimientos." resizableColumns="true">
+                    <f:facet name="header">Movimientos Registrales</f:facet>
+                    <p:column headerText="No" width="20">
+                        #{indexR+1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{movsr.movimiento.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{movsr.movimiento.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Observacion">
+                        <p:outputLabel id="obMovR" value="#{movsr.movimiento.observacion}"/>
+                        <p:tooltip for="obMovR" value="#{movsr.movimiento.observacion}" position="top" />
+                    </p:column>
+                    <p:column headerText="Repertorio" width="80">
+                        <p:outputLabel value="#{movsr.movimiento.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="80">
+                        <p:outputLabel value="#{movsr.movimiento.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fech.Insc." width="80">
+                        <p:outputLabel value="#{movsr.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Del." width="20">
+                        <p:commandButton icon="pi pi-trash" actionListener="#{editarCertificadoRp.eliminarMovimiento(indexR)}" update="mainForm:pnlGravamen">
+                            <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGrid columns="1">
+                    <p:spacer width="1" height="10"/>
+                    <p:outputLabel value="SOLVENCIA:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputTextarea value="#{editarCertificadoRp.certificado.observacion}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2" rendered="false">
+                    <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputText value="#{editarCertificadoRp.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                    <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputText value="#{editarCertificadoRp.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Guardar Certificado" actionListener="#{editarCertificadoRp.guardarCertificadoGravamen()}" icon="pi pi-save"/>
+                </center>
+            </p:panel>
+
+            <!-- CERTIFICACION GENERAL -->
+            <p:panel header="#{editarCertificadoRp.certificado.claseCertificado}" rendered="#{editarCertificadoRp.render eq 3}">
+                <h:panelGrid columns="2" style="font-weight: bolder;" columnClasses="ui-g-12 ui-md-4, ui-g-12 ui-md-8">
+                    TITULO DEL DOCUMENTO:
+                    <p:inputText value="#{editarCertificadoRp.certificado.descripcionBien}" size="60" style="text-transform: uppercase;" />
+                </h:panelGrid>
+                <!--<h:panelGrid columns="2" style="font-weight: bolder;" columnClasses="ui-g-12 ui-md-4, ui-g-12 ui-md-8">
+                    SOLICITANTE:
+                    <p:inputText value="# {editarCertificadoRp.certificado.nombreSolicitante}" size="60" style="text-transform: uppercase;"/>
+                    MOTIVO:
+                    <p:inputText value="# {editarCertificadoRp.certificado.usoDocumento}" size="60" style="text-transform: uppercase;"/>
+                </h:panelGrid>--> 
+                <h:panelGrid columns="1" style="font-weight: bolder;width: 80%;" columnClasses="ui-g-12 ui-md-4, ui-g-12 ui-md-8">
+                    CONTENIDO DE DOCUMENTO:
+                    <p:inputTextarea value="#{editarCertificadoRp.certificado.observacion}" rows="14" cols="130" scrollHeight="250" autoResize="false"/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar Certificado" actionListener="#{editarCertificadoRp.guardarCertificadoGeneral()}" icon="pi pi-save"/>
+                </center>
+            </p:panel>
+
+            <!-- COPIA DE RAZON DE INSCRIPCION -->
+            <p:panel id="pnlRazon" header="#{editarCertificadoRp.certificado.claseCertificado}" rendered="#{editarCertificadoRp.render eq 4}">
+                <center>
+                    <p:commandButton value="Agregar Inscripcion" icon="ui-icon-search" styleClass="btnStyle" 
+                                     actionListener="#{editarCertificadoRp.showDlgWith('/resources/dialog/dlglazymov')}">
+                        <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectMov}" update="pnlRazon"/>
+                    </p:commandButton>
+                </center>
+                <p:dataTable id="dtHistoriaC" value="#{editarCertificadoRp.historia}" var="movsr" scrollable="true" scrollHeight="200" 
+                             rowIndexVar="indexR" emptyMessage="Sin Movimientos." resizableColumns="true">
+                    <f:facet name="header">Movimientos Registrales</f:facet>
+                    <p:column headerText="No" width="20">
+                        #{indexR+1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{movsr.movimiento.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{movsr.movimiento.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Observacion">
+                        <p:outputLabel id="obMovR" value="#{movsr.movimiento.observacion}"/>
+                        <p:tooltip for="obMovR" value="#{movsr.movimiento.observacion}" position="top" />
+                    </p:column>
+                    <p:column headerText="Repertorio" width="80">
+                        <p:outputLabel value="#{movsr.movimiento.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="80">
+                        <p:outputLabel value="#{movsr.movimiento.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fech.Insc." width="80">
+                        <p:outputLabel value="#{movsr.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Del." width="20">
+                        <p:commandLink actionListener="#{editarCertificadoRp.eliminarMovimiento(indexR)}" update="mainForm:pnlRazon">
+                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                            <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGrid columns="1">
+                    <p:outputLabel value="INFORMACION ADICIONAL:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputTextarea value="#{editarCertificadoRp.certificado.observacion}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2" rendered="false" >
+                    <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputText value="#{editarCertificadoRp.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                    <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputText value="#{editarCertificadoRp.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Guardar Certificado" actionListener="#{editarCertificadoRp.guardarCertificadoRazon()}" icon="pi pi-save"/>
+                </center>
+            </p:panel>
+            <p:confirmDialog global="true">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog>
+
+        </h:form>
+
+        <p:dialog header="Movimientos Registrales" widgetVar="dlgMovimientos" modal="true" width="800">
+            <h:form id="frmMovs">
+                <h:panelGrid columns="2" style="width: 100%;">
+                    <p:outputLabel value="Ficha Registral Nº #{editarCertificadoRp.ficha.numFicha}" style="font-weight: bolder;font-size: 16px;"/>
+                    <p:commandButton value="Cargar Movimientos" actionListener="#{editarCertificadoRp.agregarAllMovs()}" 
+                                     style="float: right;" icon="pi pi-search"/>
+                </h:panelGrid>
+                <p:dataTable id="dtMov" value="#{editarCertificadoRp.movimientos}" scrollable="true" scrollHeight="300"
+                             var="mov" rowIndexVar="rowIndex" style="text-align: center;" resizableColumns="true"
+                             selection="#{editarCertificadoRp.temps}" rowKey="#{mov.id}">
+                    <p:column selectionMode="multiple" width="20"/>
+                    <p:column headerText="No" width="20">
+                        #{rowIndex + 1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{mov.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{mov.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Repertorio" width="70">
+                        <p:outputLabel value="#{mov.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="70" sortBy="#{mov.numInscripcion}">
+                        <p:outputLabel value="#{mov.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Insc." width="70" sortBy="#{mov.fechaInscripcion}">
+                        <p:outputLabel value="#{mov.fechaInscripcion}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Observacion" width="120">
+                        <p:outputLabel id="obMov" value="#{mov.observacion}"/>
+                        <p:tooltip for="obMov" value="#{mov.observacion}" position="top" />
+                    </p:column>
+                    <!--<p:column headerText="**" width="30">
+                        <p:commandLink actionListener="# {editarCertificadoRp.agregarHistoria(mov)}">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>-->
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Ingresar Antecedente" widgetVar="dlgAntecedente" resizable="false" modal="true" width="900" height="400">
+            <h:form id="formAntecedente">
+                <p:tabView id="tVdetalle">
+                    <p:tab title="Datos de la Inscripción">
+                        <h:panelGrid columns="3" style="font-weight: bolder;width: 100%;">
+                            <h:panelGroup layout="block">
+                                Nro Inscripción:<br/>
+                                <p:inputText value="#{editarCertificadoRp.movimiento.numInscripcion}" size="35" disabled="#{editarCertificadoRp.movimiento.id ne null}"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                Fecha Inscripción:<br/>
+                                <p:calendar value="#{editarCertificadoRp.movimiento.fechaInscripcion}" size="30" disabled="#{editarCertificadoRp.movimiento.id ne null}"
+                                            pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                Nro Repertorio:<br/>
+                                <p:inputText value="#{editarCertificadoRp.movimiento.numRepertorio}" size="35" disabled="#{editarCertificadoRp.movimiento.id ne null}"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                Nro de Tomo:<br/>
+                                <p:inputText value="#{editarCertificadoRp.movimiento.numTomo}" size="35" disabled="#{editarCertificadoRp.movimiento.id ne null}"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Libro:"/><br/>
+                                <p:selectOneMenu value="#{editarCertificadoRp.movimiento.libro}" disabled="#{editarCertificadoRp.movimiento.id ne null}" 
+                                                 converter="entityConverter" style="width: 250px;" var="nomlibref"
+                                                 filter="true" filterMatchMode="startsWith">
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                    <f:selectItems value="#{editarCertificadoRp.libros}" var="libref" itemValue="#{libref}" itemLabel="#{libref.nombre}" />
+                                    <p:column>
+                                        <f:facet name="header">Tipo</f:facet>
+                                        <h:outputText value="#{nomlibref.propiedad ? 'Propiedad' : 'Mercantil'}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">Nombre</f:facet>
+                                        <h:outputText value="#{nomlibref.nombre}"/>
+                                    </p:column>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Contrato:"/><br/>
+                                <p:inputText id="actonombref" value="#{editarCertificadoRp.movimiento.acto.nombre}" readonly="true" size="30"/>
+                                <p:commandButton icon="pi pi-search" actionListener="#{editarCertificadoRp.showDlg('/resources/dialog/dlglazyactos')}" 
+                                                 disabled="#{editarCertificadoRp.movimiento.id ne null}">
+                                    <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectActo}" update="actonombref"/>
+                                </p:commandButton>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" >
+                                <p:outputLabel value="Notaria/Juzgado:"/><br/>
+                                <p:inputText id="entejudref" value="#{editarCertificadoRp.movimiento.enteJudicial.nombre}" readonly="true" size="30" />
+                                <p:commandButton icon="pi pi-search" actionListener="#{editarCertificadoRp.showDlg('/resources/dialog/dlglazynotarias')}" 
+                                                 disabled="#{editarCertificadoRp.movimiento.id ne null}">
+                                    <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectJudicial}" update="entejudref"/>
+                                </p:commandButton>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" >
+                                <p:outputLabel value="Cantón Notaría:" /><br/>
+                                <p:selectOneMenu  value="#{editarCertificadoRp.movimiento.domicilio}" style="width: 250px;" disabled="#{editarCertificadoRp.movimiento.id ne null}"
+                                                  converter="entityConverter" filter="true" filterMatchMode="startsWith">
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                    <f:selectItems value="#{editarCertificadoRp.domicilios}" var="canref" itemLabel="#{canref.nombre}" itemValue="#{canref}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" >
+                                Fecha de Escritura:<br/>
+                                <p:calendar value="#{editarCertificadoRp.movimiento.fechaOto}" size="35" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" 
+                                            disabled="#{editarCertificadoRp.movimiento.id ne null}"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Intervinientes">
+                        <h:panelGrid columns="1" style="width: 100%;">
+                            <h:panelGroup style="float: right;">
+                                <p:commandButton icon="pi pi-search" value="Buscar Interviniente" disabled="#{editarCertificadoRp.movimiento.id ne null}" 
+                                                 actionListener="#{editarCertificadoRp.showDlg('/resources/dialog/dlglazyinterv')}">
+                                    <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectInterviniente}" update="dtInterviniente"/>
+                                </p:commandButton>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton icon="pi pi-user-plus" value="Nuevo Interviniente" disabled="#{editarCertificadoRp.movimiento.id ne null}" 
+                                                 actionListener="#{editarCertificadoRp.showDlgNewPersona()}" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <p:dataTable id="dtInterviniente" emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" 
+                                     resizableColumns="true" value="#{editarCertificadoRp.movimiento.regMovimientoClienteCollection}" 
+                                     scrollHeight="190" style="text-align: center;" rowIndexVar="index">
+                            <p:column headerText="C.I/R.U.C" width="150">
+                                <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre Interviniente">
+                                <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Papel" width="150">
+                                <p:outputLabel value="#{inter.papel.papel}"/>
+                            </p:column>
+                            <p:column headerText="***" width="30">
+                                <p:commandButton icon="pi pi-pencil" title="Cambiar Papel" disabled="#{editarCertificadoRp.movimiento.id ne null}" 
+                                                 actionListener="#{editarCertificadoRp.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                    <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectPapel}" update="dtInterviniente"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observaciones">
+                        <p:inputTextarea value="#{editarCertificadoRp.movimiento.observacion}" readonly="#{editarCertificadoRp.movimiento.tramite ne null}" 
+                                         autoResize="false" scrollHeight="200" style="width: 100%; height: 200px;"/>
+                    </p:tab>
+                </p:tabView>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{editarCertificadoRp.guardarMigracion()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgCrearInterviniente" resizable="false" modal="true" header="Registrar Nuevo Interviniente">
+            <h:form id="formCreaInterv">
+                <h:panelGrid columns="1" id="pnlInterviniente" style="font-weight: bolder; font-size: 14px;">
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo Persona:" for="tipoInterv"/><br></br>
+                        <p:selectOneMenu value="#{editarCertificadoRp.interviniente.tipoInterv}" autoWidth="true" 
+                                         style="width: 150px;" id="tipoInterv"> 
+                            <f:selectItem itemLabel="Natural" itemValue="N" />
+                            <f:selectItem itemLabel="Juridica" itemValue="J" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Identificación:" /> <br></br>
+                        <p:inputText value="#{editarCertificadoRp.interviniente.cedRuc}" size="35"/>
+                        <p:spacer width="10" />
+                        <p:commandButton icon="pi pi-search" actionListener="#{editarCertificadoRp.buscarIntervinienteDianardap()}" 
+                                         update="formCreaInterv:pnlInterviniente"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombres:" /> <br></br>
+                        <p:inputText value="#{editarCertificadoRp.interviniente.nombre}" size="45"/>
+                    </h:panelGroup>                    
+                </h:panelGrid>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{editarCertificadoRp.guardarInterviniente()}" icon="pi pi-save"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RazonDetalleFichas" pageWidth="455" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="455" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9ba5ab41-88f3-4029-8ac7-b3935b034680">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<parameter name="P_REPERTORIO" class="java.lang.Long"/>
+	<parameter name="P_ANIO" class="java.lang.String"/>
+	<parameter name="ID_MOVIMIENTO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select rf.clave_catastral as codigo_predial, pa.descripcion as parroquia,
+rf.num_ficha, a.abreviatura, rf.tipo_ficha
+from app.reg_movimiento_ficha rm
+left join app.reg_ficha rf on (rm.ficha=rf.id)
+left join app.reg_movimiento m on (m.id=rm.movimiento)
+left join app.reg_acto a on  (m.acto=a.id)
+left join app.cat_parroquia pa on pa.id = rf.parroquia
+where m.id=$P{ID_MOVIMIENTO}
+order by rf.num_ficha desc]]>
+	</queryString>
+	<field name="codigo_predial" class="java.lang.String"/>
+	<field name="parroquia" class="java.lang.String"/>
+	<field name="num_ficha" class="java.lang.Long"/>
+	<field name="abreviatura" class="java.lang.String"/>
+	<field name="tipo_ficha" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="28" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="180" y="14" width="115" height="14" uuid="1c061702-04b8-4db6-8478-3b652ac8237b"/>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ficha Registral No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="455" height="14" uuid="b06e31c6-3d7c-49df-a2c9-6eed4779393d"/>
+				<text><![CDATA[Que se refiere al(los) siguiente(s) bien(es) :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="295" y="14" width="160" height="14" uuid="2ce602c8-f4b2-4093-ba18-3c8635b04223">
+					<printWhenExpression><![CDATA[$F{tipo_ficha} == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Parroquia]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="0" y="14" width="180" height="14" uuid="bb773ed9-e24b-4a5c-b950-67fd658798be"/>
+				<textFieldExpression><![CDATA["Clave Catastral"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="180" height="14" uuid="5031e72b-8cbf-4094-b644-1dfd59d2e4a9"/>
+				<textFieldExpression><![CDATA[$F{codigo_predial} == null ? "00000000000000000" : $F{codigo_predial}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="295" y="0" width="160" height="14" uuid="ed26d041-13de-48fb-9fc6-4efeca0390bd">
+					<printWhenExpression><![CDATA[$F{tipo_ficha} == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{parroquia}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="180" y="0" width="115" height="14" uuid="41615814-4a63-4197-b3fa-4644fe2846d2"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{num_ficha}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

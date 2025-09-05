@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                 > 
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h3>Correccion de Documentos para la Tarea de Digitalización Final</h3>
+            <h:panelGrid styleClass="noBorder" columns="3">
+                No de Tramite:
+                <p:inputText value="#{correccionDocs.tramite}"/>
+                <p:commandButton value="Buscar Tramite" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{correccionDocs.findTramite()}"/>
+            </h:panelGrid><br></br>
+            <p:panel header="Documentos de Tareas del Tramite" rendered="#{correccionDocs.ht.id ne null}">
+                <p:dataTable value="#{correccionDocs.tareas}" var="tar" scrollHeight="300" reflow="true" style="text-align: center" scrollable="true"
+                             resizableColumns="true">
+                    <p:column headerText="Contrato">
+                        <h:outputText value="#{tar.detalle.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Repertorio" width="100">
+                        <h:outputText value="#{tar.detalle.liquidacion.repertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="100">
+                        <h:outputText value="#{tar.detalle.inscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fech.Insc." width="140">
+                        <p:outputLabel value="#{tar.detalle.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Realizado" width="60">
+                        <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{tar.realizado}" title="Realizado"/>
+                        <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!tar.realizado}" title="NO Realizado"/> 
+                    </p:column>
+                    <p:column headerText="Documento" width="60">
+                        <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{tar.documento}" title="Subido"/>
+                        <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!tar.documento}" title="NO Subido"/> 
+                    </p:column>
+                    <p:column headerText="UP" width="50">
+                        <p:commandLink actionListener="#{correccionDocs.showDlgDocument(tar)}" title="Subir Documento" disabled="#{tar.reemplazo}">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+        
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Cargar Documento" modal="true" width="500" height="300" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formObs">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="Contrato: #{correccionDocs.tarea.detalle.acto.nameTruncate}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="No Inscripcion: #{correccionDocs.tarea.detalle.inscripcion}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:fileUpload listener="#{correccionDocs.uploadDocTareaTramite}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+        
+    </ui:define>
+</ui:composition>

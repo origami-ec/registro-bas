@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Observaciones de Tramites</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">OBSERVACIONES DE TRÁMITES</h3></center>
+            <p:panelGrid columns="1">
+                <p:commandButton value="Ingresar Observación" icon="pi pi-user-plus" style="float: right;" 
+                                 actionListener="#{ingresoObservaciones.showDlgObs()}" />
+                <p:dataTable paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" style="text-align: center"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         resizableColumns="true"
+                         value="#{ingresoObservaciones.lazyObvs}" var="liq" emptyMessage="No se encontro liquidaciones..." filterEvent="enter">
+                <p:column headerText="Nro Revision" filterBy="#{liq.numero}" width="100" filterStyle="width: 95%">
+                    <h:outputText  value="#{liq.numero}"/>
+                </p:column>
+                <p:column headerText="C.I./R.U.C." width="150" filterBy="#{liq.ente.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.ente.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Cliente" width="300" filterBy="#{liq.ente.nombres}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.ente.nombres}"/>
+                </p:column>
+                <p:column headerText="Apellidos Clientes" width="300" filterBy="#{liq.ente.apellidos}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.ente.apellidos}"/>
+                </p:column>
+                <p:column headerText="Fecha Revision" width="150">
+                    <h:outputText value="#{liq.fechaIngreso}" >
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Observaciones" >
+                    <h:outputText value="#{liq.observacion1}"/>
+                </p:column>
+                <p:column headerText="Opciones" width="100">
+                    <p:commandButton icon="pi pi-eye" actionListener="#{ingresoObservaciones.mostrarObservacion(liq)}" title="Visualizar Observacion" />
+                    <p:spacer width="20" /> 
+                    <p:commandButton icon="pi pi-file-pdf" actionListener="#{ingresoObservaciones.generarReporte(liq)}" title="Generar Pdf" />
+                </p:column>
+            </p:dataTable>
+            </p:panelGrid>
+
+            
+        </h:form>
+
+        <p:dialog header="Observaciones" widgetVar="dlgObvs" modal="true" resizable="false" closeOnEscape="true"
+                  position="top" width="1000" height="60%">
+            <h:form id="frmObvs">
+                <p:panel header="Datos del Cliente" >
+                    <h:panelGrid id="pnlCliente" columns="5" style="font-weight: bolder;width: 100%;">
+                        CI/RUC:
+                        <p:inputText value="#{ingresoObservaciones.observacion.ente.ciRuc}" readonly="true"/>
+                        Nombres:
+                        <p:inputText value="#{ingresoObservaciones.observacion.ente.nombreCompleto}" readonly="true" size="60"/>
+                        <p:commandButton value="Buscar" icon="pi pi-search" disabled="#{!ingresoObservaciones.guardar}" 
+                                         actionListener="#{ingresoObservaciones.showDlg('/resources/dialog/dlglazyente')}">
+                            <p:ajax event="dialogReturn" listener="#{ingresoObservaciones.selectObject}" update="pnlCliente"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+                <p:panel header="Observaciones del Tramite">
+                    <p:inputTextarea style="width: 99%" value="#{ingresoObservaciones.observacion.observacion1}" rows="15"
+                                     autoResize="false"/>
+                </p:panel>
+                <br/>
+                <div align="center">
+                    <p:commandButton value="Guardar" icon="pi pi-save" disabled="#{!ingresoObservaciones.guardar}" 
+                                     actionListener="#{ingresoObservaciones.saveObservacion()}"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+
+    </ui:define>
+</ui:composition>

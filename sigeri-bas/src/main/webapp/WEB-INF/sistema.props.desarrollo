@@ -1,0 +1,72 @@
+[sistema]
+ejbRuta = java:global/sigeri_bas/
+
+rutaAnexos = D:/server-files/sigeri/anexos/
+rutaTemporales = D:/server-files/sigeri/temp/
+rutaFirmados = D:/server-files/sigeri/fd/
+rutaFirmaEC = D:/server-files/firmas/
+rutaImagenes = D:/server-files/origami/imagenes
+rutaTitulos = D:/server-files/sigeri/titulos/
+rutaDevolutivas = D:/server-files/sigeri/devolutivas/
+formatoArchivos = /(\\.|\\/)(gif|jpe?g|png|pdf|xlsx|docx|xlsm|dwg|shp|doc|xls|ppt|pptx|tif|txt)$/
+
+[ejbs]
+entityManager = java:module/manager
+bpmBaseEngine = java:module/bpmBaseEngine
+bpmProcessEngine = java:module/bpmProcessEngine
+documents = java:module/DocumentsEjb
+
+[zoning]
+region = EC
+
+[mail]
+smtp_Host = smtp.gmail.com
+smtp_Port = 587
+correo = tramitesventanillaonline@registrodelapropiedadsd.gob.ec
+pass = tramites02
+ssl = true
+
+[condb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://192.188.57.85:5432/sigeri_bas
+username = sisapp
+password = sis@pp2023
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[activiti]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://192.188.57.85:5432/sigeri_bas
+username = sisapp
+password = sis@pp2023
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[docdb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://192.188.57.85:5432/sigeri_bas_archivos
+username = sisapp
+password = sis@pp2023
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[webservices]
+dominioVentanilla = http://172.16.84.51:9090/#/
+urlWSVentanilla = http://172.16.84.51:8085/rpm-ventanilla/api/
+wsdlMunicipio = http://172.16.84.51:8080/gim/paymentPlatform?wsdl
+urlWsFacturacion = http://172.16.84.51:8780/api/facturacionElectronica/
+urlFirmaEC = http://192.188.57.85:8781/api/
+urlWsEmail = http://192.188.57.85:8782/asgard/api/
+urlWsDinardap = http://192.188.57.85:8790/api/
+urlWsCatastro = http://172.16.3.151:9096/registro/predio/
+urlOrigamiZuul = http://192.188.57.62:8713/
+urlOrigamiDocs = http://192.188.57.62:8718/origami/docs/
+urlOrigamiMedia = http://192.188.57.62:8716/origami/api/
+ambienteFacturacion = 1
+isOnline = false
+
+[automatic]
+enviar = false

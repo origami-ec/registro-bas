@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TareaEntregadeDocumento" language="groovy" pageWidth="740" pageHeight="842" columnWidth="700" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f281607e-8440-4f06-878c-09ba46e10ee3">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HASTA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="numtramite" class="java.lang.Long"/>
+	<field name="fechaingreso" class="java.util.Date"/>
+	<field name="fechaentrega" class="java.util.Date"/>
+	<field name="assigne" class="java.lang.String"/>
+	<field name="despachado" class="java.lang.String"/>
+	<field name="iniciotarea" class="java.util.Date"/>
+	<field name="fintarea" class="java.util.Date"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="700" height="14" uuid="e92d22dc-8a50-43b0-b753-870b0de7824f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TAREA ENTREGA DE DOCUMENTOS FINANLIZADOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="329" y="16" width="41" height="14" isPrintWhenDetailOverflows="true" uuid="37374dd1-82b1-4487-a9af-9c5cdc3ea4ad"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="16" width="177" height="14" isPrintWhenDetailOverflows="true" uuid="b5b3840f-9101-434a-a921-5ee7adb1da63"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha  de Ingreso, Desde:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement x="371" y="16" width="155" height="14" isPrintWhenDetailOverflows="true" uuid="f8938c03-a145-4d0d-a235-1c37b0ef043f"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{HASTA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement x="178" y="16" width="151" height="14" isPrintWhenDetailOverflows="true" uuid="d1641abc-77f7-4d5d-ab50-626bd0b7c8d8"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="24">
+			<staticText>
+				<reportElement x="192" y="0" width="160" height="22" uuid="2a92a8f4-cb0e-4b71-b1c3-7d8d76c0725f"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INSCRIPTOR/
+CERTIFICADOR RESPONSABLE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="467" y="0" width="115" height="22" uuid="23f5b284-a213-4f17-948a-34f5d3b8c71a"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Inicio Tarea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="352" y="0" width="115" height="22" uuid="1e5bd0ef-1d0e-44ae-9451-27b668ca94f6"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESPACHADO POR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="582" y="0" width="118" height="22" uuid="625b6e64-14b2-4150-a09f-eb9b4472db77"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Fin Tarea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="122" y="0" width="70" height="22" uuid="2c0cc152-17b4-4cf3-82bf-9a26965bc5fc"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Entrega]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="52" height="22" uuid="1ba1e2be-d5f9-4e60-a789-f1b57944071b"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tramite Nº]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="52" y="0" width="70" height="22" uuid="b9f6f7af-def2-4850-b22a-a9654fc1bcaf"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Ingreso]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="52" height="20" uuid="3ab34a5f-733e-4d1f-b594-325b3aad2776"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{numtramite}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="52" y="0" width="70" height="20" uuid="b4ee0ca1-de31-42f2-ae01-6ac400893cc0"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fechaingreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="122" y="0" width="70" height="20" uuid="8933fc06-19d6-486f-af94-dd054a9b1ccf"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fechaentrega}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="192" y="0" width="160" height="20" uuid="1c021c4a-8132-410f-a0a6-c3432d405a00"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{assigne}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="352" y="0" width="115" height="20" uuid="4cfd1cc8-6915-4f3c-a798-51156ad500e9"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{despachado}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="467" y="0" width="115" height="20" uuid="454365a7-f425-40ce-b9e1-1e34573b3be1"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{iniciotarea}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="582" y="0" width="118" height="20" uuid="65ebbbe7-3b58-4075-9fcc-f01f4550405c"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fintarea}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="199" y="0" width="90" height="20" uuid="22bc5079-cf53-48c0-b574-01c129e1d303"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a" isBlankWhenNull="true">
+				<reportElement x="289" y="0" width="90" height="20" uuid="a86fe324-b985-4e41-ab90-d665478bfdf5"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="658" y="0" width="40" height="20" uuid="4f739663-653a-478d-8eb1-4e2facc0af2a"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="577" y="0" width="80" height="20" uuid="8b9ba1b2-b356-4a8f-a2d3-be0066397c58"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

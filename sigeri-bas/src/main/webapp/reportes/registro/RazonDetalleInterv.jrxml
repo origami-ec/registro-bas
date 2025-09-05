@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RazonDetalleInterv" pageWidth="455" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="455" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="77d5effc-bf38-4708-9e20-3b99ba6c6022">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_MOVIMIENTO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select ce.nombre as nombres, ce.ced_ruc, ps.papel, mc.estado as estado_civil
+from app.reg_movimiento m
+left join app.reg_movimiento_cliente mc on(m.id=mc.movimiento)
+left join app.reg_ente_interviniente ce on (mc.ente_interv=ce.id)
+left join app.reg_papel ps on (mc.papel=ps.id)
+where m.id=$P{ID_MOVIMIENTO}
+order by 3 desc, 1 asc]]>
+	</queryString>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="ced_ruc" class="java.lang.String"/>
+	<field name="papel" class="java.lang.String"/>
+	<field name="estado_civil" class="java.lang.String"/>
+	<pageHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="230" height="12" uuid="959cc0f3-5a3b-4c43-81fa-56dcbdd62f57"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="230" y="0" width="80" height="12" uuid="addcb3df-f0e5-4f17-af88-38ae181c3ed8"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cédula/Ruc]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="390" y="0" width="65" height="12" uuid="b07754b6-8ae7-47da-9db5-36e6ad51d5ee"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Calidad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="310" y="0" width="80" height="12" uuid="c4a182d7-1ad7-43d2-9589-384571e2d090"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Estado Civil]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="230" height="16" isPrintWhenDetailOverflows="true" uuid="5753e7ec-b13c-41d8-8dcb-b40d286ce513"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres}.toUpperCase().trim()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement x="230" y="0" width="80" height="16" uuid="e3894ad8-3f70-4448-b9cc-7d296f33361a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_ruc}.length() == 15 ? "**********" : $F{ced_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="390" y="0" width="65" height="16" uuid="070fcd98-5f4a-482b-975e-aaa86ae918a7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{papel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="310" y="0" width="80" height="16" uuid="79375035-6f72-451a-a8b7-b03ca22b2669"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado_civil}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

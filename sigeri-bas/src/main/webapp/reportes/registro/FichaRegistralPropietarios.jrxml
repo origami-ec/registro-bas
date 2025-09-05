@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FichaDetallePropietarios" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c00c0ccb-6ced-464c-b570-22d737b4db77">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_FICHA" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[Select en.ced_ruc, en.nombre, fp.calidad
+from app.reg_ficha_propietarios fp
+left join app.reg_ente_interviniente en on (en.id = fp.propietario)
+where fp.ficha = $P{ID_FICHA} order by 2]]>
+	</queryString>
+	<field name="ced_ruc" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="calidad" class="java.lang.String"/>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement style="negrita" mode="Transparent" x="1" y="0" width="149" height="12" uuid="a3146ed1-e237-492f-941a-ca0bfe56ae4e"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cédula / RUC / Pasaporte]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Transparent" x="150" y="0" width="350" height="12" uuid="1d8f013a-f755-4a0f-abd4-dd810a153b07"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="1" y="0" width="149" height="12" uuid="911877e8-58d2-45eb-8f56-70ba4cb44f53"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_ruc}.length() == 15 ? "**********" : $F{ced_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="150" y="0" width="350" height="12" uuid="42b7a090-0d9e-49c9-aa10-a17f39f672ef"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement stretchType="RelativeToBandHeight" x="1" y="0" width="1" height="13" uuid="3ac5d2de-8f77-4f0c-b015-7ccb2fe66d5e"/>
+			</line>
+			<line>
+				<reportElement positionType="Float" x="1" y="12" width="499" height="1" uuid="4d7df504-0d49-4e90-a2bf-71288fd90611"/>
+			</line>
+			<line>
+				<reportElement stretchType="RelativeToBandHeight" x="500" y="0" width="1" height="13" uuid="e3347ab7-7aff-404d-ac44-23ed7380b5be"/>
+			</line>
+			<line>
+				<reportElement stretchType="RelativeToBandHeight" x="150" y="0" width="1" height="13" uuid="7b7c5401-3d76-42f0-b7e0-aa18aa98c5a3"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

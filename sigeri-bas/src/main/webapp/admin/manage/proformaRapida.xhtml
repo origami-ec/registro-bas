@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>PROFORMA RÁPIDA</h1></center>
+            <p:accordionPanel id="accPanelRP">
+                <p:tab title="ACTOS O CONTRATOS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGroup id="pnlActos" style="width: 40%;float: left;" >
+                        <p:dataTable id="dtActos" var="ac" value="#{iniciarTramiteRP.actos}" emptyMessage="Sin elementos..."
+                                     paginator="true" paginatorPosition="bottom" lazy="true" resizableColumns="true"
+                                     rows="10" filterEvent="enter"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}" >
+                            <p:column headerText="NOMBRE" filterBy="#{ac.nombre}">
+                                <h:outputText value="#{ac.nombre}"/>
+                            </p:column>
+                            <p:column headerText="TIPO" width="50">
+                                <h:outputText value="#{ac.tipoActo.nombre}" style="font-size: 10px;"/>
+                            </p:column>
+                            <p:column headerText="VALOR $" width="60" style="text-align: right;">
+                                <p:outputLabel value="SIN ARANCEL" rendered="#{ac.arancel eq null}"/>
+                                <p:outputLabel value="#{ac.arancel.valor}" rendered="#{ac.arancel.valorFijo}"/>
+                                <p:outputLabel value="CUANTÍA" rendered="#{!ac.arancel.valorFijo}"/>
+                            </p:column>
+                            <p:column headerText="***" width="25">
+                                <p:commandButton title="Seleccionar" icon="pi pi-forward" actionListener="#{iniciarTramiteRP.onRowSelect(ac)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                    <h:panelGroup id="pnlValores" style="width: 60%;float: right;">
+                        <p:panel id="pnlContratos">
+                            <p:dataTable id="dtSubTotal" value="#{iniciarTramiteRP.actosPorPagar}" var="det" 
+                                         rowIndexVar="rowIndex" resizableColumns="true"
+                                         emptyMessage="Sin Contratos" scrollable="true" scrollHeight="200">
+                                <f:facet name="header">CONTRATOS SELECCIONADOS</f:facet>
+                                <p:column headerText="**" width="20">
+                                    <p:outputLabel value="#{rowIndex + 1}"/>
+                                </p:column>
+                                <p:column headerText="Acto" >
+                                    <p:outputLabel id="actoContra" value="#{det.acto.nombre}"/>
+                                    <p:tooltip for="actoContra" value="#{det.acto.nombre}" position="top" />
+                                </p:column>
+                                <p:column headerText="Valor" width="40" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorUnitario}" />
+                                </p:column>
+                                <p:column headerText="Cant." width="30" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.cantidad}" />
+                                </p:column>
+                                <p:column headerText="SubTotal" width="45" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.subtotal}" />
+                                </p:column>
+                                <p:column headerText="Desc." width="30" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.descuento}" />
+                                </p:column>
+                                <!--<p:column headerText="Adic.." width="30" style="text-align: right;"><p:outputLabel value="# {det.recargo}" /></p:column>-->
+                                <p:column headerText="Total" width="40" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorTotal}" />
+                                </p:column>
+                                <!--<p:column headerText="Acc." width="35">
+                                    <p:commandLink actionListener="# {iniciarTramiteRP.showDlgEditActo(rowIndex)}" title="Editar" style="padding-right: 10px;">
+                                        <p:graphicImage value="/resources/icons/edit.png" height="16"/>
+                                    </p:commandLink>
+                                    <p:commandLink actionListener="# {iniciarTramiteRP.eliminarDetalle(rowIndex)}" title="Eliminar" update="dtSubTotal">
+                                        <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                    </p:commandLink>
+                                </p:column>-->
+                            </p:dataTable>
+                            <div align="right">
+                                <h:panelGrid columns="2" style="font-weight: bolder;text-align: right;">
+                                    <p:outputLabel value="SUBTOTAL: $"/>
+                                    <p:inputText value="#{iniciarTramiteRP.subTotal}" readonly="true"/>
+                                    <p:outputLabel value="DESCUENTO: $"/>
+                                    <p:inputText value="#{iniciarTramiteRP.descPorLey}" readonly="true" style="color: red;"/>
+                                    <p:outputLabel value="TOTAL: $"/>
+                                    <p:inputText value="#{iniciarTramiteRP.totalPagar}" readonly="true"/>
+                                </h:panelGrid>
+                            </div>
+                        </p:panel>
+                    </h:panelGroup>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog id="dglIngresoCuantia" widgetVar="dlgCuantia" header="Información del Contrato" resizable="false" 
+                  modal="true" width="900" closable="true" closeOnEscape="true" >
+            <h:form id="formCuantia">
+                <p:panel header="NOMBRE DEL DOCUMENTO: #{iniciarTramiteRP.rld.acto.nameTruncate2}">
+                    <p:panelGrid style="font-weight: bolder;width: 100%;">
+                        <p:row>
+                            <p:column>
+                                <h:panelGroup rendered="#{iniciarTramiteRP.rld.acto.solvencia}">
+                                    <p:outputLabel value="Nro de Certificados: " /><br/>
+                                    <p:inputText value="#{iniciarTramiteRP.rld.cantidad}" ><p:keyFilter regEx="/[\d]/"/> </p:inputText>    
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{!iniciarTramiteRP.rld.acto.solvencia}">
+                                    <p:outputLabel value="Avalúo: $" /><br/>
+                                    <p:inputNumber value="#{iniciarTramiteRP.avaluo}" decimalPlaces="2" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup rendered="#{!iniciarTramiteRP.rld.acto.solvencia}">
+                                    <p:outputLabel value="Cuantía: $" /><br/>
+                                    <p:inputNumber value="#{iniciarTramiteRP.cuantia}" decimalPlaces="2" />
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <p:commandButton value="Agregar Intervieniente" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{iniciarTramiteRP.showDlg('/resources/dialog/dlglazyente')}">
+                            <p:ajax event="dialogReturn" listener="#{iniciarTramiteRP.selectInterv}" update="dtIntervinientes"/>
+                        </p:commandButton>
+                    </div>
+                    <br></br>
+                    <p:dataTable id="dtIntervinientes" value="#{iniciarTramiteRP.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Descuento" width="85">
+                            <p:outputLabel value="#{inter.exoneracion.porcentaje}"/>
+                        </p:column>
+                        <p:column headerText="Desc." width="40">
+                            <p:commandLink actionListener="#{iniciarTramiteRP.showDlgPapel('/resources/dialog/dlglazyexoneracion', index)}">
+                                <p:graphicImage value="/resources/icons/descuento.jpg" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{iniciarTramiteRP.selectObjectExo}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink actionListener="#{iniciarTramiteRP.eliminarInterviniente(index)}" update="dtIntervinientes">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{iniciarTramiteRP.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgExoneracion" header="Aplicar Exoneracion" resizable="false" modal="true" width="700" closable="false" closeOnEscape="false">
+            <h:form id="formExo">
+                <p:outputLabel value="** Como primer paso, debe seleccionar a los intervinientes que sean beneficiarios." style="font-weight: bolder;"/>
+                <p:dataTable id="dtbeneficiarios" value="#{iniciarTramiteRP.exoneraciones}" var="ben" emptyMessage="Sin elementos..."
+                             scrollable="true" scrollHeight="200" rowIndexVar="indBen" style="text-align: center" resizableColumns="true" >
+                    <p:column headerText="Ben." width="40">
+                        <p:selectBooleanCheckbox value="#{ben.beneficiario}">
+                            <p:ajax update="dtbeneficiarios"/>
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+                    <p:column headerText="C.I/R.U.C" width="120">
+                        <p:outputLabel value="#{ben.ente.ciRuc}"/>
+                    </p:column>
+                    <p:column headerText="Nombres">
+                        <p:outputLabel value="#{ben.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                    </p:column>
+                    <p:column headerText="Exoneracion" width="150">
+                        <p:outputLabel value="#{ben.exoneracion.concepto}" rendered="#{ben.exoneracion ne null and ben.beneficiario}"/>
+                        <p:outputLabel value="NINGUNO" rendered="#{ben.exoneracion eq null and ben.beneficiario}"/>
+                    </p:column>
+                    <p:column headerText="%Pagar" width="60">
+                        <p:outputLabel value="#{ben.exoneracion.porPagar}" rendered="#{ben.exoneracion ne null and ben.beneficiario}"/>
+                        <p:outputLabel value="100%" rendered="#{ben.exoneracion eq null and ben.beneficiario}"/>
+                    </p:column>
+                    <p:column headerText="Exo." width="40">
+                        <p:commandLink actionListener="#{iniciarTramiteRP.showDlgExon('/resources/dialog/dlglazyexoneracion', indBen)}">
+                            <p:graphicImage value="/resources/icons/unir.png" height="16"/>
+                            <p:ajax event="dialogReturn" listener="#{iniciarTramiteRP.selectObjectExo}" update="dtbeneficiarios"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+                <center>
+                    <p:commandButton value="Calcular Porcentaje" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{iniciarTramiteRP.calcularValorDescuento()}"/>
+                    <p:commandButton value="Cancelar Descuento" icon="ui-icon-cancel" styleClass="btnStyle" actionListener="#{iniciarTramiteRP.cancelarAplicarExo()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

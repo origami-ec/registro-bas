@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Repertorios" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="60" bottomMargin="20" uuid="f3c6b8a2-ebc8-4f48-b9c3-4d17e2fede42">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\origami\\Documents\\NetBeansProjects\\sgm\\src\\main\\webapp\\reportes\\registroPropiedad\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="FECHA_DESDE" class="java.lang.String"/>
+	<parameter name="FECHA_HASTA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select cast(m.fecha as date) as fecha_repertorio, to_char(m.fecha, 'dd/MM/yyyy') as date_repertorio,
+app.mes_dia_cadena (1, to_char(m.fecha, 'D')) as fecha_dia, to_char(m.fecha, 'DD') as fecha_dia_num,
+app.mes_dia_cadena (2, to_char(m.fecha, 'MM')) as fecha_mes, to_char(m.fecha, 'yyyy') as fecha_anio,
+count(distinct(m.repertorio)) as cantidad, min(m.repertorio) as minimo, max(m.repertorio) as maximo,
+cast(now() as date) - cast(m.fecha as date) as dias_diferencia
+from secuencias.secuencia_repertorio m
+where m.fecha between to_date($P{FECHA_DESDE}, 'dd/MM/yyyy') and to_date($P{FECHA_HASTA}, 'dd/MM/yyyy')
+group by fecha_repertorio, date_repertorio, fecha_dia, fecha_dia_num, fecha_mes, fecha_anio
+order by 1]]>
+	</queryString>
+	<field name="fecha_repertorio" class="java.sql.Date"/>
+	<field name="date_repertorio" class="java.lang.String"/>
+	<field name="fecha_dia" class="java.lang.String"/>
+	<field name="fecha_dia_num" class="java.lang.String"/>
+	<field name="fecha_mes" class="java.lang.String"/>
+	<field name="fecha_anio" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Long"/>
+	<field name="minimo" class="java.lang.Integer"/>
+	<field name="maximo" class="java.lang.Integer"/>
+	<field name="dias_diferencia" class="java.lang.Integer"/>
+	<detail>
+		<band height="40" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="802" height="30" uuid="e258f3e4-396a-4d4c-97ee-ae5d252aba04"/>
+				<subreportParameter name="FECHA_DIA_NUM">
+					<subreportParameterExpression><![CDATA[$F{fecha_dia_num}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CANTIDAD">
+					<subreportParameterExpression><![CDATA[$F{cantidad}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="FECHA_MES">
+					<subreportParameterExpression><![CDATA[$F{fecha_mes}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="FECHA_ANIO">
+					<subreportParameterExpression><![CDATA[$F{fecha_anio}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMG_URL">
+					<subreportParameterExpression><![CDATA[$P{IMG_URL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MINIMO">
+					<subreportParameterExpression><![CDATA[$F{minimo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DIAS_DIFERENCIA">
+					<subreportParameterExpression><![CDATA[$F{dias_diferencia}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="FECHA_REPERTORIO">
+					<subreportParameterExpression><![CDATA[$F{date_repertorio}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="FECHA_DIA">
+					<subreportParameterExpression><![CDATA[$F{fecha_dia}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REGISTRADOR">
+					<subreportParameterExpression><![CDATA[$P{REGISTRADOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MAXIMO">
+					<subreportParameterExpression><![CDATA[$F{maximo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Repertorios_detalles.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

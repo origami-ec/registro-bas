@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IndicesPorLibrov3" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="0" uuid="41bc3621-ebb9-44a1-8dcc-1582265e5f96">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="LIBRO" class="java.lang.Long"/>
+	<parameter name="USER_NAME" class="java.lang.String"/>
+	<parameter name="LIBRO_NAME" class="java.lang.String"/>
+	<parameter name="HEADER_URL" class="java.lang.String"/>
+	<parameter name="NRO_TOMO" class="java.lang.String"/>
+	<parameter name="ANIO" class="java.lang.String"/>
+	<parameter name="INSC_DESDE" class="java.lang.Integer"/>
+	<parameter name="INSC_HASTA" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select mo.num_inscripcion, mo.observacion,
+(select trim(f.descripcion_bien) from app.reg_ficha f
+left join app.reg_movimiento_ficha mf on mf.ficha = f.id
+where mf.movimiento = mo.id limit 1) as descripcion_bien,
+(select trim(ei.nombre) from app.reg_ente_interviniente ei
+left join app.reg_movimiento_cliente mc on ei.id = mc.ente_interv
+where mc.movimiento = mo.id limit 1) as nombre
+from app.reg_movimiento mo
+where mo.num_inscripcion is not null and mo.libro = $P{LIBRO}
+and to_char(mo.fecha_inscripcion, 'yyyy') = $P{ANIO}
+and mo.num_inscripcion between $P{INSC_DESDE} and $P{INSC_HASTA}
+order by 4 ]]>
+	</queryString>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="descripcion_bien" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<pageHeader>
+		<band height="90" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="160" y="70" width="60" height="16" isPrintWhenDetailOverflows="true" uuid="6f348926-c50d-408b-acbd-2bf389d3e0bb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[LIBRO:]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="220" y="70" width="335" height="16" uuid="508c8507-11c2-4b40-9d07-5e02412e485b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{LIBRO_NAME}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="555" height="70" uuid="d01590d1-c256-4e86-aadf-8d8ca51ebad7"/>
+				<imageExpression><![CDATA[$P{HEADER_URL}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="negrita" x="0" y="70" width="60" height="16" isPrintWhenDetailOverflows="true" uuid="5ca43137-f2bd-4f65-a294-d5c7913addce"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TOMO:]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="60" y="70" width="100" height="16" uuid="4f33fccf-574f-43d5-a431-999760edfdd2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Nro. " + $P{NRO_TOMO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="30" y="0" width="230" height="24" backcolor="#CCCCCC" uuid="79f94296-9063-4d38-b65b-7c604fd8f499"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nombres y Apellidos (Otorgantes)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="261" y="0" width="224" height="24" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="3db87565-fa4f-42c1-881e-b27070a41f77"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Descripción del Inmueble]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="485" y="0" width="70" height="24" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="ecaa9962-3c54-4fe6-b692-20e241efeaf0"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Inscripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="30" height="24" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="2698af75-a00e-4c68-9542-2b27d061e924"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="30" height="12" isPrintWhenDetailOverflows="true" uuid="da6a5f71-a0cf-44cd-a67c-4258d8ab0c94"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="260" y="0" width="225" height="12" isPrintWhenDetailOverflows="true" uuid="898f737d-f55d-4f28-b27a-53feb1d5a869"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_bien} == null ? $F{observacion}.trim() : $F{descripcion_bien}.trim()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="30" y="0" width="230" height="12" isPrintWhenDetailOverflows="true" uuid="571568a6-1c16-476e-839a-8656ffac05dc"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}.trim()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="485" y="0" width="70" height="12" isPrintWhenDetailOverflows="true" uuid="734010b9-6b15-4f03-a5bb-147f5bb8e82d"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement x="435" y="1" width="80" height="20" uuid="4958f045-c32f-4a42-865c-a3cb2fce19d8"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="1" width="40" height="20" uuid="90c9023e-3251-44bf-ab60-99c29554ce79"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="2" width="69" height="20" uuid="67aa7855-15ca-4fd8-b1fc-04c5f7c6160e"/>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="69" y="2" width="261" height="20" isPrintWhenDetailOverflows="true" uuid="823aa287-313e-446a-a23d-e4c2c6fdf874"/>
+				<textFieldExpression><![CDATA[$P{USER_NAME}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

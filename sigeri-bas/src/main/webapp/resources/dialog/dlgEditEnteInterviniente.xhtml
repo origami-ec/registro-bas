@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <h:head>
+        <title>Interviniente</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form id="formEditInterv" >
+            <p:panelGrid style="font-weight: bolder; margin-left: 10px;" columns="1">
+                <f:facet name="header">
+                    <p:outputLabel value="** En el modulo de Mantenimiento de Intervinientes se pueden editar los nombres del interviniente." style="color: #0033FF"/>
+                </f:facet>
+                <co:inputSelect label="Papel:" value="#{dlgEditEnteInterviniente.interv.papel}" catalogo="#{dlgEditEnteInterviniente.papeles}"
+                                var="p" itemLabel="#{p.papel}" itemValue="#{p}" lazy="false"  >
+                    <p:ajax process="@this" event="ajax" />
+                </co:inputSelect>
+                <co:inputText label="* C.I./R.U.C.:" value="#{dlgEditEnteInterviniente.interv.enteInterv.cedRuc}" readonly="true" required="true" />
+                <co:inputText label="*Nombres:" value="#{dlgEditEnteInterviniente.interv.enteInterv.nombre}" readonly="true" required="true" />
+                <co:inputTextButton label="Domicilio:" value="#{dlgEditEnteInterviniente.interv.domicilio.nombre}"
+                                    iconButton="ui-icon-search" actionListenerButton="#{dlgEditEnteInterviniente.showDlg('/resources/dialog/dlglazyDomicilios')}"
+                                    isAjaxButton="true" listenerAjaxButton="#{dlgEditEnteInterviniente.selectObject}" />
+
+                <co:inputTextButton label="Nacionalidad:" value="#{dlgEditEnteInterviniente.interv.enteInterv.nacionalidad.descripcion}"
+                                    iconButton="ui-icon-search" actionListenerButton="#{dlgEditEnteInterviniente.showDlg('/resources/dialog/dlglazynacionalidad')}"
+                                    isAjaxButton="true" listenerAjaxButton="#{dlgEditEnteInterviniente.selectObject}" />
+            </p:panelGrid>
+
+            <div align="center">
+                <p:commandButton value="Guardar" action="#{dlgEditEnteInterviniente.agregarListaIntervEdit()}" styleClass="btnStyle"
+                                 icon="fa fa-save" immediate="true" />
+            </div>
+
+        </h:form>
+    </h:body>
+</html>

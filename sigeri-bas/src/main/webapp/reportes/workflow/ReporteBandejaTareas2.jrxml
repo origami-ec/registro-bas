@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteBandejaTareas2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="0" bottomMargin="0" uuid="e5c8adb3-6b0e-4436-be56-27727587fc47">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<style name="POR_REALIZAR" mode="Opaque" forecolor="#333333" backcolor="#FFE2E6"/>
+	<style name="ONLONE" mode="Opaque" forecolor="#333333" backcolor="#D9FFEA"/>
+	<style name="PENDIENTE" mode="Opaque" forecolor="#333333" backcolor="#FFFBAB"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<parameter name="NOMBRES" class="java.lang.String"/>
+	<parameter name="USER" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<field name="numTramite" class="java.lang.Long"/>
+	<field name="idProcesoTemp" class="java.lang.String"/>
+	<field name="fechaIngreso" class="java.util.Date"/>
+	<field name="fechaEntrega" class="java.util.Date"/>
+	<field name="nombrePropietario" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="estaReingresado" class="java.lang.Boolean"/>
+	<field name="actos" class="java.lang.String"/>
+	<field name="revisiones" class="java.lang.Integer"/>
+	<field name="assignee" class="java.lang.String"/>
+	<variable name="fechaIngreso_1" class="java.lang.Integer" resetType="Group" resetGroup="FECHA_INGRESO" calculation="Count">
+		<variableExpression><![CDATA[$F{fechaIngreso}]]></variableExpression>
+	</variable>
+	<group name="FECHA_INGRESO">
+		<groupExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{fechaIngreso})]]></groupExpression>
+		<groupHeader>
+			<band height="20" splitType="Stretch">
+				<textField>
+					<reportElement x="0" y="0" width="515" height="20" uuid="7b89f476-f64b-4b2d-a7b7-bff7375c3294"/>
+					<box>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Bottom">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Fecha de Ingreso: " + new SimpleDateFormat("dd/MM/yyyy").format($F{fechaIngreso})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="10">
+				<textField>
+					<reportElement x="435" y="0" width="80" height="10" uuid="52eb1317-f6e5-4f9f-842e-a0bca6263119"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Total: " + $V{fechaIngreso_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="842" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="-40" y="0" width="595" height="842" uuid="57e326f0-b020-4d64-b7ee-797d7bb5d1cf"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="118" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="80" width="515" height="18" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="384e1bde-abd4-4e0a-960a-c50b86dd3c8d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE BANDEJA DE TAREAS POR USUARIO]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="0" y="98" width="242" height="18" uuid="5dde9bcd-c5d6-40fd-bdc4-5f4393406864"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FUNCIONARIO: " + $P{NOMBRES}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement style="negrita" x="242" y="98" width="273" height="18" uuid="3c9bdeee-f541-4bbd-8931-5b8ddb399077"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA: " + new SimpleDateFormat("EEEEE dd MMMMM yyyy, HH:mm").format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="30" height="14" backcolor="#CCCCCC" uuid="fc718ac5-5f9e-4e52-b382-d7bdc5ff7882"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="30" y="0" width="50" height="14" backcolor="#CCCCCC" uuid="f72131d5-1af7-4461-a878-5976879daea0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Trámite]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="80" y="0" width="80" height="14" backcolor="#CCCCCC" uuid="3706b31e-64af-4306-8cdf-7512d8a087a7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tarea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="355" y="0" width="80" height="14" backcolor="#CCCCCC" uuid="b6dc7301-c795-40e7-9c08-356ae33386b9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha Ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="435" y="0" width="80" height="14" backcolor="#CCCCCC" uuid="fd18c644-d068-464c-9246-88350b44ca7c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tipo Ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="160" y="0" width="195" height="14" backcolor="#CCCCCC" uuid="2d3e7224-77df-451a-a05a-58bdbb1397f4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Contratos]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<rectangle>
+				<reportElement style="PENDIENTE" x="0" y="0" width="515" height="12" uuid="efeb3674-1412-47dc-8851-52dd0fe5d1f0">
+					<printWhenExpression><![CDATA[$F{idProcesoTemp} != null && $F{idProcesoTemp} != "ONLINE"]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement style="ONLONE" x="0" y="0" width="515" height="12" uuid="1f7bf9cc-a0a9-4f3c-a99d-cc789953b2c3">
+					<printWhenExpression><![CDATA[$F{idProcesoTemp} == "ONLINE"]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement style="POR_REALIZAR" x="0" y="0" width="515" height="12" uuid="93167760-50da-4d2f-a500-738356460e89">
+					<printWhenExpression><![CDATA[$F{idProcesoTemp} == null]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="0" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="7b7a942d-cb16-494d-9a29-147c8b5f6dfa"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="355" y="0" width="80" height="12" uuid="df73e980-7e69-4275-9a09-7cf3a6158f91"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaIngreso}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="30" y="0" width="50" height="12" isPrintWhenDetailOverflows="true" uuid="3f08b320-6838-402b-ae79-ed6d7c2e74e0"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numTramite}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="0" width="30" height="12" isPrintWhenDetailOverflows="true" uuid="fe73cc75-eba4-464d-9b8f-4045855d8416"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT} + " (" +($F{idProcesoTemp} == "ONLINE" ? "OL" : $F{idProcesoTemp} == null ? "PR" : "PT") + ")"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="435" y="0" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="f1968189-d26d-4c7e-959a-771e7de5ecd4"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estaReingresado}? "DEVOLUTIVA" : ($F{revisiones} > 1? "REASIGNADA" : "NORMAL")]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="160" y="0" width="195" height="12" isPrintWhenDetailOverflows="true" uuid="b151fba4-794a-4ca2-9b9b-b40e36174796"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{actos}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="60" splitType="Stretch">
+			<textField>
+				<reportElement x="395" y="14" width="80" height="14" uuid="597580b1-62b4-4dea-81ac-312875ec81ba"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="475" y="14" width="40" height="14" uuid="58ce0268-932b-4490-8488-1142aea0dd4b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="226" y="28" width="150" height="10" uuid="6aade791-79e6-40cb-98f6-8406147359b6"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="115" y="28" width="111" height="10" uuid="428d559c-9ec5-4489-b45d-60da167b03e8"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="85" y="14" width="310" height="14" uuid="2bc3f87b-7e3b-4986-af8b-f881d6b6db5c"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOMENCLATURA: PENDIENTE (PT), POR REALIZAR (PR), ON LINE (OL)"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

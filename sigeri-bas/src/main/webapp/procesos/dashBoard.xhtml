@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+    <ui:define name="title">Bandeja de Tareas</ui:define>
+    <ui:define name="content">
+        <center><h3 style="font-weight: bolder;">BANDEJA DE TAREAS</h3></center>
+        <!--<center><h1>BANDEJA DE TAREAS</h1></center>-->
+        <h:form id="formMain">
+            <style>
+                .atrasado {
+                    background-color: orangered !important;
+                    color: #192a37 !important;
+                }
+                .importante {
+                    background-color: darkgoldenrod !important;
+                    color: #192a37 !important;
+                }
+                .online {
+                    background-color: darksalmon !important;
+                    color: #192a37 !important;
+                }
+            </style>
+            <h:panelGrid style="width: 100%;">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Usuario: " style="font-size: 18px; font-weight: bolder;" rendered="#{dashBoard.esAdmin}"/>
+                        <p:inputText value="#{dashBoard.usuario}" rendered="#{dashBoard.esAdmin}">
+                            <p:ajax event="change" listener="#{dashBoard.actualizarTramitePendiente()}" />
+                        </p:inputText>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="Total Trámites: #{dashBoard.cantidad}" style="font-size: 18px; font-weight: bolder; float: right;"/>
+                    </p:column>
+                </p:row>
+            </h:panelGrid>
+            <p:dataTable style="text-align: center;" var="v_task" value="#{dashBoard.lazy}" resizableColumns="true" rowIndexVar="indexInd" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                         lazy="true" rows="20" rowsPerPageTemplate="20,40,60,80" emptyMessage="No tiene tareas pendientes..." 
+                         filterEvent="enter" paginator="true" rowStyleClass="#{v_task.idProcesoTemp eq 'ONLINE' ? 'online' : null}">
+                <p:column headerText="No." width="30">
+                    <h:outputText value="#{indexInd+1}" />
+                </p:column>
+                <p:column headerText="Diag." width="30">
+                    <p:commandButton actionListener="#{dashBoard.viewProcess(v_task)}" title="Diagrama" icon="pi pi-share-alt"/>
+                </p:column>
+                <p:column headerText="Nombre de Tarea" width="200">
+                    <p:outputLabel value=" #{v_task.name}" style="text-transform: uppercase"/>
+                </p:column>
+                <p:column headerText="Contratos del Trámite" style="text-align: left;" >
+                    <p:outputLabel value="#{v_task.contratos}" style="white-space: pre-wrap;" />
+                </p:column>
+                <p:column headerText="Nro de Trámite" filterBy="#{v_task.numTramite}" width="100" filterStyle="width: 90%">
+                    <p:outputLabel value="#{v_task.numTramite}"/>
+                </p:column>
+                <p:column headerText="Fecha de Ingreso" width="100">
+                    <p:outputLabel value="#{v_task.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Fecha Reingreso" width="100">
+                    <p:outputLabel value="#{v_task.fechaReingreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Fecha de Entrega" width="100">
+                    <p:outputLabel value="#{v_task.fechaEntrega}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Tipo Ingreso" width="80">
+                    <p:outputLabel value="#{v_task.idProcesoTemp}" rendered="#{v_task.idProcesoTemp ne null}"/>
+                    <p:outputLabel value="Presencial" rendered="#{v_task.idProcesoTemp eq null}"/>
+                </p:column>
+                <p:column headerText="Tarea" width="30">
+                    <p:commandButton actionListener="#{dashBoard.redirecTask(v_task)}" icon="pi pi-chevron-right" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog widgetVar="dlgDiagrama" header="Diagrama de Proceso" modal="true" position="top" 
+                  closeOnEscape="true" height="650" width="1000">
+            <h:form id="frmDiagrama">
+                <p:graphicImage value="#{dashBoard.stream}"  rendered="#{dashBoard.stream ne null}" stream="false"/>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

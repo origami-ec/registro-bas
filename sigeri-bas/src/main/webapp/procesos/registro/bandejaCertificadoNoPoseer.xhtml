@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Bandeja Express</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+
+            <div class="card card-w-title">
+                <center><h2>Certificados Xpress Entrega</h2></center>
+                <p:dataTable id="dtTareas1" value="#{tareaCertificadoNoPoseeBienRp.tareas}" 
+                             rowIndexVar="i"
+                             var="det" 
+                             paginator="true" lazy="true" rows="15" 
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             emptyMessage="No se encontró ningún Item." 
+                             style="text-align: center;" filterEvent="enter" resizableColumns="true"
+                             >
+                    <p:column headerText="**" width="15">
+                        #{i + 1}
+                    </p:column>
+                    <p:column headerText="Trámite" filterBy="#{det.tramite.numTramite}" width="50">
+                        <p:outputLabel value="#{det.detalle.liquidacion.numTramiteRp}"/>
+                    </p:column>
+                    <p:column headerText="# Factura" filterBy="#{det.detalle.liquidacion.codigoComprobante}">
+                        <p:outputLabel value="#{det.detalle.liquidacion.codigoComprobante}"/>
+                    </p:column>
+                    <p:column headerText="# Certificado" filterBy="#{det.certificado.numCertificado}">
+                        <p:outputLabel value="#{det.certificado.numCertificado}"/>
+                    </p:column>
+                    <p:column headerText="Solicitante" filterBy="#{det.detalle.liquidacion.solicitante.apellidos}">
+                        <p:outputLabel value="#{det.detalle.liquidacion.solicitante.nombreCompleto}"/>
+                    </p:column>
+                    <p:column headerText="Uso del Documento">
+                        <p:outputLabel value="#{det.detalle.liquidacion.usoDocumento.valor}"/>
+                    </p:column>
+                    <p:column headerText="Fecha" width="90">
+                        <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+
+                    <p:column headerText="Estado" width="50">
+                        <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{det.realizado}" title="Realizado"/>
+                        <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!det.realizado}" title="NO Realizado"/> 
+                        <p:spacer width="10" rendered="#{det.realizado}"/>
+                        <p:commandLink title="Imprimir" actionListener="#{tareaCertificadoNoPoseeBienRp.imprimirCertificado(det)}" rendered="#{det.realizado}">
+                            <p:graphicImage value="/resources/icons/reporte.png" height="16" />
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column headerText="Entrega" width="30">
+                        <p:commandLink actionListener="#{tareaCertificadoNoPoseeBienRp.entregaTramiteTarea(det)}" title="Realizar">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

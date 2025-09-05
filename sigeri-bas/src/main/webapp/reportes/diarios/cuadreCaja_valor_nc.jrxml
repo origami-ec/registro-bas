@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cuadreCaja_valor_nc" language="groovy" pageWidth="80" pageHeight="80" columnWidth="80" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="248a98ac-4345-4819-bfa8-08e5f19aa058">
+	<property name="ireport.zoom" value="5.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<parameter name="VALOR_TOTAL" class="java.math.BigDecimal"/>
+	<queryString>
+		<![CDATA[select sum(nc.valor_total) as valor_notas_credito
+from financiero.ren_nota_credito nc
+left join flow.regp_liquidacion liq on nc.factura = liq.id
+left join financiero.ren_cajero ca on ca.id = nc.caja_emision
+where (CASE WHEN $P{USUARIO}>0 THEN liq.user_ingreso=$P{USUARIO} ELSE liq.user_ingreso>0 END)
+and nc.fecha_emision between to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')::timestamp without  time zone AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone]]>
+	</queryString>
+	<field name="valor_notas_credito" class="java.math.BigDecimal"/>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="80" height="14" uuid="bdb0b803-2ede-4609-aaf8-3749095e4da4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_notas_credito} == null ? 0.00 : $F{valor_notas_credito}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement style="negrita" x="0" y="14" width="80" height="14" uuid="658c1cfc-2bf9-41ae-947e-55d5f45c6412"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_notas_credito} == null ? $P{VALOR_TOTAL} :
+$P{VALOR_TOTAL}.subtract($F{valor_notas_credito})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

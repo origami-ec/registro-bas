@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Configuración de Correos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">CONFIGURACIÓN DE CORREOS</h3></center>
+            <p:tabView id="tabViewCorreos">
+                <p:tab title="LOGS DE CORREOS" >
+                    <p:dataTable paginator="true" lazy="true" rows="20" id="dtLogsCorreos" rowsPerPageTemplate="20,40,60" resizableColumns="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" paginatorPosition="bottom" 
+                                 value="#{configurarCorreos.logs}" var="log" emptyMessage="No se encontró registros." filterEvent="enter" >
+                        <p:column headerText="Dest." filterBy="#{log.destinatario}" filterStyle="width: 95%" 
+                                  filterMatchMode="contains" >
+                            <h:outputText id="text1" value="#{log.destinatario}"/>
+                            <p:tooltip for="text1" value="#{log.destinatario}" position="top" />
+                        </p:column>
+                        <p:column headerText="Asunto" width="150"
+                                  filterBy="#{log.asunto}" filterStyle="width: 95%" >
+                            <h:outputText value="#{log.asunto}"/>
+                        </p:column>
+                        <p:column headerText="Mensaje" filterBy="#{log.mensaje}" filterStyle="width: 95%" 
+                                  filterMatchMode="contains" >
+                            <h:outputText id="text2" value="#{log.mensaje}"/>
+                            <p:tooltip for="text2" value="#{log.mensaje}" position="top" />
+                        </p:column>
+                        <p:column headerText="Fecha" sortBy="#{log.fechaEnvio}" width="100" >
+                            <h:outputText value="#{log.fechaEnvio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Tramite" width="100"
+                                  filterBy="#{log.tramite}" filterStyle="width: 95%" >
+                            <h:outputText value="#{log.tramite}"/>
+                        </p:column>
+                        <p:column headerText="Excepcion" >
+                            <h:outputText id="text3" value="#{log.excepcion}"/>
+                            <p:tooltip for="text3" value="#{log.excepcion}" position="top" />
+                        </p:column>
+                        <p:column headerText="Origen" filterBy="#{log.origen}" filterStyle="width: 95%" >
+                            <h:outputText id="text4" value="#{log.origen}"/>
+                            <p:tooltip for="text4" value="#{log.origen}" position="top" />
+                        </p:column>
+                        <p:column headerText="Usuario" width="80"
+                                  filterBy="#{log.usuario}" filterStyle="width: 95%" >
+                            <h:outputText id="text5" value="#{log.usuario}"/>
+                            <p:tooltip for="text5" value="#{log.usuario}" position="top" />
+                        </p:column>
+                        <p:column headerText="Send" width="40" >
+                            <h:outputText value="SI" rendered="#{log.enviado}"/>
+                            <h:outputText value="NO" rendered="#{!log.enviado}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="REGISTRO DE CORREOS" >
+                    <center><p:commandButton value="Registrar Nuevo Correo" icon="pi pi-google" 
+                                             actionListener="#{configurarCorreos.showDlgNuevo()}" /></center><br/>
+                    <p:dataTable paginator="true" lazy="true" rows="10" style="text-align: center;" id="dtCorreos" 
+                                 rowsPerPageTemplate="10,20,30" resizableColumns="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" paginatorPosition="bottom" 
+                                 value="#{configurarCorreos.correos}" var="cor" emptyMessage="No se encontró registros." filterEvent="enter" >
+                        <p:column headerText="Host" filterBy="#{cor.servidor}" filterStyle="width: 95%" filterMatchMode="contains" >
+                            <h:outputText value="#{cor.servidor}"/>
+                        </p:column>
+                        <p:column headerText="Puerto" filterBy="#{cor.puerto}" filterStyle="width: 95%" >
+                            <h:outputText value="#{cor.puerto}"/>
+                        </p:column>
+                        <p:column headerText="Usuario" filterBy="#{cor.usuario}" filterStyle="width: 95%" filterMatchMode="contains" >
+                            <h:outputText value="#{cor.usuario}"/>
+                        </p:column>
+                        <p:column headerText="Clave" >
+                            <h:outputText value="#{cor.clave}"/>
+                        </p:column>
+                        <p:column headerText="SSL" >
+                            <h:outputText value="#{cor.ssl}"/>
+                        </p:column>
+                        <p:column headerText="Razon Social" filterBy="#{cor.razonSocial}" filterStyle="width: 95%" filterMatchMode="contains" >
+                            <h:outputText value="#{cor.razonSocial}"/>
+                        </p:column>
+                        <p:column headerText="Estado" >
+                            <h:outputText value="ACTIVO" rendered="#{cor.estado}"/>
+                            <h:outputText value="INACTIVO" rendered="#{!cor.estado}"/>
+                        </p:column>
+                        <p:column headerText="Edit." width="50">
+                            <p:commandButton icon="pi pi-pencil" title="Editar" actionListener="#{configurarCorreos.showDlgEdit(cor)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="CONTENIDO DE CORREOS" >
+                    <center><p:commandButton value="Registrar Nuevo Formato" icon="pi pi-envelope" 
+                                             actionListener="#{configurarCorreos.showDlgNuevoFormato()}" /></center><br/>
+                    <p:dataTable paginator="true" lazy="true" rows="10" id="dtFormatos" rowsPerPageTemplate="10,20,30" resizableColumns="true" 
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" paginatorPosition="bottom" 
+                                 value="#{configurarCorreos.formatos}" var="formato" emptyMessage="No se encontró registros." filterEvent="enter" >
+                        <p:column headerText="Header" >
+                            <h:outputText id="labelHeader" value="#{formato.header}"/>
+                            <p:tooltip for="labelHeader" value="#{formato.header}" position="top" />
+                        </p:column>
+                        <p:column headerText="Footer" >
+                            <h:outputText id="labelFooter" value="#{formato.footer}"/>
+                            <p:tooltip for="labelFooter" value="#{formato.footer}" position="top" />
+                        </p:column>
+                        <p:column headerText="Asunto de Correo" filterBy="#{formato.asunto}" filterStyle="width: 95%" filterMatchMode="contains" >
+                            <h:outputText value="#{formato.asunto}"/>
+                        </p:column>
+                        <p:column headerText="Tipo Notificacion" filterBy="#{formato.tipo.descripcion}" filterStyle="width: 95%" filterMatchMode="contains" >
+                            <h:outputText value="#{formato.tipo.descripcion}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="60" rendered="false">
+                            <h:outputText value="ACTIVO" rendered="#{formato.estado eq 1}"/>
+                            <h:outputText value="INACTIVO" rendered="#{formato.estado ne 1}"/>
+                        </p:column>
+                        <p:column headerText="Edit." width="50">
+                            <p:commandButton icon="pi pi-pencil" title="Editar" actionListener="#{configurarCorreos.showDlgEditFormato(formato)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+
+        <p:dialog header="Registro de Correo" widgetVar="dlgEdicion" resizable="false" modal="true" closeOnEscape="true" width="500">
+            <h:form id="formEdicion">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="1">
+                    Host:
+                    <p:inputText value="#{configurarCorreos.correo.servidor}" style="width: 100%;"/>
+                    Puerto:
+                    <p:inputNumber value="#{configurarCorreos.correo.puerto}" decimalPlaces="0" thousandSeparator=""/>
+                    Usuario:
+                    <p:inputText value="#{configurarCorreos.correo.usuario}" style="width: 100%;" />
+                    Clave:
+                    <p:inputText value="#{configurarCorreos.correo.clave}" style="width: 100%;" />
+                    SSL:
+                    <p:inputText value="#{configurarCorreos.correo.ssl}" style="width: 100%;" />
+                    Razon Social:
+                    <p:inputText value="#{configurarCorreos.correo.razonSocial}" style="width: 100%;" />
+                    <h:panelGroup>
+                        Estado:
+                        <p:spacer width="20" height="1"/>
+                        <p:selectBooleanCheckbox value="#{configurarCorreos.correo.estado}" title="Cambiar estado" />
+                    </h:panelGroup>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{configurarCorreos.guardarCorreo()}" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Formato de Notificación" widgetVar="dlgEdicionFormato" resizable="false" modal="true" closeOnEscape="true" width="800">
+            <h:form id="formEdicionFormato">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="1">
+                    Tipo Formato:
+                    <p:selectOneMenu value="#{configurarCorreos.notificacion.tipo}" converter="entityConverter" style="width: 100%;" disabled="true">
+                        <f:selectItems value="#{configurarCorreos.tiposFormatos}" var="tf" itemLabel="#{tf.descripcion}" itemValue="#{tf}"/>
+                    </p:selectOneMenu>
+                    Asunto de Correo:
+                    <p:inputText value="#{configurarCorreos.notificacion.asunto}" style="width: 100%;" />
+                    Header:
+                    <p:inputTextarea value="#{configurarCorreos.notificacion.header}" style="width: 100%;" autoResize="false" rows="15"/>
+                    Footer:
+                    <p:inputTextarea value="#{configurarCorreos.notificacion.footer}" style="width: 100%;" autoResize="false" rows="15"/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{configurarCorreos.guardarFormato()}" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

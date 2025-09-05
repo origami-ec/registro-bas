@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteInscripciones" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cef78e97-9fe7-4739-818b-ebae4d50d9b4">
+	<property name="ireport.zoom" value="1.6500000000000004"/>
+	<property name="ireport.x" value="203"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<subDataset name="REFERENCIAS" uuid="4040ef36-dfb8-4392-9353-a72e6084d9fa">
+		<parameter name="MOVIMIENTO" class="java.lang.Long">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="INDEX" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT row_number() over(ORDER BY m.fecha_inscripcion) numero, m.fecha_inscripcion,
+a.nombre contrato,m.num_repertorio, m.fecha_repertorio, m.num_inscripcion, m.id movimiento
+FROM app.reg_movimiento_referencia mvr INNER JOIN app.reg_movimiento m ON m.id = mvr.movimiento_referencia
+LEFT JOIN app.reg_libro l ON l.id = m.libro
+LEFT JOIN app.reg_acto a ON a.id = m.acto
+WHERE mvr.movimiento = $P{MOVIMIENTO}
+ORDER BY m.fecha_inscripcion]]>
+		</queryString>
+		<field name="numero" class="java.lang.Long"/>
+		<field name="fecha_inscripcion" class="java.sql.Timestamp"/>
+		<field name="contrato" class="java.lang.String"/>
+		<field name="num_repertorio" class="java.lang.Integer"/>
+		<field name="fecha_repertorio" class="java.sql.Timestamp"/>
+		<field name="num_inscripcion" class="java.lang.Integer"/>
+		<field name="movimiento" class="java.lang.Long"/>
+	</subDataset>
+	<parameter name="FECHA" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\PROYECTOS\\PROYECTOS\\registropropiedad\\src\\main\\webapp\\resources\\image\\logo.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LIBRO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[SELECT row_number() over(ORDER BY r.fecha_inscripcion) numero, ra.nombre contrato,
+r.num_repertorio, r.fecha_repertorio, r.num_inscripcion, r.fecha_inscripcion, UPPER(u.usuario) usuario,
+TRIM(COALESCE(ue.nombres, '') || ' ' || COALESCE(ue.apellidos, '')) nombre_funcionario, r.id movimiento
+, a.nombre reff_acto, m.fecha_inscripcion reff_fecha_insc,
+case when ra.id='40' then r.observacion else ' ' end as obs_plano
+FROM app.reg_movimiento m INNER JOIN app.reg_movimiento_referencia mr ON mr.movimiento = m.id
+INNER JOIN app.reg_movimiento r ON r.id = mr.movimiento_referencia
+LEFT JOIN app.reg_libro l ON l.id = m.libro
+LEFT JOIN app.reg_acto a ON a.id = m.acto
+INNER JOIN app.acl_user u ON u.id = m.user_creador
+INNER JOIN app.cat_ente ue ON ue.id = u.ente
+LEFT JOIN app.reg_acto ra ON ra.id = r.acto
+WHERE m.fecha_inscripcion::DATE = CAST($P{FECHA} AS DATE)
+AND r.fecha_inscripcion::date <> CAST($P{FECHA} AS DATE)
+AND CASE WHEN $P{USUARIO} IS NULL THEN true ELSE u.id = $P{USUARIO} END
+AND CASE WHEN $P{LIBRO} IS NULL THEN true ELSE a.libro = $P{LIBRO} END
+ORDER BY r.fecha_inscripcion;]]>
+	</queryString>
+	<field name="numero" class="java.lang.Long"/>
+	<field name="contrato" class="java.lang.String"/>
+	<field name="num_repertorio" class="java.lang.Integer"/>
+	<field name="fecha_repertorio" class="java.sql.Timestamp"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="fecha_inscripcion" class="java.sql.Timestamp"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="nombre_funcionario" class="java.lang.String"/>
+	<field name="movimiento" class="java.lang.Long"/>
+	<field name="reff_acto" class="java.lang.String"/>
+	<field name="reff_fecha_insc" class="java.sql.Timestamp"/>
+	<field name="obs_plano" class="java.lang.String"/>
+	<pageHeader>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="1" width="623" height="17" backcolor="#CCCCCC" uuid="73e4f807-d784-42a4-8143-268dd8eb937a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE INSCRIPCIONES PARA MARGINACIÓN]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement style="negrita" x="0" y="19" width="623" height="17" uuid="cb25bf7d-b452-480a-8c79-603b1598202a"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA INSCRIPCIÓN: " + new SimpleDateFormat("dd/MM/yyyy").format($P{FECHA})]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="623" y="0" width="179" height="54" uuid="2b7df0a5-bb24-4696-96e2-5679cd127575"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement style="negrita" x="0" y="37" width="623" height="17" uuid="61a689ed-5e55-4ccd-823e-82284c5a6d46"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FUNCIONARIO: " + ($P{USUARIO} == null? "TODOS" : ($F{nombre_funcionario} == null? "" : $F{nombre_funcionario}))]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="35" height="14" backcolor="#FBF6F6" uuid="6ef76c8d-4773-44b3-ac7f-09a551e398c3"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NRO.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="35" y="0" width="297" height="14" backcolor="#FBF6F6" uuid="4b5f1386-9b45-448c-a91b-eba800daa220"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ACTO/CONTRATO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="332" y="0" width="74" height="14" backcolor="#FBF6F6" uuid="8853ec56-11e5-4a73-b375-4fc9600d6b32"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPERTORIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="406" y="0" width="74" height="14" backcolor="#FBF6F6" uuid="3f9064cb-5926-4979-8aed-be25ef6592dc"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INSCRIPCIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="480" y="0" width="75" height="14" backcolor="#FBF6F6" uuid="e0979331-6533-477b-a504-f3af7a4fe0d9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[F. INSCRIP.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="555" y="0" width="247" height="14" backcolor="#FBF6F6" uuid="5385f386-248b-4375-9c2f-a5b620a3332a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DETALLE MARGINACION]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Immediate">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="35" height="14" backcolor="#FFFFFF" uuid="0d5468ca-3d76-4394-b404-202de492a697"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="3" spacingBefore="1" spacingAfter="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="35" y="0" width="297" height="14" backcolor="#FFFFFF" uuid="315e6d1e-d01e-43d6-9589-6b1f874cd29f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="3" spacingBefore="1" spacingAfter="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contrato}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="332" y="0" width="74" height="14" backcolor="#FFFFFF" uuid="92052bf3-df95-4d4d-9653-d993ce3f3660"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="3" spacingBefore="1" spacingAfter="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_repertorio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="406" y="0" width="74" height="14" backcolor="#FFFFFF" uuid="0d3ec9db-bb46-4c6d-99d5-c0dd6e3ac576"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="3" spacingBefore="1" spacingAfter="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="480" y="0" width="75" height="14" backcolor="#FFFFFF" uuid="498f1e26-b525-4607-959d-d3e127e6b7b1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="3" spacingBefore="1" spacingAfter="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="555" y="0" width="247" height="14" backcolor="#FFFFFF" uuid="274dcbfc-2cd9-4cb1-a5c6-b6096e3716ec"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="3" spacingBefore="1" spacingAfter="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SE INCRIBE " + $F{reff_acto} + " (" + new SimpleDateFormat("dd/MM/yyyy").format($F{reff_fecha_insc}) + " " + $F{nombre_funcionario} +") " + $F{obs_plano}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="14" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="111" y="0" width="150" height="14" uuid="c7e7cdea-7ab6-4c45-b6db-ccd86cb2de56"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="111" height="14" uuid="c3466e7a-12bf-44e1-a67c-56bb29fac0c0"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Fecha de Impresión: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="435" y="0" width="80" height="14" uuid="9e9fa10a-78fd-4ce0-9231-d2044e50ce5e"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="0" width="40" height="14" uuid="0bd7b135-5698-49bf-b4c1-2dab1b0ced57"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="75" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{USUARIO} != null]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="FixRelativeToBottom" x="135" y="55" width="288" height="20" isRemoveLineWhenBlank="true" uuid="23e8f4d4-3836-4877-a6e3-c93c3baeb96b">
+					<printWhenExpression><![CDATA[$P{USUARIO} != null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_funcionario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

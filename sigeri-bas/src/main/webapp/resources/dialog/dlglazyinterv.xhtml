@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Clientes</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="6" rowsPerPageTemplate="6,10,20" filterEvent="enter"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         paginatorPosition="bottom" 
+                         value="#{dlgLazyInterv.lazy}" var="user" emptyMessage="No se encontró ningún Item" style="text-align: center;">
+                <p:column headerText="C.I./R.U.C." width="200" filterBy="#{user.cedRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{user.cedRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres" filterBy="#{user.nombre}" filterStyle="width: 95%;">
+                    <h:outputText value="#{user.nombre}"/>
+                </p:column>
+                <p:column headerText="Sel." width="30">
+                    <p:commandButton icon="pi pi-forward" actionListener="#{dlgLazyInterv.selectObject(user)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

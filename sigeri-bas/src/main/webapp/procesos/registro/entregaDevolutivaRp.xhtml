@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm" > 
+            <h1>
+                <center>
+                    #{notaDevolutivaRp.taskDataByTaskID.name} 
+                    <h:outputLabel value=" #" />
+                    #{notaDevolutivaRp.notaDevolutiva.numNotaDevolutiva}
+                </center>
+            </h1>
+            <h:panelGrid  columns="4" style="font-size: 16px;font-weight: bolder;"> 
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                #{notaDevolutivaRp.ht.numTramite}
+            </h:panelGrid>
+            <br></br>
+            <p:tabView id="mainTab">
+                <p:tab title="Informacion Nota Devolutiva">
+                    <br></br>
+
+                    <p:outputLabel value="TRÁMITE INICIADO EN LÍNEA" rendered="#{notaDevolutivaRp.online}" 
+                                   style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+                    <h:panelGrid  columns="3" >
+                        <p:fieldset legend="Solicitante" >
+                            <h:panelGrid  columns="2" >
+                                <h:panelGroup>
+                                    <p:outputLabel value="Identificación:"  /><br></br>
+                                    <p:outputLabel value="#{notaDevolutivaRp.liquidacion.solicitante.ciRuc}"
+                                                   style="margin-left: 10px; text-transform: uppercase;font-weight: bolder;"/>    
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres Completos:" /><br></br>
+                                    <p:outputLabel value="#{notaDevolutivaRp.liquidacion.solicitante.nombreCompleto}"
+                                                   style="margin-left: 10px; text-transform: uppercase;font-weight: bolder;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Asunto: "/><br></br>
+                                    <p:outputLabel value="#{notaDevolutivaRp.notaDevolutiva.asunto}" 
+                                                   style="margin-left: 10px; font-weight: bolder;"/>    
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha de Ingreso: " /><br></br>
+                                    <p:outputLabel value="#{notaDevolutivaRp.notaDevolutiva.fechaIngreso}" 
+                                                   style="margin-left: 10px; font-weight: bolder;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Realizado por: " /><br></br>
+                                    <p:outputLabel value="#{notaDevolutivaRp.notaDevolutiva.realizado}" 
+                                                   style=" margin-left: 10px; font-weight: bolder;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Descargar Nota Devolutiva: " /><br></br>
+                                    <p:commandLink actionListener="#{notaDevolutivaRp.descargarNotaDevolutiva(notaDevolutivaRp.notaDevolutiva.id)}"
+                                                   style="margin-left: 10px; font-weight: bolder;">
+                                        <p:graphicImage value="/resources/icons/down.png"/>
+                                    </p:commandLink>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset  legend="Datos de Quien Retira" >
+                            <h:panelGrid id="datosRetiroRetira" columns="1"  style="font-weight: bolder;">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Identificación:" /> <br></br>
+                                    <p:inputText value="#{notaDevolutivaRp.notaDevolutiva.quienRetira.ciRuc}" size="30"
+                                                 readonly="#{notaDevolutivaRp.notaDevolutiva.quienRetira.id ne null}"
+                                                 onkeyup="if (event.keyCode == 13) {
+                                                             buscarQuienRetira();
+                                                             return false;
+                                                         }" 
+                                                 onkeypress="if (event.keyCode == 13) {
+                                                             return false;
+                                                         }"
+                                                 />
+                                    <p:spacer width="10" />
+                                    <p:commandLink  title="Buscar"  
+                                                    actionListener="#{notaDevolutivaRp.buscarQuienRetira()}"
+                                                    update="datosRetiroRetira">
+                                        <p:graphicImage value="/resources/icons/buscar.png" style="text-align: right" height="16"/>
+                                    </p:commandLink>
+                                    <p:remoteCommand name="buscarQuienRetira" actionListener="#{notaDevolutivaRp.buscarQuienRetira()}"
+                                                     update="datosRetiroRetira"/>
+                                    <p:spacer width="5" />
+                                    <p:commandLink  title="Limpiar"  
+                                                    actionListener="#{notaDevolutivaRp.limpiarQuienRetira()}"
+                                                    update="datosRetiroRetira">
+                                        <p:graphicImage value="/resources/icons/trash.png" style="text-align: right" height="16"/>
+                                    </p:commandLink>
+                                    <p:spacer width="5" />
+                                    <p:selectBooleanCheckbox value="#{notaDevolutivaRp.quienRetiraSolicita}" >
+                                        <p:ajax update="datosRetiroRetira" listener="#{notaDevolutivaRp.quienRetiraEsSolicitante()}" />
+                                    </p:selectBooleanCheckbox>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres:" /> <br></br>
+                                    <p:inputText value="#{notaDevolutivaRp.notaDevolutiva.quienRetira.nombreCompleto}" 
+                                                 size="38" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="" /> <br></br>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset  legend="Datos de Quien Reingresa" >
+                            <h:panelGrid id="datosRetiroReingreso" columns="1"  style="font-weight: bolder;">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Identificación:" /> <br></br>
+                                    <p:inputText value="#{notaDevolutivaRp.notaDevolutiva.quienReingresa.ciRuc}" size="30"
+                                                 readonly="#{notaDevolutivaRp.notaDevolutiva.quienReingresa.id ne null}"
+                                                 onkeyup="if (event.keyCode == 13) {
+                                                             buscarQuienReingresa();
+                                                             return false;
+                                                         }" 
+                                                 onkeypress="if (event.keyCode == 13) {
+                                                             return false;
+                                                         }"
+                                                 />
+                                    <p:spacer width="5" />
+                                    <p:commandLink  title="Buscar"  
+                                                    actionListener="#{notaDevolutivaRp.buscarQuienReingresa()}"
+                                                    update="datosRetiroReingreso">
+                                        <p:graphicImage value="/resources/icons/buscar.png" style="text-align: right" height="16"/>
+                                    </p:commandLink>
+                                    <p:remoteCommand name="buscarQuienReingresa" actionListener="#{notaDevolutivaRp.buscarQuienReingresa()}"
+                                                     update="datosRetiroReingreso"/>
+                                    <p:spacer width="5" />
+                                    <p:commandLink  title="Limpiar"  
+                                                    actionListener="#{notaDevolutivaRp.limpiarQuienReingresa()}"
+                                                    update="datosRetiroReingreso">
+                                        <p:graphicImage value="/resources/icons/trash.png" style="text-align: right" height="16"/>
+                                    </p:commandLink>
+                                    <p:spacer width="5" />
+                                    <p:selectBooleanCheckbox value="#{notaDevolutivaRp.quienReingresaSolicita}" >
+                                        <p:ajax update="datosRetiroReingreso" listener="#{notaDevolutivaRp.quienReingresaEsSolicitante()}" />
+                                    </p:selectBooleanCheckbox>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres:" /> <br></br>
+                                    <p:inputText value="#{notaDevolutivaRp.notaDevolutiva.quienReingresa.nombreCompleto}" 
+                                                 size="38" readonly="true"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="" /> <br></br>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                    </h:panelGrid>
+                    <h:panelGrid  columns="2" >
+                        <p:fieldset  legend="Observaciones" >
+                            <h:panelGrid  columns="1" style="font-size: 16px;">
+                                <p:inputTextarea value="#{notaDevolutivaRp.notaDevolutiva.observacion}"  rows="7" cols="73"  />    
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <h:panelGrid id="pnlAprobacion"  columns="1" style="font-size: 16px;" >
+                            <p:commandButton value="Mantener Estado" icon="pi pi-comment" 
+                                             actionListener="#{notaDevolutivaRp.mantenerEstado(true)}"   />
+                            <br></br>
+                            <p:commandButton value="Completar Tarea" icon="pi pi-check" 
+                                             actionListener="#{notaDevolutivaRp.completarTareaDevolutiva()}" />
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Notas Devolutivas Registradas" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{notaDevolutivaRp.notaDevolutivaAnalisis}" var="notaDevolutiva" >
+                            <p:column headerText="Fecha de Registro" >
+                                #{notaDevolutiva.fechaReingreso}
+                            </p:column>
+                            <p:column headerText="Realizado" >
+                                #{notaDevolutiva.realizado}
+                            </p:column>
+                            <p:column headerText="Asunto" >
+                                #{notaDevolutiva.asunto}
+                            </p:column>
+                            <p:column headerText="Retiro" >
+                                #{notaDevolutiva.fechaRetiro}
+                            </p:column>
+                            <p:column headerText="Reingreso" >
+                                #{notaDevolutiva.fechaReingreso}
+                            </p:column>
+                            <p:column headerText="Descargar" >
+                                <center>
+                                    <p:commandLink actionListener="#{notaDevolutivaRp.descargarNotaDevolutiva(notaDevolutiva.id)}">
+                                        <p:graphicImage value="/resources/icons/down.png"/>
+                                    </p:commandLink> 
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+
+                </p:tab>
+
+                <p:tab title="Documentos Habilitantes" rendered="false">
+                    <p:panelGrid rendered="#{notaDevolutivaRp.online}" >
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column>
+                                    Nombre del Documento
+                                </p:column>
+                                <p:column>
+                                    Descargar
+                                </p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Formulario de Usuario On Line"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandLink actionListener="#{notaDevolutivaRp.showFormularioOnline()}">
+                                    <p:graphicImage value="/resources/icons/down.png"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Documento Adjunto de Trámite On Line"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandLink actionListener="#{notaDevolutivaRp.downLoadDocument()}">
+                                    <p:graphicImage value="/resources/icons/down.png"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:dataTable value="#{notaDevolutivaRp.archivos}" style="text-align: center;" scrollable="true" 
+                                 emptyMessage="Sin elementos..." scrollHeight="300" var="doc1" >
+                        <p:column headerText="Transaccion">
+                            <p:outputLabel value="#{doc1.id}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="100">
+                            <p:outputLabel value="#{doc1.fecha}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Paginas">
+                            <p:outputLabel value="#{doc1.numeroPaginas}"/>
+                        </p:column>
+                        <p:column headerText="Peso" >
+                            <p:outputLabel value="#{doc1.peso}"/>
+                        </p:column>
+                        <p:column headerText="View" width="80">
+                            <p:commandLink actionListener="#{notaDevolutivaRp.visualizarDocsTramite(notaDevolutivaRp.ht.numTramite)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="20" width="20"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+            <br></br>
+
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog>     
+
+
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Confirmar Tarea" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <center>
+                    <p:outputLabel value="Solicitud Aprobada" style="font-weight: bolder;font-size: 16px; color: green"/>
+                </center>
+                <br></br>
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{notaDevolutivaRp.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="900"/>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Aceptar" styleClass="btnStyle" icon="ui-icon-check"
+                                     actionListener="#{notaDevolutivaRp.completarTarea()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

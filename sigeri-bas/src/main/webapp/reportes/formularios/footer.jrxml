@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="title" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7afb34c4-5b96-4360-b773-29afb47c278c">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TITLE" class="java.lang.String"/>
+	<parameter name="LOGO" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\LOJA\\registropropiedad\\src\\main\\webapp\\resources\\image\\LogoRegistroLoja.jpg"]]></defaultValueExpression>
+	</parameter>
+	<pageFooter>
+		<band height="56" splitType="Stretch">
+			<frame>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="555" height="56" uuid="57bc9ae9-8387-4edb-8882-498f6072419d"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<staticText>
+					<reportElement x="0" y="0" width="545" height="17" uuid="6394cad5-3fcd-412a-947e-bfad683fe23e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REGISTRO DE LA PROPIEDAD Y MERCANTIL DEL CANTÓN JIPIJAPA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="17" width="545" height="13" uuid="f0c2cb73-29aa-4291-b711-1c32760cb629"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<text><![CDATA[Dirección: Sucre y Montalvo (Esquina)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="30" width="545" height="13" uuid="337983ce-7190-453d-9a12-79b0a26cdd06"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<text><![CDATA[Teléfono: 2603074]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="43" width="545" height="13" uuid="ee41dc26-ff6c-458b-abc5-a1070f8e4b4a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<text><![CDATA[www.jipijapa.gob.ec]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</pageFooter>
+</jasperReport>

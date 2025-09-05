@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h1><center><p:outputLabel value="#{realizarProcesoRp.taskDataByTaskID.name}" style="text-transform: uppercase;"/></center></h1>
+            <h:panelGrid style="font-size: 20px;font-weight: bolder;">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Nombre Tarea:" style="font-weight: bolder;color: #005f9c"/>
+                        #{realizarProcesoRp.taskDataByTaskID.name}
+                        <p:spacer height="1" width="50"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                        #{realizarProcesoRp.ht.numTramite}
+                        <p:spacer height="1" width="50"/>
+                    </p:column>
+                    <!--<p:column>
+                        <p:outputLabel value="Responsable:" style="font-weight: bolder;color: #005f9c"/>
+                        # {realizarProcesoRp.taskDataByTaskID.assignee}
+                    </p:column>-->
+                </p:row>
+            </h:panelGrid>
+            <br></br>
+            <p:tabView id="mainTab" prependId="false">
+                <p:tab title="Tareas del tramite">
+                    <p:panel header="TAREAS A REALIZAR EN EL TRAMITE">
+                        <h:panelGrid styleClass="noBorder" columns="1" style="margin: 0 auto;text-align: center;">
+                            <p:outputLabel value="TRÁMITE INICIADO EN LÍNEA" rendered="#{realizarProcesoRp.liquidacion.estadoPago.id eq 7}" 
+                                           style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+                        </h:panelGrid>
+                        <p:dataTable id="dtTareas" value="#{realizarProcesoRp.tareas}" emptyMessage="Sin elementos..." scrollHeight="250"  
+                                     rowIndexVar="indexInsc" var="det" style="text-align: center; width: 85%;margin: 0 auto;" scrollable="true" 
+                                     resizableColumns="true">
+                            <p:column headerText="Nº" width="30">#{indexInsc+1}</p:column>
+                            <p:column headerText="Contrato">
+                                <p:outputLabel value="#{det.detalle.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80" rendered="#{realizarProcesoRp.liquidacion.inscripcion}" >
+                                <p:outputLabel value="#{det.detalle.liquidacion.repertorio}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="80" rendered="#{realizarProcesoRp.liquidacion.inscripcion}">
+                                <p:outputLabel value="#{det.detalle.inscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Nº Documento" width="80" rendered="#{realizarProcesoRp.liquidacion.certificado}">
+                                <p:outputLabel value="#{det.detalle.inscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fecha" width="100">
+                                <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Estado" width="50">
+                                <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{det.realizado}" title="Realizado"/>
+                                <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!det.realizado}" title="NO Realizado"/> 
+                            </p:column>
+                            <p:column headerText="Tarea" width="30">
+                                <p:commandLink actionListener="#{realizarProcesoRp.realizarTarea(det)}" title="Realizar">
+                                    <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                        <br></br>
+
+                    </p:panel>
+                </p:tab>
+                <p:tab title="Observaciones" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{realizarProcesoRp.observacionesTramites}" var="obs" >
+
+                            <p:column headerText="Fecha de Ingreso" >
+                                #{obs.fecCre}
+                            </p:column>
+                            <p:column headerText="Tarea" >
+                                #{obs.tarea}
+                            </p:column>
+                            <p:column headerText="Observación" >
+                                #{obs.observacion}
+                            </p:column>
+
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+                </p:tab>
+                <p:tab title="Documentos Habilitantes">
+                    <p:dataTable value="#{realizarProcesoRp.lazyTbData}" style="text-align: center;" scrollable="true" lazy="true" 
+                                 emptyMessage="Sin elementos..." scrollHeight="300" var="doc1" paginator="true" reflow="true" 
+                                 rows="5" paginatorAlwaysVisible="false">
+                        <p:column headerText="Documental">
+                            <p:outputLabel value="#{doc1.idCarpeta.idTipoDoc.desTipoDoc}"/>
+                        </p:column>
+                        <p:column headerText="Carpeta">
+                            <p:outputLabel value="#{doc1.idCarpeta.desCarpeta}"/>
+                        </p:column>
+                        <p:column headerText="Tramite">
+                            <p:outputLabel value="#{doc1.f01}"/>
+                        </p:column>
+                        <p:column headerText="Paginas" >
+                            <p:outputLabel value="#{doc1.canPaginas}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="140">
+                            <p:outputLabel value="#{doc1.fecCreacion}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Opciones" width="80">
+                            <p:commandLink actionListener="#{realizarProcesoRp.cropDocHabilitante(doc1)}">
+                                <p:graphicImage value="/resources/icons/documento.png" height="20" width="20"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+            <br></br>
+            <center>
+                <h:panelGrid id="pnlAprobacion"  columns="4" style="font-size: 16px;" >
+
+                    <p:commandButton id="btnCompletar" value="Completar Tarea" icon="ui-icon-check" 
+                                     rendered="#{realizarProcesoRp.solicitudAprobada}"
+                                     styleClass="btnStyle" actionListener="#{realizarProcesoRp.completarTarea()}">
+                        <p:confirm header="Confirmación" message="Seguro de Completar Tarea?" icon="ui-icon-alert" />
+                    </p:commandButton>
+                    <p:spacer width="10" />
+                    <p:commandButton id="btnRechazar" value="Rechazar" styleClass="btnStyle" icon="fa fa-trash" 
+                                     actionListener="#{realizarProcesoRp.rechazar()}" 
+                                     rendered="#{realizarProcesoRp.solicitudAprobada}"
+                                     update="mainForm:pnlAprobacion, mainForm:pnlRechazada"/>
+                </h:panelGrid>
+
+
+                <h:panelGrid id="pnlRechazada"   style="font-size: 16px;" >
+                    <h:panelGrid  columns="1" rendered="#{!realizarProcesoRp.solicitudAprobada}" >
+                        <p:outputLabel value="Solicitud Rechazada" style="font-weight: bolder;font-size: 16px; color: red" />
+                        <p:outputLabel value="#{realizarProcesoRp.notaDevolutiva.fecha}" style="font-weight: bolder" /> 
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="# Nota Devolutiva" />
+                            <p:inputText value="#{realizarProcesoRp.notaDevolutiva.numNotaDevolutiva}"  />    
+
+                        </h:panelGrid>
+
+                        <p:outputLabel value="Para: #{realizarProcesoRp.notaDevolutiva.para.nombreCompleto}"   /> 
+                        <p:outputLabel value="Asunto: #{realizarProcesoRp.notaDevolutiva.asunto}"   /> 
+
+                        <br></br>
+                        <!--placeholder="Escriba aquí su Nota Devolutiva"-->
+                        <p:textEditor widgetVar="editorNotaDevolutiva" 
+                                      value="#{realizarProcesoRp.notaDevolutiva.detalle}"     
+                                      style="margin-bottom:10px; width: 900px; height: 450px; " 
+                                      placeholder="Escriba aquí su Nota Devolutiva"
+                                      >
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+
+                                </span>
+                                <span class="ql-formats">
+
+                                </span>
+                            </f:facet>
+                        </p:textEditor>
+                        <br></br><br></br>
+                        <h:panelGrid   columns="4" style="margin: 0 auto;" >
+                            <p:commandButton value="Completar Tarea" styleClass="btnStyle" icon="ui-icon-check" 
+                                             update="mainForm:pnlAprobacion"
+                                             actionListener="#{realizarProcesoRp.completarTareaRechazoJuridico()}">
+                                <p:confirm header="Confirmación" message="Está seguro de realizar la nota devolutiva?" icon="pi pi-exclamation-triangle" />
+
+                            </p:commandButton>
+                            <p:spacer width="10" />
+                            <p:commandButton value="Cancelar"  styleClass="btnStyle"  
+                                             icon="fa fa-trash"     
+                                             actionListener="#{realizarProcesoRp.cancelar()}"
+                                             update="mainForm:pnlAprobacion, mainForm:pnlRechazada"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:panelGrid>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                </p:confirmDialog>     
+            </center>
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Confirmar Tarea" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{realizarProcesoRp.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="900"/>
+                <br/><br/>
+                <center><p:commandButton value="Aceptar" styleClass="btnStyle" icon="ui-icon-check"
+                                         actionListener="#{realizarProcesoRp.completarTarea()}"/></center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

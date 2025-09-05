@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteObservacionesCac" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="44c41430-ab03-4fa9-995f-d6837b1f4bd8">
+	<property name="ireport.zoom" value="2.3579476910000032"/>
+	<property name="ireport.x" value="18"/>
+	<property name="ireport.y" value="109"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="HASTA_STRING" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Anyelo\\Desktop\\NetBeansProjects\\rpp\\src\\main\\webapp\\reportes\\diarios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<parameter name="TESORERA" class="java.lang.String"/>
+	<parameter name="COORDINADORA" class="java.lang.String"/>
+	<parameter name="CONTADORA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select sol.ci_ruc, sol.apellidos || sol.nombres as nombres_completos, o.observacion1 as observacion, o.numero, us.usuario
+ from flow.Regp_Observaciones_Ingreso o
+left join app.acl_user us on us.id = o.user_ingreso
+left join app.cat_ente sol on sol.id = o.ente
+where
+(CASE WHEN $P{USUARIO} > 0 THEN us.id = $P{USUARIO} ELSE us.id > 0 END) and
+o.fecha_ingreso between to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone
+order by o.fecha_ingreso]]>
+	</queryString>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="nombres_completos" class="java.lang.String"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="numero" class="java.lang.Long"/>
+	<field name="usuario" class="java.lang.String"/>
+	<background>
+		<band height="842" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="-22" y="-21" width="595" height="863" uuid="3f5a2fb4-5602-4d58-8afa-d6109889858f"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="110" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="80" width="555" height="16" uuid="20ce27e1-57a0-421a-97c7-54a3302db764"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE OBSERVACIONES]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="233" y="96" width="128" height="14" uuid="0eb3cd59-2287-4329-b7d2-1be1531868d8"/>
+				<textFieldExpression><![CDATA[$P{HASTA_STRING}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement style="negrita" x="54" y="96" width="128" height="14" uuid="634c41f6-8a42-4bb1-8589-b8e1c9b82aee"/>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="189" y="96" width="44" height="14" uuid="270e8d2c-d486-423c-8af1-ac64a9ad480b"/>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="96" width="44" height="14" uuid="2535145b-8625-498c-9484-e429c12b69a4"/>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="96" width="65" height="14" uuid="bcfcde9b-058a-484f-b38d-770b52d7d32c"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="426" y="96" width="129" height="14" uuid="20c7e188-dbf2-462f-9463-e6491fbcfe33"/>
+				<textFieldExpression><![CDATA[$P{USUARIO} == 0 ? "TODOS" : $F{usuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="24" y="0" width="65" height="14" backcolor="#CCCCCC" uuid="d7316016-986d-45d3-a053-37cfa4f18ae5"/>
+				<box>
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.4"/>
+					<rightPen lineWidth="0.4"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Identificación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="89" y="0" width="132" height="14" backcolor="#CCCCCC" uuid="cab00c3f-d179-4293-96eb-fa1503a6617a"/>
+				<box>
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.4"/>
+					<rightPen lineWidth="0.4"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombres y Apellidos / Razón Social]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="221" y="0" width="334" height="14" backcolor="#CCCCCC" uuid="ebbaef09-4f40-412f-9b6e-86e39bf82bbe"/>
+				<box>
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.4"/>
+					<rightPen lineWidth="0.4"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Observación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="24" height="14" backcolor="#CCCCCC" uuid="165a7d0a-9ee9-4e34-9b7f-0a58a7813923"/>
+				<box>
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.4"/>
+					<bottomPen lineWidth="0.4"/>
+					<rightPen lineWidth="0.4"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nro]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="24" y="0" width="65" height="10" uuid="9801890f-0fff-4274-a42e-ead69ad07530"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="24" height="10" uuid="9fc4bcf3-3990-4413-8bbc-18bc6210fcc3"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="89" y="0" width="132" height="10" uuid="c44cc547-72d9-4123-8ae7-4e8115d7a25b"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres_completos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="221" y="0" width="334" height="10" isPrintWhenDetailOverflows="true" uuid="475a2858-ad0f-498d-b737-d5b25b18e147"/>
+				<box leftPadding="1" rightPadding="1">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observacion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="86" y="25" width="38" height="10" uuid="8103c524-5467-4837-a5b8-e89f98e75c07"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="124" y="25" width="34" height="10" uuid="fdbeb83d-340b-48e5-a4e7-395ad488ce20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="86" y="5" width="90" height="10" uuid="9be66e0b-c703-45ad-b034-3c8bb08801b8"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="176" y="5" width="193" height="10" uuid="ebecb23c-f604-483c-ac6a-36c305986d88"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="86" y="15" width="90" height="10" uuid="8a161c7e-8bec-490b-8db7-a379e7b9c666"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Usuario de Impresión:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="50"/>
+	</summary>
+</jasperReport>

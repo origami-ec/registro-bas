@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proforma_detalles_valores" language="groovy" pageWidth="391" pageHeight="595" columnWidth="391" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fb9e8db-f0d9-4e7e-9221-eae9023560ba">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ac.nombre as acto, de.cuantia, de.avaluo, de.valor_unitario, de.num_predio,
+de.valor_total, de.recargo, de.cantidad, de.base_imponible, ac.nrpm_transaccion,
+de.descuento, de.reingreso, ac.solvencia, ex.concepto, ex.id as exoneracion,
+de.aplica_descuento, de.cantidad_intervinientes, de.id as id_detalle
+from flow.regp_liquidacion_detalles de
+left join app.reg_acto ac on (ac.id = de.acto)
+left join flow.regp_exoneracion ex on ex.id = de.exoneracion
+where de.liquidacion = $P{LIQUIDACION} order by de.fecha_ingreso]]>
+	</queryString>
+	<field name="acto" class="java.lang.String"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="num_predio" class="java.lang.Integer"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="recargo" class="java.math.BigDecimal"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="base_imponible" class="java.math.BigDecimal"/>
+	<field name="nrpm_transaccion" class="java.lang.String"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="reingreso" class="java.lang.Boolean"/>
+	<field name="solvencia" class="java.lang.Boolean"/>
+	<field name="concepto" class="java.lang.String"/>
+	<field name="exoneracion" class="java.lang.Long"/>
+	<field name="aplica_descuento" class="java.lang.Boolean"/>
+	<field name="cantidad_intervinientes" class="java.lang.Integer"/>
+	<field name="id_detalle" class="java.lang.Long"/>
+	<variable name="TOTAL" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_total}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="391" height="14" backcolor="#CCCCCC" uuid="10e09d27-22a6-43e4-b141-b6fad5567a13"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[VALORES A CANCELAR]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="141" height="12" uuid="1da92584-511b-403e-8450-88b717ecf948"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="6" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[CONTRATOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="341" y="0" width="50" height="12" uuid="c2ca5482-3fe2-4e27-a0b9-17570d5ba45c"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="6" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="291" y="0" width="50" height="12" uuid="1dba4a3e-9378-4a0e-bd24-59633ce308fc"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="6" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Gastos G.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="141" y="0" width="50" height="12" uuid="b7760cd1-97c2-4f13-b92a-4d67cae35431"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="6" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Base Imponible]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="191" y="0" width="50" height="12" uuid="a4802100-bc25-4ead-9a04-ea7809166553"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="6" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Valor Uni.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="241" y="0" width="50" height="12" uuid="0e73d53b-d210-49c0-a0eb-4cb44e616e9a"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="6" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Descuento]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="141" height="12" uuid="8ed552db-dd6f-4ef6-b40e-0e7ceab82c58"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto} + ($F{aplica_descuento} ? " (Amplicación de Certificado Anterior)" : "")]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="341" y="0" width="50" height="12" uuid="582a6317-4f17-4f70-94ff-2d544c488122"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="291" y="0" width="50" height="12" uuid="d703fb79-c021-4142-8379-a70b8fbb45ea"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{recargo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="141" y="0" width="50" height="12" uuid="2c53c842-8c88-478e-b1fb-238672893f1a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solvencia} ? "0,00" : $F{base_imponible}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="191" y="0" width="50" height="12" uuid="074d3924-7220-406d-9d06-14f3f02d9035"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="241" y="0" width="50" height="12" uuid="d859c2a5-2520-4957-b3c8-86bc8e855a3c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="8" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{nrpm_transaccion} == "CA"]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="391" height="8" uuid="38bb0e19-ca4f-4583-9885-c0c1cf741871"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["* Cantidad de Años: " + $F{num_predio}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="8" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{nrpm_transaccion} == "CV"]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="391" height="8" uuid="5b096df9-79e9-4f2b-b6ad-9301671936f9"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["* Cantidad de Ventas: " + $F{num_predio} + " (Valor adicional por cada venta: 4.00)"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="8" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="391" height="8" isRemoveLineWhenBlank="true" uuid="4fea8d96-2794-4463-9dc9-d53b61b9e456">
+					<printWhenExpression><![CDATA[$F{nrpm_transaccion} == "CP"]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["* Estatutos Personales: " + $F{cantidad_intervinientes} + " (Valor adicional por cada estatuto: 4.00)"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="10" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{exoneracion} != null]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="391" height="10" uuid="1cee36cd-be89-4226-b2c1-82b8c79c3a06"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA["** Exoneración: " + $F{concepto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="220" y="0" width="110" height="14" uuid="a0461105-e785-4c94-ac89-980078461398"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[VALOR TOTAL]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement style="negrita" x="330" y="0" width="60" height="14" uuid="bfd298d3-2677-42ec-b2bb-3fabd2c51acb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

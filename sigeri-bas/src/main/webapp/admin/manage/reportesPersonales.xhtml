@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Reportes Personales</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>REPORTES PERSONALES</h2></center>
+            <p:tabView id="mainTab">
+
+                <p:tab title="Reportes por Usuario">
+                    <h:panelGrid id="pnlReport" columns="2" style="font-weight: bolder; margin: 0 auto; ">
+                        Tipo de Reporte:
+                        <p:selectOneMenu value="#{reportesPersonales.reporte}" style="width: 250px;">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{0}"/>
+                            <f:selectItem itemLabel="Certificados Emitidos" itemValue="#{1}"/>
+                            <f:selectItem itemLabel="Inscripciones Realizadas" itemValue="#{2}"/>
+                            <f:selectItem itemLabel="Inscripciones del Dia" itemValue="#{3}"/>
+                            <f:selectItem itemLabel="Trámites en Bandeja" itemValue="#{4}"/>
+                            <f:selectItem itemLabel="Tareas Realizadas por Usuario" itemValue="#{5}"/>
+                            <f:selectItem itemLabel="Informe de Notas Devolutivas" itemValue="#{6}"/>
+                            <p:ajax event="change" update="pnlReport"/>
+                        </p:selectOneMenu>
+                        Fecha Desde:
+                        <p:calendar value="#{reportesPersonales.desde}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy" 
+                                    mask="true"
+                                    disabled="#{reportesPersonales.reporte eq 4}"/>
+                        Fecha Hasta:
+                        <p:calendar value="#{reportesPersonales.hasta}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy" 
+                                    mask="true" 
+                                    disabled="#{reportesPersonales.reporte eq 3 or reportesPersonales.reporte eq 4}"/>
+                        
+                        <p:commandButton value="Generar Reporte PDF" icon="pi pi-file-pdf" 
+                                         actionListener="#{reportesPersonales.imprimirReportes()}"/>
+                        <p:commandButton value="Generar Reporte XLS" icon="pi pi-file-excel" 
+                                         action="#{reportesPersonales.imprimirReportes()}" 
+                                         actionListener="#{reportesPersonales.setExcel(true)}"/>
+                    </h:panelGrid>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

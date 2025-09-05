@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                 >
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Solicitud de Corrección de Trámites</h2></center> 
+            <p:accordionPanel id="accNc" activeIndex="1">
+                <p:tab title="INICIO DE SOLICITUD" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGrid styleClass="noBorder" columns="4">
+                        No de Tramite:
+                        <p:inputText value="#{solicitudCorreccion.tramite}"/>
+                        <p:commandButton value="Buscar" actionListener="#{solicitudCorreccion.buscarTramite()}"/>
+                    </h:panelGrid>
+                    <br/>
+                    <p:fieldset legend="Datos de la Factura" rendered="#{solicitudCorreccion.render}">
+                        <p:panelGrid styleClass="noBorder" style="width: 100%;font-size: 12px;font-weight: bolder;">
+                            <p:row>
+                                <p:column>
+                                    No. Tramite:
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.numTramiteRp}"/>
+                                </p:column>
+                                <p:column>
+                                    Fecha Emision:
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.fechaIngreso}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </p:outputLabel>
+                                </p:column>
+                            </p:row>                  
+                            <p:row>
+                                <p:column>
+                                    CI/RUC: 
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.solicitante.ciRuc}"/>
+                                </p:column>
+                                <p:column colspan="2">
+                                    Cliente 
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.solicitante.nombreCompleto}"/>
+                                </p:column>
+                            </p:row>                        
+                            <p:row>
+                                <p:column>
+                                    No. Factura: 
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.codigoComprobante}"/>
+                                </p:column>
+                                <p:column>
+                                    No de Autorizacion: 
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.numeroAutorizacion}"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                        <p:dataTable value="#{solicitudCorreccion.liquidacion.regpLiquidacionDetallesCollection}" var="det" style="text-align: center;">
+                            <p:column headerText="Contrato">#{det.acto.nombre}</p:column>
+                            <p:column headerText="Avaluo" width="100">#{det.avaluo}</p:column>
+                            <p:column headerText="Cuantia" width="100">#{det.cuantia}</p:column>
+                            <p:column headerText="Valor Uni." width="100">#{det.valorUnitario}</p:column>
+                            <p:column headerText="Exo." width="100">#{det.exoneracion.porcentaje}</p:column>
+                            <p:column headerText="Valor Total" width="100">#{det.valorTotal}</p:column>
+                        </p:dataTable>
+                        <p:panelGrid styleClass="noBorder" columns="6">
+                            Desc.Limit.Cobro:
+                            <p:outputLabel value="$ #{solicitudCorreccion.liquidacion.descLimitCobro}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Desc.Ley:
+                            <p:outputLabel value="$ #{solicitudCorreccion.liquidacion.descuentoValor}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Total a Cancelar:
+                            <p:outputLabel value="$ #{solicitudCorreccion.liquidacion.totalPagar}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                        </p:panelGrid>                    
+                    </p:fieldset>
+                    <br/>
+                    <p:fieldset legend="Observacion" rendered="#{solicitudCorreccion.render}">
+                        <p:inputTextarea value="#{solicitudCorreccion.motivo}" placeholder="Observacion de solicitud de correccion" style="width: 100%;"/>
+                        <div align="center">
+                            <p:commandButton value="Solicitar Correccion" icon="ui-icon-document" actionListener="#{solicitudCorreccion.ingresarSolicitud()}"/>
+                        </div>
+                    </p:fieldset>
+                </p:tab>
+                <p:tab title="SOLICITUDES DE CORRECCION INGRESADAS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{solicitudCorreccion.lazyCorrs}" var="corrs" emptyMessage="No se encontró ningún Item" style="text-align: center;">
+                        <p:column headerText="No Tramite" filterBy="#{corrs.numTramite}" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="#{corrs.idTramite.numTramite}"/>
+                        </p:column>
+                        <p:column headerText="Propietario" filterBy="#{corrs.propietario}" filterStyle="width: 95%">
+                            <h:outputText  value="#{corrs.idTramite.nombrePropietario}"/>
+                        </p:column> 
+                        <p:column headerText="Funcionario Asignado" width="100" filterStyle="width: 95%">
+                            <h:outputText  value="#{corrs.userAsignado}"/>
+                        </p:column>                         
+                        <p:column headerText="Fecha Ingreso" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="#{corrs.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column> 
+                        <p:column headerText="Fecha Entrega" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="#{corrs.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>   
+                        <p:column headerText="Estado" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="#{corrs.estadoCorreccion.code}"/>
+                        </p:column>   
+                        <p:column headerText="Task" width="50">
+                            <p:commandLink  title="Procesar" actionListener="#{solicitudCorreccion.revisarSolicitud(corrs)}" disabled="#{corrs.estadoCorreccion.id eq 6}">
+                                <p:graphicImage value="/resources/icons/ir.png" height="16" />   
+                            </p:commandLink>
+                        </p:column>                                                
+                    </p:dataTable>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+        <p:dialog id="dlgRevisionSolicitud" header="Revision de Solcitud" widgetVar="dlgRevisionSolicitudRp" resizable="false"
+                  closeOnEscape="true" modal="true" width="700" height="530">
+            <h:form id="formRevision">
+                <p:tabView id="tabRevision">
+                    <p:tab title="Factura">
+                        <p:panelGrid styleClass="noBorder" style="width: 100%;font-size: 12px;font-weight: bolder;">
+                            <p:row>
+                                <p:column>
+                                    No. Tramite:
+                                    <p:outputLabel value="#{solicitudCorreccion.sc.idTramite.numTramite}"/>
+                                </p:column>
+                                <p:column>
+                                    Fecha Emision:
+                                    <p:outputLabel value="#{solicitudCorreccion.sc.idTramite.fechaIngreso}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </p:outputLabel>
+                                </p:column>
+                            </p:row>                  
+                            <p:row>
+                                <p:column>
+                                    CI/RUC: 
+                                    <p:outputLabel value="#{solicitudCorreccion.sc.idTramite.solicitante.ciRuc}"/>
+                                </p:column>
+                                <p:column colspan="2">
+                                    Cliente 
+                                    <p:outputLabel value="#{solicitudCorreccion.sc.idTramite.solicitante.nombreCompleto}"/>
+                                </p:column>
+                            </p:row>                        
+                            <p:row>
+                                <p:column>
+                                    No. Factura: 
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.codigoComprobante}"/>
+                                </p:column>
+                                <p:column>
+                                    No de Autorizacion: 
+                                    <p:outputLabel value="#{solicitudCorreccion.liquidacion.numeroAutorizacion}"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                        <p:dataTable value="#{solicitudCorreccion.liquidacion.regpLiquidacionDetallesCollection}" var="det" style="text-align: center;" 
+                                     scrollable="true" scrollHeight="300" rowIndexVar="index" resizableColumns="true">
+                            <p:column headerText="N°" width="50">
+                                #{index+1}
+                            </p:column>
+                            <p:column headerText="Contrato">#{det.acto.nombre}</p:column>
+                            <p:column headerText="Repertorio" width="100">#{solicitudCorreccion.liquidacion.repertorio}</p:column>
+                            <p:column headerText="Inscripcion" width="100">#{det.inscripcion}</p:column>
+                            <!--<p:column headerText="Avaluo" width="100"># {det.avaluo}</p:column>
+                            <p:column headerText="Cuantia" width="100"># {det.cuantia}</p:column>
+                            <p:column headerText="Valor Uni." width="100"># {det.valorUnitario}</p:column>
+                            <p:column headerText="Exo." width="100"># {det.exoneracion.porcentaje}</p:column>
+                            <p:column headerText="Valor Total" width="100"># {det.valorTotal}</p:column>-->
+                        </p:dataTable>
+                        <!--<p:panelGrid styleClass="noBorder" columns="6">
+                            Desc.Limit.Cobro:
+                            <p:outputLabel value="$ # {solicitudCorreccion.liquidacion.descLimitCobro}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Desc.Ley:
+                            <p:outputLabel value="$ # {solicitudCorreccion.liquidacion.descuentoValor}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Total a Cancelar:
+                            <p:outputLabel value="$ # {solicitudCorreccion.liquidacion.totalPagar}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                        </p:panelGrid>-->                                 
+                    </p:tab>
+                    <p:tab title="Revisiones">
+                        <p:dataTable value="#{solicitudCorreccion.sc.regpCorreccionDetallesCollection}" emptyMessage="No se encontro ninguna solicitud."
+                                     var="det" scrollable="true" style="text-align: center;width: 99%">
+                            <p:column headerText="Usuario Ingreso" width="100">
+                                <p:outputLabel value="#{det.userIngreso}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Ingreso" width="120">
+                                <p:outputLabel value="#{det.fechaElaboracion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Observaciones">
+                                <p:outputLabel value="#{det.observacion}"/>
+                            </p:column>
+                        </p:dataTable>                        
+                    </p:tab>
+                    <p:tab title="Procesar Solicitud">
+                        <p:fieldset legend="Funcionario" rendered="#{solicitudCorreccion.renderS}">
+                            <p:column>
+                                <p:inputText value="#{solicitudCorreccion.funcionario.usuario}" readonly="true"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Buscar" icon="ui-icon-search" actionListener="#{solicitudCorreccion.showDlg('/resources/dialog/dlglazyusers')}">
+                                    <p:ajax event="dialogReturn" listener="#{solicitudCorreccion.selectFuncionario}" update="tabRevision"/>
+                                </p:commandButton>
+                            </p:column>                        
+                        </p:fieldset>
+                        <br/>
+                        <p:fieldset rendered="false">
+                            <div align="center">
+                                <p:column>
+                                    <p:commandButton value="Subir Documento" icon="ui-icon-search" actionListener="#{solicitudCorreccion.redirectFacelet('/admin/manage/correccionDocs.xhtml')}">
+                                    </p:commandButton>
+                                </p:column>        
+                            </div>
+                        </p:fieldset>   
+                        <p:fieldset legend="Cliente Retira" rendered="#{solicitudCorreccion.renderR}">
+                            <p:column>
+                                Nombre:
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="nombreretira" value="#{solicitudCorreccion.userRetira.nombreCompleto}" readonly="true" size="40"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Buscar" icon="ui-icon-search" actionListener="#{solicitudCorreccion.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{solicitudCorreccion.selectCliente}" update="nombreretira"/>
+                                </p:commandButton>
+                            </p:column>                            
+                        </p:fieldset>   
+                        <br/>
+                        <p:dataTable id="dtTareas" value="#{solicitudCorreccion.tareas}" emptyMessage="Sin elementos..."  rowIndexVar="indexInsc"
+                                     var="tarea" style="text-align: center;margin: 0 auto;" scrollable="true" resizableColumns="true" 
+                                     rendered="#{solicitudCorreccion.renderC or solicitudCorreccion.renderD}">
+                            <p:column headerText="Contrato">
+                                <p:outputLabel value="#{tarea.detalle.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Repertorio" width="85">
+                                <p:outputLabel value="#{tarea.detalle.liquidacion.repertorio}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="85">
+                                <p:outputLabel value="#{tarea.detalle.inscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Insc." width="120">
+                                <p:outputLabel value="#{tarea.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Estado" width="50" rendered="#{solicitudCorreccion.renderC}">
+                                <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{tarea.corregido}" title="Corregido"/>
+                                <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!tarea.corregido}" title="No Corregido"/> 
+                            </p:column>
+                            <p:column headerText="Editar" width="50" rendered="#{solicitudCorreccion.renderC}">
+                                <p:commandLink actionListener="#{solicitudCorreccion.realizarTarea(tarea)}" title="Realizar">
+                                    <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                                </p:commandLink>
+                            </p:column>
+                            <p:column headerText="Document" width="50" rendered="#{solicitudCorreccion.renderD}">
+                                <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{tarea.reemplazo}" title="Subido"/>
+                                <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!tarea.reemplazo}" title="NO Subido"/> 
+                            </p:column>
+                            <p:column headerText="Replace" width="50" rendered="#{solicitudCorreccion.renderD}">
+                                <p:commandLink actionListener="#{solicitudCorreccion.showDlgDocument(tarea)}" title="Subir Documento" disabled="#{tarea.reemplazo}">
+                                    <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                        <br/>
+                        <p:fieldset legend="Observacion">
+                            <p:inputTextarea value="#{solicitudCorreccion.motivo}" placeholder="Observacion de revision de solicitud" style="width: 100%;"/>
+                        </p:fieldset>
+                        <br/>
+                        <div align="center">
+                            <p:commandButton value="Procesar" icon="ui-icon-document" actionListener="#{solicitudCorreccion.procesar(solicitudCorreccion.scd)}"/>
+                        </div>                        
+                    </p:tab>
+                    <p:tab title="Certificados">
+                        <p:dataTable id="dtCertificados" var="cer" value="#{solicitudCorreccion.certificados}" scrollable="true" scrollHeight="300" 
+                                     rowIndexVar="index" emptyMessage="No se encontraron certificados para éste trámite." style="text-align: center;">
+                            <p:column headerText="N°" width="50">
+                                #{index+1}
+                            </p:column>
+                            <p:column headerText="N° Certificado">
+                                <p:outputLabel value="#{cer.numCertificado}"/>
+                            </p:column>
+                            <p:column headerText="Fecha de Emision">
+                                <p:outputLabel value="#{cer.fechaEmision}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Tipo de Certificado">
+                                <p:outputLabel value="HISTORIA DE DOMINIO" rendered="#{cer.tipoCertificado eq 1}"/>
+                                <p:outputLabel value="BIENES RAICES" rendered="#{cer.tipoCertificado eq 2}"/>
+                                <p:outputLabel value="CERTIFICADO GENERAL" rendered="#{cer.tipoCertificado eq 3}"/>
+                            </p:column>
+                            <p:column headerText="Ver" width="100">
+                                <p:commandLink actionListener="#{solicitudCorreccion.generarCertificado(cer)}">
+                                    <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>                
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Cargar Documento" width="500" height="300" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formObs">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="Contrato: #{solicitudCorreccion.tarea.detalle.acto.nameTruncate}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="No Inscripcion: #{solicitudCorreccion.tarea.detalle.inscripcion}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:fileUpload listener="#{solicitudCorreccion.uploadDocTareaTramite}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,674 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Proforma Oficios</ui:define>
+    <ui:define name="content">
+
+        <h:form id="mainForm">
+            <p:growl  globalOnly="true" showDetail="true" showSummary="true"   />
+            <p:accordionPanel id="accPanelRP">
+                <p:tab title="DATOS DEL CONTRIBUYENTE" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:panel id="pnlSolicitante" header="SOLICITANTE" style="width: 49%; float: left;">
+                        <h:panelGrid id="gridSolicitante" style="font-weight: bolder;" columns="1">
+                            <h:panelGroup>
+                                <p:outputLabel value="Identificación:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.ciRuc}"
+                                             size="46" placeholder="Ingrese numero de Identificacion"
+                                             readonly="#{iniciarTramiteOficiosRp.solicitante.id ne null}"
+                                             onkeyup="if (event.keyCode == 13) {
+                                                         buscar();
+                                                         return false;
+                                                     }" 
+                                             onkeypress="if (event.keyCode == 13) {
+                                                         return false;
+                                                     }"/>    
+                                <p:spacer width="10" />
+                                <p:commandLink  title="Buscar" 
+                                                actionListener="#{iniciarTramiteOficiosRp.buscar()}">
+                                    <p:graphicImage value="/resources/icons/buscar.png" style="text-align: right" height="16"/>
+                                    <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectSolicitante}" update="mainForm:accPanelRP:pnlSolicitante"/>
+                                </p:commandLink>
+                                <p:remoteCommand name="buscar" actionListener="#{iniciarTramiteOficiosRp.buscar()}"/>
+                                <p:spacer width="10" />
+                                <p:commandLink  title="Limpiar" 
+                                                actionListener="#{iniciarTramiteOficiosRp.limpiarDatosSolicitante()}" 
+                                                update="mainForm:accPanelRP:pnlSolicitante">
+                                    <p:graphicImage value="/resources/icons/trash.png" style="text-align: right" height="16"/>
+                                </p:commandLink>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{iniciarTramiteOficiosRp.solicitante.esPersona}">
+                                <p:outputLabel value="Nombres:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.nombres}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{iniciarTramiteOficiosRp.solicitante.esPersona}">
+                                <p:outputLabel value="Apellidos" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.apellidos}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!iniciarTramiteOficiosRp.solicitante.esPersona}">
+                                <p:outputLabel value="Razón Social" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.razonSocial}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!iniciarTramiteOficiosRp.solicitante.esPersona}">
+                                <p:outputLabel value="Nombre Comercial" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.nombreComercial}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Dirección" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.direccion}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Correo:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.correo1}" size="60"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Teléfono:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.solicitante.telefono1}" size="60"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandLink  title="Actualizar Datos Solicitante" actionListener="#{iniciarTramiteOficiosRp.actualizarDatosSolicitante()}" update="pnlSolicitante">
+                                <p:graphicImage value="/resources/icons/refres.png" style="text-align: right" height="30"/>
+                            </p:commandLink>
+                        </center>
+                    </p:panel>
+                    <p:panel id="pnlBeneficiario" header="DATOS PARA FACTURA" style="width: 49%; float: right;">
+                        <h:panelGrid style="font-weight: bolder;" columns="1">
+                            <h:panelGroup>
+                                <p:outputLabel value="Identificación:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.ciRuc}" size="43" 
+                                             placeholder="Ingrese numero de Identificacion"
+                                             readonly="#{iniciarTramiteOficiosRp.beneficiario.id ne null}"
+                                             onkeyup="if (event.keyCode == 13) {
+                                                         buscarBeneficiario();
+                                                         return false;
+                                                     }" 
+                                             onkeypress="if (event.keyCode == 13) {
+                                                         return false;
+                                                     }"/>
+                                <p:spacer width="10" />
+                                <p:commandLink  title="Buscar" 
+                                                actionListener="#{iniciarTramiteOficiosRp.buscarBeneficiario()}">
+                                    <p:graphicImage value="/resources/icons/buscar.png" style="text-align: right" height="16"/>
+                                    <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectBeneficiario}" update="pnlBeneficiario"/>
+                                </p:commandLink>
+                                <p:remoteCommand name="buscarBeneficiario" actionListener="#{iniciarTramiteOficiosRp.buscarBeneficiario()}"/>
+                                <p:spacer width="10" />
+                                <p:commandLink  title="Limpiar" 
+                                                actionListener="#{iniciarTramiteOficiosRp.limpiarDatosBeneficiario()}" 
+                                                update="pnlBeneficiario">
+                                    <p:graphicImage value="/resources/icons/trash.png" style="text-align: right" height="16"/>
+                                </p:commandLink>
+                                <p:spacer width="5" />
+                                <p:selectBooleanCheckbox value="#{iniciarTramiteOficiosRp.beneficiarioEsSolicitante}" >
+                                    <p:ajax update="pnlBeneficiario" listener="#{iniciarTramiteOficiosRp.actualizarBeneficiarioEsSolicitante()}" />
+                                </p:selectBooleanCheckbox>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{iniciarTramiteOficiosRp.beneficiario.esPersona}">
+                                <p:outputLabel value="Nombres:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.nombres}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{iniciarTramiteOficiosRp.beneficiario.esPersona}">
+                                <p:outputLabel value="Apellidos" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.apellidos}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!iniciarTramiteOficiosRp.beneficiario.esPersona}">
+                                <p:outputLabel value="Razón Social" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.razonSocial}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!iniciarTramiteOficiosRp.beneficiario.esPersona}">
+                                <p:outputLabel value="Nombre Comercial" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.nombreComercial}"   size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Dirección" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.direccion}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Correo:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.correo1}" size="60"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Teléfono:" /> <br></br>
+                                <p:inputText value="#{iniciarTramiteOficiosRp.beneficiario.telefono1}" size="60"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandLink title="Actualizar Datos Factura" actionListener="#{iniciarTramiteOficiosRp.actualizarDatosBeneficiario()}" update="pnlBeneficiario">
+                                <p:graphicImage value="/resources/icons/refres.png" style="text-align: right" height="30"/>
+                            </p:commandLink>
+                        </center>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="DATOS DE LA PROPIEDAD" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGrid columns="2" style="width: 100%;font-weight: bolder;">
+                        <p:fieldset legend="NUMERO DE INSCRIPCION">
+                            <h:panelGrid columns="2" style="width: 100%;">
+                                <co:inputNumber label="Nro. Inscripcion:" value="#{iniciarTramiteOficiosRp.liquidacion.numInscripcion}" decimalPlaces="0"  >
+                                    <p:ajax event="blur" listener="#{iniciarTramiteOficiosRp.validarTramiteIngresado(iniciarTramiteOficiosRp.liquidacion)}" />
+                                </co:inputNumber>
+                                <co:inputNumber label="Año Inscripcion:" value="#{iniciarTramiteOficiosRp.liquidacion.anioInscripcion}" decimalPlaces="0"  >
+                                    <p:ajax event="blur" listener="#{iniciarTramiteOficiosRp.validarTramiteIngresado(iniciarTramiteOficiosRp.liquidacion)}" />
+                                </co:inputNumber>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="NUMERO DE FICHA">
+                            <p:outputLabel value="Ficha Registral: " /><br/>
+                            <p:inputText id="ficha_registral" value="#{iniciarTramiteOficiosRp.numFicha}" readonly="true" />
+                            <p:spacer width="20"/>
+                            <p:commandButton value="Buscar" icon="fa fa-search" styleClass="white-button" actionListener="#{iniciarTramiteOficiosRp.showDlgFichas()}" />
+                            <p:spacer width="20"/>
+                            <p:commandButton value="Borrar" icon="fa fa-trash" styleClass="white-button" actionListener="#{iniciarTramiteOficiosRp.limpiarFicha()}" />
+                        </p:fieldset>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="CONTRATOS DEL TRAMITE" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGroup id="pnlActos" style="width: 45%;float: left;">
+                        <p:dataTable id="dtActos" var="ac" value="#{iniciarTramiteOficiosRp.actos}" selectionMode="single" selection="#{iniciarTramiteOficiosRp.acto}"
+                                     rowKey="#{ac.id}" emptyMessage="Sin elementos..." scrollable="true" scrollHeight="520" filterEvent="enter">
+                            <p:ajax event="rowSelect" listener="#{iniciarTramiteOficiosRp.onRowSelect()}"/>
+                            <f:facet name="header">
+                                <h:outputText value="ACTOS O CONTRATOS" />
+                            </f:facet>
+                            <p:column headerText="LIBRO" filterBy="#{ac.libro.nombre}" filterMatchMode="contains" rendered="false">
+                                <h:outputText value="#{ac.libro.nombre}"/>
+                            </p:column>
+                            <p:column headerText="NOMBRE" filterBy="#{ac.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{ac.nombre}"/>
+                            </p:column>
+                            <p:column headerText="VALOR" width="150">
+                                <h:outputText value="#{iniciarTramiteOficiosRp.valorArancel(ac)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                    <h:panelGroup id="pnlValores" style="width: 55%;float: right">
+                        <p:panel id="pnlContratos">
+                            <p:dataTable id="dtSubTotal" value="#{iniciarTramiteOficiosRp.actosPorPagar}" var="det" 
+                                         rowIndexVar="rowIndex" resizableColumns="true"
+                                         emptyMessage="Sin Contratos" scrollable="true" scrollHeight="200">
+                                <f:facet name="header">CONTRATOS SELECCIONADOS</f:facet>
+                                <p:column headerText="**" width="20">
+                                    <p:outputLabel value="#{rowIndex + 1}"/>
+                                </p:column>
+                                <p:column headerText="Acto" >
+                                    <p:outputLabel id="actoContra" value="#{det.acto.nombre}"/>
+                                    <p:tooltip for="actoContra" value="#{det.acto.nombre}" position="top" />
+                                </p:column>
+                                <p:column headerText="Valor" width="40" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorUnitario}" />
+                                </p:column>
+                                <p:column headerText="Cant." width="30" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.cantidad}" />
+                                </p:column>
+                                <p:column headerText="SubTotal" width="45" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.subtotal}" />
+                                </p:column>
+                                <p:column headerText="Desc." width="30" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.descuento}" />
+                                </p:column>
+                                <p:column headerText="Adic.." width="30" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.recargo}" />
+                                </p:column>
+                                <p:column headerText="Total" width="40" 
+                                          style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorTotal}" />
+                                </p:column>
+                                <p:column headerText="Acc." width="35">
+                                    <p:commandLink actionListener="#{iniciarTramiteOficiosRp.showDlgEditActo(rowIndex)}" title="Editar" style="padding-right: 10px;">
+                                        <p:graphicImage value="/resources/icons/edit.png" height="16"/>
+                                    </p:commandLink>
+                                    <p:commandLink actionListener="#{iniciarTramiteOficiosRp.eliminarDetalle(rowIndex)}" title="Eliminar" update="dtSubTotal">
+                                        <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                            <div align="right">
+                                <h:panelGrid columns="2" style="font-weight: bolder;text-align: right;">
+                                    <p:outputLabel value="SUBTOTAL: $"/>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.subTotal}" readonly="true"/>
+                                    <p:outputLabel value="ADICIONAL: $"/>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.recargoAplicado}" readonly="true"/>
+                                    <p:outputLabel value="DESCUENTO: $"/>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.descPorLey}" readonly="true" style="color: red;"/>
+                                    <p:outputLabel value="TOTAL: $"/>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.totalPagar}" readonly="true"/>
+                                </h:panelGrid>
+                            </div>
+                        </p:panel>
+                        <p:panel id="pnlUsoDoc">
+                            <h:panelGrid style="font-weight: bolder; width: 100%" columns="2">
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Tramite por Reingreso?" /><br></br>
+                                    <p:selectBooleanCheckbox value="#{iniciarTramiteOficiosRp.liquidacion.reingreso}"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Es Contrato Juridico?" style="font-weight: bold"  /> <br></br>
+                                    <p:selectBooleanCheckbox value="#{iniciarTramiteOficiosRp.liquidacion.esJuridico}" />
+                                </h:panelGroup>   
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Nro de Ticket:" for="tramiteReferencia"/> <br></br>
+                                    <p:inputNumber decimalPlaces="0" value="#{iniciarTramiteOficiosRp.liquidacion.tramiteReferencia}" style="width: 200px" id="tramiteReferencia"/>
+                                </h:panelGroup> 
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Nro Comprobante:" for="numeroComprobante" /> <br></br>
+                                    <p:inputNumber decimalPlaces="0"  value="#{iniciarTramiteOficiosRp.liquidacion.numeroComprobante}" style="width: 200px" id="numeroComprobante" />
+                                </h:panelGroup> 
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Oficio/Memo:" /> <br></br>
+                                    <p:inputText id="solicitud" value="#{iniciarTramiteOficiosRp.liquidacion.oficioMemoReferencia}"  />
+                                    <p:commandButton icon="fa fa-search"  styleClass="white-button" 
+                                                     actionListener="#{iniciarTramiteOficiosRp.showDlgSolicitudes(false)}" disabled="false">
+                                        <p:ajax event="dialogReturn"   update="solicitud"/>
+                                    </p:commandButton>    
+                                </h:panelGroup>
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Nro Juicio:"  /> <br></br>
+                                    <p:inputText id="numero_juicio" value="#{iniciarTramiteOficiosRp.liquidacion.escritJuicProvResolucion}"  />
+                                    <p:commandButton icon="fa fa-search"  styleClass="white-button" 
+                                                     actionListener="#{iniciarTramiteOficiosRp.showDlgSolicitudes(true)}" disabled="false">
+                                        <p:ajax event="dialogReturn"   update="mainForm:accPanelRP:numero_juicio"/>
+                                    </p:commandButton>    
+                                </h:panelGroup>
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Nro Formulario:" /> <br></br>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.liquidacion.numFormulario}"  />
+                                </h:panelGroup> 
+                                <h:panelGroup style="block">
+                                    <p:outputLabel value="Asignar a:" />
+                                    <p:selectOneMenu style="display: block; margin-top: 3px; min-width: 0px !important; width: 38% !important" 
+                                                     class="selectWidth135"  value="#{iniciarTramiteOficiosRp.userInscriptor}" converter="entityConverter" filter="true" >  
+                                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                        <f:selectItems value="#{iniciarTramiteOficiosRp.users}" var="usu" itemLabel="#{usu.usuario} - #{usu.ente.nombres} " itemValue="#{usu}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup class="Responsive100 Responsive" >
+                                    <p:outputLabel value="Uso de Documento:" />
+                                    <p:selectOneMenu style="display: block; margin-top: 3px; min-width: 0px !important; width: 38% !important" class="selectWidth135"  value="#{iniciarTramiteOficiosRp.usoDocumento}" converter="entityConverter" filter="true" >  
+                                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                        <f:selectItems value="#{iniciarTramiteOficiosRp.usosDocumentos}" var="it" itemLabel="#{it.valor}" itemValue="#{it}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup style="block" >
+                                    <p:outputLabel value=" " />  <br></br>
+                                    <p:commandButton value="Nuevo" icon="ui-icon-plus" actionListener="#{iniciarTramiteOficiosRp.showDlgUsoDoc()}"/>
+                                    <p:commandButton value="Editar" icon="ui-icon-pencil" actionListener="#{iniciarTramiteOficiosRp.showDlgEditUsoDoc()}"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                            <br></br>
+                            <center>
+                                <p:commandButton id="btnGeneraProforma" value="Generar Proforma" icon="ui-icon-disk" styleClass="btnStyle" update="mainForm:accPanelRP:pnlUsoDoc"
+                                                 actionListener="#{iniciarTramiteOficiosRp.guardarLiquidacion()}" disabled="#{iniciarTramiteOficiosRp.block}" />
+                            </center>
+                        </p:panel>
+                    </h:panelGroup>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog id="dglIngresoCuantia" widgetVar="dlgCuantia" header="Información del Contrato" resizable="false" 
+                  modal="true" width="900" closable="true" closeOnEscape="true" >
+            <h:form id="formCuantia">
+                <p:panel header="NOMBRE DEL DOCUMENTO: #{iniciarTramiteOficiosRp.rld.acto.nameTruncate2}">
+                    <p:panelGrid style="font-weight: bolder;width: 100%;">
+                        <p:row>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nro Comparecientes Pago: "/><br/>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.rld.cantidadIntervinientes}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup rendered="#{iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                                    <p:outputLabel value="Nro de Certificados: " /><br/>
+                                    <p:inputText value="#{iniciarTramiteOficiosRp.rld.cantidad}" ><p:keyFilter regEx="/[\d]/"/> </p:inputText>    
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                                    <p:outputLabel value="Avalúo: $" /><br/>
+                                    <p:inputNumber value="#{iniciarTramiteOficiosRp.avaluo}" decimalPlaces="2" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                                    <p:outputLabel value="Cuantía: $" /><br/>
+                                    <p:inputNumber value="#{iniciarTramiteOficiosRp.cuantia}" decimalPlaces="2" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup rendered="#{iniciarTramiteOficiosRp.tipocalculo eq 1}" >
+                                    <p:outputLabel value="Nro de Lotes:" /><br/>
+                                    <p:inputNumber value="#{iniciarTramiteOficiosRp.rld.numPredio}" decimalPlaces="0" />
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panelGrid style="font-weight: bolder;width: 100%;" rendered="#{iniciarTramiteOficiosRp.certificado}">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Año ultima transf.:"/><br/>
+                                <p:inputText  id="anio_traspaso" value="#{iniciarTramiteOficiosRp.rld.anioUltimaTrasnferencia}" maxlength="4"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Año antecedente: "/><br/>
+                                <p:inputText id="anio_mov" value="#{iniciarTramiteOficiosRp.rld.anioAntecedenteSolicitado}" maxlength="4"><p:keyFilter regEx="/[\d]/"/> 
+                                    <p:ajax event="blur" listener="#{iniciarTramiteOficiosRp.aniosCalculo()}" update="base_calculo" process="anio_traspaso,anio_mov"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Años base: "/><br/>
+                                <p:inputText value="15" maxlength="4" readonly="true"> </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Años exedentes: "/><br/>
+                                <p:inputText id="base_calculo" value="#{iniciarTramiteOficiosRp.aniosDiferencia}" readonly="true "/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <h:panelGrid columns="5">
+                            <h:panelGroup id="agregaSolicitante">
+                                <p:outputLabel value="Agregar Solicitante" style="font-weight: bold" /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox  value="#{iniciarTramiteOficiosRp.agregaSolicitante}" >
+                                        <p:ajax update="dtIntervinientes,agregaSolicitante" 
+                                                listener="#{iniciarTramiteOficiosRp.agregarSolicitanteInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+                            <h:panelGroup id="agregaBeneficiario">
+                                <p:outputLabel value="Agregar Datos Factura" style="font-weight: bold"  /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox  value="#{iniciarTramiteOficiosRp.agregaBeneficiario}" >
+                                        <p:ajax update="dtIntervinientes, agregaBeneficiario" 
+                                                listener="#{iniciarTramiteOficiosRp.agregarBeneficiarioInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+                            <h:panelGroup>
+                                <p:commandButton value="Agregar Intervieniente" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{iniciarTramiteOficiosRp.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectInterv}" update="dtIntervinientes"/>
+                                </p:commandButton>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </div>
+                    <br></br>
+                    <p:dataTable id="dtIntervinientes" value="#{iniciarTramiteOficiosRp.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Pap." width="40" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                            <p:commandLink actionListener="#{iniciarTramiteOficiosRp.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:graphicImage value="/resources/icons/agregar.png" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectObjectPapel}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descuento" width="85">
+                            <p:outputLabel value="#{inter.exoneracion.porcentaje}"/>
+                        </p:column>
+                        <p:column headerText="Desc." width="40">
+                            <p:commandLink actionListener="#{iniciarTramiteOficiosRp.showDlgPapel('/resources/dialog/dlglazyexoneracion', index)}">
+                                <p:graphicImage value="/resources/icons/descuento.jpg" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectObjectExo}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink actionListener="#{iniciarTramiteOficiosRp.eliminarInterviniente(index)}" update="dtIntervinientes,formCuantia:agregaSolicitante,formCuantia:agregaBeneficiario">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{iniciarTramiteOficiosRp.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglEditCuantia" widgetVar="dglEditCuantia" header="Información del Contrato" 
+                  resizable="false" modal="true" width="900" closable="false" closeOnEscape="false">
+            <h:form id="formEditCuantia">
+                <p:panel header="#{iniciarTramiteOficiosRp.rld.acto.nameTruncate2}">
+                    <p:panelGrid styleClass="noBorder" columns="6" style="margin: 0 auto;">
+                        <p:outputLabel value="Avalúo: $" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{iniciarTramiteOficiosRp.avaluo}" decimalPlaces="2" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Cuantía: $" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{iniciarTramiteOficiosRp.cuantia}" decimalPlaces="2" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Nro. comparecientes al pago: "/>
+                        <p:inputText value="#{iniciarTramiteOficiosRp.rld.cantidadIntervinientes}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="Nro. Certificados: " rendered="#{iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:inputText value="#{iniciarTramiteOficiosRp.rld.cantidad}" rendered="#{iniciarTramiteOficiosRp.rld.acto.solvencia}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="# Repertorio" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{iniciarTramiteOficiosRp.rld.inscripcion}" decimalPlaces="0" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Fecha Repertorio" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+                        <p:calendar value="#{iniciarTramiteOficiosRp.rld.fechaIngreso}" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}"/>
+
+                        <!--                                                Reingreso:
+                                                <p:selectBooleanCheckbox value="# {iniciarTramiteOficiosRp.rld.reingreso}"/>-->
+                        <p:outputLabel value="No de Lotes:" rendered="#{iniciarTramiteOficiosRp.tipocalculo eq 1}"/>
+                        <p:inputNumber value="#{iniciarTramiteOficiosRp.rld.numPredio}" decimalPlaces="0" rendered="#{iniciarTramiteOficiosRp.tipocalculo eq 1}"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="8" style="margin: 0 auto;" rendered="#{iniciarTramiteOficiosRp.certificado}">
+                        <p:outputLabel value="Año ultima trasf.: "/>
+                        <p:inputText  id="anio_traspaso" value="#{iniciarTramiteOficiosRp.rld.anioUltimaTrasnferencia}" maxlength="4"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="Año antecedente : "/>
+                        <p:inputText id="anio_mov" value="#{iniciarTramiteOficiosRp.rld.anioAntecedenteSolicitado}" maxlength="4"><p:keyFilter regEx="/[\d]/"/> 
+                            <p:ajax event="blur" listener="#{iniciarTramiteOficiosRp.aniosCalculo()}" update="base_calculo" process="anio_traspaso,anio_mov"/>
+                        </p:inputText>
+                        <p:outputLabel value="Años base: "/>
+                        <p:inputText value="15" maxlength="4" readonly="true"> </p:inputText>
+                        <p:outputLabel value="Años exedente: "/>
+                        <p:inputText id="base_calculo" value="#{iniciarTramiteOficiosRp.aniosDiferencia}" readonly="true "/>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <h:panelGrid columns="5">
+                            <h:panelGroup id="editagregaSolicitante">
+                                <p:outputLabel value="Agregar Solicitante" style="font-weight: bold" /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox  value="#{iniciarTramiteOficiosRp.agregaSolicitante}" >
+                                        <p:ajax update="dtEditIntrv,editagregaSolicitante" 
+                                                listener="#{iniciarTramiteOficiosRp.agregarSolicitanteInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+                            <h:panelGroup id="editagregaBeneficiario">
+                                <p:outputLabel value="Agregar Datos Factura" style="font-weight: bold"  /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox  value="#{iniciarTramiteOficiosRp.agregaBeneficiario}" >
+                                        <p:ajax update="dtEditIntrv, editagregaBeneficiario" 
+                                                listener="#{iniciarTramiteOficiosRp.agregarBeneficiarioInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+                            <h:panelGroup>
+                                <p:commandButton value="Agregar Intervieniente" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{iniciarTramiteOficiosRp.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectInterv}" update="dtEditIntrv"/>
+                                </p:commandButton>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </div>
+                    <br></br>
+
+                    <p:dataTable id="dtEditIntrv" value="#{iniciarTramiteOficiosRp.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Pap." width="40" rendered="#{!iniciarTramiteOficiosRp.rld.acto.solvencia}">
+                            <p:commandLink actionListener="#{iniciarTramiteOficiosRp.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:graphicImage value="/resources/icons/agregar.png" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectObjectPapel}" update="dtEditIntrv"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descuento" width="85">
+                            <p:outputLabel value="#{inter.exoneracion.porcentaje}"/>
+                        </p:column>
+                        <p:column headerText="Desc." width="40">
+                            <p:commandLink actionListener="#{iniciarTramiteOficiosRp.showDlgPapel('/resources/dialog/dlglazyexoneracion', index)}">
+                                <p:graphicImage value="/resources/icons/descuento.jpg" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{iniciarTramiteOficiosRp.selectObjectExo}" update="dtEditIntrv"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink actionListener="#{iniciarTramiteOficiosRp.eliminarInterviniente(index)}" update="dtEditIntrv,formEditCuantia:editagregaSolicitante,formEditCuantia:editagregaBeneficiario">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{iniciarTramiteOficiosRp.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglUsoDoc" widgetVar="usoDocumento" header="Uso Documento" resizable="false" modal="true">
+            <h:form id="formUsoDoc">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nombre:" style="font-weight: bolder;font-size: 12px"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{iniciarTramiteOficiosRp.nuevoUsoDoc.valor}" size="40" maxlength="39"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{iniciarTramiteOficiosRp.guardarUsoDoc()}"/></center>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="dglSolicitudes" widgetVar="dglSolicitudes" width="790" header="Oficios / Memorandums" resizable="false" modal="true">
+            <h:form id="frmSolicitudes">
+                <p:dataTable id="dtTareasDinardap" reflow="true" paginator="true" lazy="true" rows="10" resizableColumns="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             value="#{iniciarTramiteOficiosRp.tareasLazy}" var="tar" emptyMessage="Sin elementos..." filterEvent="enter" style="text-align: center;"
+                             rowStyleClass="#{!tar.realizado ? 'orange' : null}">
+                    <p:column headerText="No.Solicitud" filterBy="#{tar.numeroSolicitud}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{tar.numeroSolicitud}"/>
+                    </p:column>
+                    <p:column headerText="Institucion Solicitante" filterBy="#{tar.institucion}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{tar.institucion}"/>
+                    </p:column>
+                    <p:column headerText="Usuario Solicitante" filterBy="#{tar.solicitante}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{tar.solicitante}"/>
+                    </p:column>
+                    <p:column headerText="Fecha Ing." width="80" sortBy="#{tar.fecha}">
+                        <p:outputLabel value="#{tar.fecha}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>  
+                    <p:column headerText="***" width="20" >
+                        <p:commandLink actionListener="#{iniciarTramiteOficiosRp.seleccionarSolicitud(tar, false)}">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>  
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglSolicitudesJuridico" widgetVar="dglSolicitudesJuridico" width="790" header="Oficios / Memorandums" resizable="false" modal="true">
+            <h:form id="frmSolicitudesJuridico">
+                <p:dataTable id="dtTareasDinardapJuridico" reflow="true" paginator="true" lazy="true" rows="10" resizableColumns="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             value="#{iniciarTramiteOficiosRp.tareasLazy}" var="tar" emptyMessage="Sin elementos..." filterEvent="enter" style="text-align: center;"
+                             rowStyleClass="#{!tar.realizado ? 'orange' : null}">
+                    <p:column headerText="Ticket" filterBy="#{tar.ticket}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurTicket" value="#{tar.ticket}"/>
+                        <p:tooltip for="jurTicket" value="#{tar.ticket}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Juicio" filterBy="#{tar.numeroSolicitud}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurNumJuicio" value="#{tar.numeroSolicitud}"/>
+                        <p:tooltip for="jurNumJuicio" value="#{tar.numeroSolicitud}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Institucion Solicitante" filterBy="#{tar.institucion}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurInstitucion" value="#{tar.institucion}"/>
+                        <p:tooltip for="jurInstitucion" value="#{tar.institucion}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Deudor / Prohibición Solicitante" filterBy="#{tar.solicitante}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurDeudor" value="#{tar.solicitante}"/>
+                        <p:tooltip for="jurDeudor" value="#{tar.solicitante}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Acto" >
+                        <p:outputLabel id="jurActo" value="#{tar.acto.nombre}"/>
+                        <p:tooltip for="jurActo" value="#{tar.acto.nombre}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Fecha Ing." width="80">
+                        <p:outputLabel value="#{tar.fecha}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Estado" width="80" >
+                        <p:outputLabel value="#{tar.estadoTramite}"/>
+                    </p:column>
+                    <p:column headerText="Sel." width="20" >
+                        <p:commandLink actionListener="#{iniciarTramiteOficiosRp.seleccionarSolicitud(tar, true)}">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>  
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dglFichas" width="800" closable="true" closeOnEscape="true" header="Fichas Registrales" 
+                  resizable="false" modal="true">
+            <h:form id="frmFichas">
+                <p:dataTable paginator="true" lazy="true" rows="10" rowsPerPageTemplate="5,10,15" 
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords}" resizableColumns="true"
+                             value="#{iniciarTramiteOficiosRp.fichasRegistrales}" var="f" emptyMessage="No se encontró Fichas" filterEvent="enter">
+                    <p:column headerText="Nro de Ficha" filterBy="#{f.numFicha}" sortBy="#{f.numFicha}" width="90" filterStyle="width: 95%">
+                        <h:outputText value="#{f.numFicha}"/>
+                    </p:column>
+                    <p:column headerText="Clave Catastral" filterBy="#{f.claveCatastral}" width="160" filterStyle="width: 95%">
+                        <h:outputText value="#{f.claveCatastral}"/>
+                    </p:column>
+                    <p:column headerText="Parroquia" width="100">
+                        <h:outputText value="#{f.parroquia.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Descripción del Bien">
+                        <h:outputText id="labelDescFicha" value="#{f.descripcionBien}"/>
+                        <p:tooltip for="labelDescFicha" value="#{f.descripcionBien}" position="top"/>
+                    </p:column>
+                    <p:column headerText="**" width="20">
+                        <p:commandLink actionListener="#{iniciarTramiteOficiosRp.seleccionarFicha(f)}">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>  
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

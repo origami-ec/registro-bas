@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <p:panelGrid styleClass="noBorder" columns="6" style="font-size: 16px;font-weight: bolder;">
+                <p:outputLabel value="Nombre Tarea:" style="font-weight: bolder;color: #005f9c"/>
+                #{respuestaJudicialRp.taskDataByTaskID.name}
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                #{respuestaJudicialRp.ht.numTramite}
+            </p:panelGrid>
+            <p:tabView id="mainTab">
+                <p:tab title="Informacion de Tramite">
+                    <p:panelGrid styleClass="noBorder" columns="4" style="font-size: 16px;">
+                        <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{respuestaJudicialRp.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                        <p:outputLabel value="Nombre Solicitante:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{respuestaJudicialRp.liquidacion.solicitante.nombreCompleto}"
+                                       style="text-transform: uppercase;font-weight: bolder;"/>
+                    </p:panelGrid>
+                    <p:dataTable value="#{respuestaJudicialRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" resizableColumns="true"
+                                 reflow="true" style="text-align: center" emptyMessage="Sin observaciones..." scrollable="true" scrollHeight="300">
+                        <p:column headerText="Contrato">
+                            <h:outputText value="#{det.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <h:outputText value="#{det.liquidacion.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <h:outputText value="#{det.inscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fech.Insc." width="140">
+                            <p:outputLabel value="#{det.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Documentos Adjuntos (Documentos Habilitantes)">
+                    <p:dataTable value="#{respuestaJudicialRp.docs}" style="text-align: center;" scrollable="true"
+                                 emptyMessage="Sin elementos..." scrollHeight="300" var="doc">
+                        <p:column headerText="Nombre Archivo">
+                            <p:outputLabel value="#{doc.nombreArchivo}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" width="120">
+                            <p:outputLabel value="#{doc.contentType}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="140">
+                            <p:outputLabel value="#{doc.fecha}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Descargar" width="80">
+                            <p:commandLink actionListener="#{respuestaJudicialRp.downloadDocHabilitante(doc)}">
+                                <p:graphicImage value="/resources/icons/down.png"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Respuesta al Trámite por orden Judicial">
+                    <p:panelGrid styleClass="noBorder" columns="2">
+                        No de Oficio:
+                        <p:inputText value="#{respuestaJudicialRp.rrj.numeroOficio}" size="50"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="1">
+                        Respuesta/Observación:
+                        <p:inputTextarea value="#{respuestaJudicialRp.observacion}" rows="10" cols="100"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="2" style="margin: 0 auto;">
+                        <p:commandButton value="Adjuntar Oficio" icon="ui-icon-document" actionListener="#{respuestaJudicialRp.showDlgDocRespuesta()}" styleClass="btnStyle"/>
+                        <p:commandButton value="Completar Tarea" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{respuestaJudicialRp.pasarSinRespuesta()}">
+                            <p:confirm header="Confirmación" message="Seguro de Completar Tarea?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true">
+                            <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </p:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog id="dlgDocumento" widgetVar="dlgDocs" header="Cargar Oficio" modal="true" width="500" height="300" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formDocs">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="Tramite: #{respuestaJudicialRp.ht.numTramite}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="Fecha Ingreso: #{respuestaJudicialRp.ht.fechaIngreso}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:fileUpload listener="#{respuestaJudicialRp.handleUpload}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>        
+
+    </ui:define>
+</ui:composition>

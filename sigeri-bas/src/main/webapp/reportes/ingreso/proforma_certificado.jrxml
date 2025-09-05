@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proforma3" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="0" uuid="73dd3597-5107-44cb-a7c3-db55bf31f331">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="FOOTER" class="java.lang.String"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="VALOR_STRING" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\app_server\\apache-tomee-plus-1.7.1\\webapps\\rpp\\reportes\\ingreso\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select liq.fecha_creacion, ht.num_tramite, sol.ci_ruc, sol.telefono1, sol.direccion, sol.correo1, ben.ci_ruc as ced_bene, ben.telefono1 as telef_bene, ben.direccion as direccion_bene, ben.correo1 as correo_bene,
+case sol.es_persona when true then coalesce(sol.nombres,'')||' '||coalesce(sol.apellidos,'')
+else sol.razon_social end AS solicitante,
+case ben.es_persona when true then coalesce(ben.nombres,'')||' '||coalesce(ben.apellidos,'')
+else ben.razon_social end AS beneficiario,
+liq.sub_total, liq.descuento_valor, liq.desc_limit_cobro, liq.total_pagar, liq.descuento_porc,
+liq.gastos_generales,
+liq.adicional,
+coalesce(en.titulo_prof,'') ||' '||
+coalesce(en.nombres,'') ||' '|| coalesce(en.apellidos,'') as user_name,
+liq.oficio_memo_referencia from flow.regp_liquidacion as liq
+left join flow.historico_tramites ht on (ht.id = liq.tramite)
+left join app.cat_ente sol on (sol.id = liq.solicitante)
+left join app.cat_ente ben on (ben.id = liq.beneficiario)
+left join app.acl_user us on (us.id = liq.user_creacion)
+left join app.cat_ente en on (en.id = us.ente)
+where liq.id = $P{ID_LIQUIDACION}]]>
+	</queryString>
+	<field name="fecha_creacion" class="java.sql.Timestamp"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="telefono1" class="java.lang.String"/>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="correo1" class="java.lang.String"/>
+	<field name="ced_bene" class="java.lang.String"/>
+	<field name="telef_bene" class="java.lang.String"/>
+	<field name="direccion_bene" class="java.lang.String"/>
+	<field name="correo_bene" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="beneficiario" class="java.lang.String"/>
+	<field name="sub_total" class="java.math.BigDecimal"/>
+	<field name="descuento_valor" class="java.math.BigDecimal"/>
+	<field name="desc_limit_cobro" class="java.math.BigDecimal"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="descuento_porc" class="java.math.BigDecimal"/>
+	<field name="gastos_generales" class="java.math.BigDecimal"/>
+	<field name="adicional" class="java.math.BigDecimal"/>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="oficio_memo_referencia" class="java.lang.String"/>
+	<title>
+		<band height="98" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="18" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="1c97d1c8-dd1b-43a3-a297-0cee81c90070"/>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROFORMA - REGISTRO DE LA PROPIEDAD DEL CANTÓN PLAYAS]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement x="230" y="18" width="90" height="16" isPrintWhenDetailOverflows="true" uuid="85013666-361d-4761-9619-dd5efed51812"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_creacion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="120" y="48" width="40" height="12" isPrintWhenDetailOverflows="true" uuid="366a43f4-d211-4246-9b20-630156c278ec"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telf.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="48" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="d9453ead-7369-4c1d-8bce-394793276eff"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="160" y="48" width="117" height="12" isPrintWhenDetailOverflows="true" uuid="05f88a8c-6f93-40ba-839e-d02563969f55"/>
+				<box leftPadding="0">
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telefono1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="60" width="222" height="12" isPrintWhenDetailOverflows="true" uuid="9f58f8d4-077e-415a-ae5a-714edcf1ecd0"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solicitante}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="320" y="18" width="100" height="16" isPrintWhenDetailOverflows="true" uuid="286c0fcc-6d99-4b4b-8123-59583f1f1018">
+					<printWhenExpression><![CDATA[$F{oficio_memo_referencia} != null &&
+!$F{oficio_memo_referencia}.isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="12" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Oficio/Memo:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="420" y="18" width="135" height="16" isPrintWhenDetailOverflows="true" uuid="89505fa5-6235-44eb-9c71-d5f3d940bf00">
+					<printWhenExpression><![CDATA[$F{oficio_memo_referencia} != null &&
+!$F{oficio_memo_referencia}.isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{oficio_memo_referencia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="34" width="277" height="14" backcolor="#CCCCCC" uuid="a0746925-7833-445c-adf4-9beead1dd8f1"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SOLICITANTE]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="80" y="18" width="100" height="16" isPrintWhenDetailOverflows="true" uuid="8a435268-07ef-4950-86cf-11b375110a5c"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_tramite})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="18" width="80" height="16" isPrintWhenDetailOverflows="true" uuid="6fddaf05-8115-436c-9c0c-a1568ea02a9e"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No Trámite:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="48" width="40" height="12" isPrintWhenDetailOverflows="true" uuid="39bbcbcb-f597-469a-b097-d284702dc53c"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CI/RUC:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="2342d652-6d32-43fa-9848-7292db42a9c4"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="438" y="48" width="117" height="12" isPrintWhenDetailOverflows="true" uuid="de49dddc-00e1-4a0d-8279-2f640acd9621"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telef_bene}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="48" width="40" height="12" isPrintWhenDetailOverflows="true" uuid="d00b15d6-387d-4a05-b8d8-f6bbb3b91edb"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CI/RUC:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="398" y="48" width="40" height="12" isPrintWhenDetailOverflows="true" uuid="918220ef-a4df-417f-9c5e-f7d289f9c4d8"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telf.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="318" y="48" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="99bb08bc-bc32-43b8-b7e6-4e7bbf2f1712"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_bene}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="333" y="84" width="222" height="12" isPrintWhenDetailOverflows="true" uuid="809d0583-1912-4929-aced-2f9805c88bfb"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_bene}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="84" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="4d94eaa0-6c09-4cb8-b061-db888ce895df"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Direccion:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="72" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="29a6a408-a742-4759-b524-fd3506056693"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Correo:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="333" y="72" width="222" height="12" isPrintWhenDetailOverflows="true" uuid="858ad384-7666-4303-a1b6-cbc557e0ba53"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{correo_bene}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="333" y="60" width="222" height="12" isPrintWhenDetailOverflows="true" uuid="aabc3fcc-be3e-4442-8a70-a131dca136b5"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{beneficiario}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="60" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="28a20363-0f09-482a-89c7-a2e7a8433484"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="18" width="50" height="16" isPrintWhenDetailOverflows="true" uuid="30616a1c-d09b-4580-86df-6cd6134ada32"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="278" y="34" width="277" height="14" backcolor="#CCCCCC" uuid="b1b4a7a6-58fe-473c-b92d-8d867d58cc6a"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BENEFICIARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="72" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="defd598f-a393-407e-bf8b-e60faf19600e"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Correo:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="84" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="a8a9a147-7c89-4636-8cb5-a41acfa67408"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Direccion:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="72" width="222" height="12" isPrintWhenDetailOverflows="true" uuid="f76245d0-8ee2-45fa-9cda-52b3c1323fe7"/>
+				<box>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{correo1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="84" width="222" height="12" isPrintWhenDetailOverflows="true" uuid="0336f64e-23e9-477a-a83a-faaa6f9cb161"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="44" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="1" width="555" height="20" isRemoveLineWhenBlank="true" uuid="3c43c24b-b002-4015-8632-060e9a0927be"/>
+				<subreportParameter name="LIQUIDACION">
+					<subreportParameterExpression><![CDATA[$P{ID_LIQUIDACION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "proforma_descuentos_certificado.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="22" width="555" height="20" uuid="b74a6668-b163-48a0-8c90-8d59564af9cb"/>
+				<subreportParameter name="GASTO_GENERAL">
+					<subreportParameterExpression><![CDATA[$F{gastos_generales}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIQUIDACION">
+					<subreportParameterExpression><![CDATA[$P{ID_LIQUIDACION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUB_TOTAL">
+					<subreportParameterExpression><![CDATA[$F{sub_total}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VALOR_STRING">
+					<subreportParameterExpression><![CDATA[$P{VALOR_STRING}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ADICIONAL">
+					<subreportParameterExpression><![CDATA[$F{adicional}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TOTAL_PAGAR">
+					<subreportParameterExpression><![CDATA[$F{total_pagar}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESCUENTO">
+					<subreportParameterExpression><![CDATA[$F{descuento_valor}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "proforma_detalles_certificado.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="115" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="103" width="555" height="12" uuid="2acda0fa-fd8d-4575-9679-cfd7ffe9122d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Validez de la proforma: 8 días.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="54" width="200" height="12" isPrintWhenDetailOverflows="true" uuid="39f10626-15ad-4a3d-8bd4-469e9aed3da1"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solicitante}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="306" y="54" width="200" height="12" isPrintWhenDetailOverflows="true" uuid="c2655a53-6748-4bb6-b198-8eeae1a6933d"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="40" y="66" width="200" height="12" isPrintWhenDetailOverflows="true" uuid="ddb10620-45dd-4c78-b3c8-34b8cc808142"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SOLICITANTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="306" y="66" width="200" height="12" isPrintWhenDetailOverflows="true" uuid="cbe863e9-97b7-4d14-83eb-d0f26a97f6e3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REVISOR]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="520c93d4-3b29-4a09-a57f-66763da35807"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

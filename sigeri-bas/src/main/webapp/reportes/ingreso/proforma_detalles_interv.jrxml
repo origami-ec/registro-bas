@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proforma_detalles_interv" language="groovy" pageWidth="391" pageHeight="595" columnWidth="391" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fb9e8db-f0d9-4e7e-9221-eae9023560ba">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_LIQ_DETALLE" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[SELECT ente.ci_ruc, ente.nombres, ente.apellidos, ente.razon_social, pa.papel,
+case ente.es_persona when true then coalesce(ente.apellidos,'')||' '||coalesce(ente.nombres,'')
+else ente.razon_social end AS nombre_completo, int.nombres as interviniente, int.ente
+from flow.regp_intervinientes int
+left join app.cat_ente ente on ente.id = int.ente
+left join app.reg_papel pa on pa.id = int.papel
+where int.liquidacion = $P{ID_LIQ_DETALLE} order by 5]]>
+	</queryString>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="apellidos" class="java.lang.String"/>
+	<field name="razon_social" class="java.lang.String"/>
+	<field name="papel" class="java.lang.String"/>
+	<field name="nombre_completo" class="java.lang.String"/>
+	<field name="interviniente" class="java.lang.String"/>
+	<field name="ente" class="java.lang.Long"/>
+	<detail>
+		<band height="8" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="391" height="8" uuid="8ed552db-dd6f-4ef6-b40e-0e7ceab82c58"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ente} == null ? $F{interviniente} :
+(" - " + $F{ci_ruc} + " - " + $F{nombre_completo} + ($F{papel} == null ? "" : " - " + $F{papel}))]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Juzgados/Notarías/Entes Judiciales</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:tabView>
+                <p:tab title="Listado de Juzgados / Notarías">
+                    <p:dataTable id="dtJuzgados" value="#{dlgLazyNotarias.lazy}" var="notar" style="text-align: center" filterEvent="enter" paginatorPosition="bottom"
+                                 paginator="true" lazy="true" rows="7" rowsPerPageTemplate="7,15,20" emptyMessage="No hay elementos."
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+                        <p:column headerText="Abrev." filterBy="#{notar.abreviatura}" filterStyle="width: 95%" width="70">
+                            <p:outputLabel value="#{notar.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{notar.nombre}" filterBy="#{notar.nombre}" 
+                                  filterStyle="width: 75%" filterMatchMode="contains">
+                            <p:outputLabel value="#{notar.nombre}" />
+                        </p:column>
+                        <p:column headerText="**" width="40">
+                            <p:commandButton icon="pi pi-forward" actionListener="#{dlgLazyNotarias.selectObject(notar)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Nuevo Juzgado / Notaría">
+                    <p:panel id="pnlJuzgado" header="Información de ente Judicial" >
+                        <h:panelGrid columns="1" style="font-weight: bolder;">
+                            <h:panelGroup>
+                                Abreviatura:<br></br>
+                                <p:inputText value="#{dlgLazyNotarias.juzgado.abreviatura}" size="50" maxlength="10" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Nombre:<br></br>    
+                                <p:inputText value="#{dlgLazyNotarias.juzgado.nombre}" size="50" maxlength="100" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <center>
+                                <p:commandButton value="Guardar" update="dtJuzgados, pnlJuzgado" icon="pi pi-save" 
+                                                 actionListener="#{dlgLazyNotarias.saveJuzgado()}"/>
+                            </center>
+                        </h:panelGrid>
+
+                    </p:panel>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subPersonalRecaudaciones" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="20" uuid="6c0f9a58-39ee-4bcf-a452-f7ced84c86d8">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Usuario" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="totalRecaudados" class="java.math.BigDecimal"/>
+	<parameter name="HASTA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT us.usuario, COALESCE(SUM(comprav.valor), 0) AS tot_com_vent, COUNT(comprav.count) AS comprav_count, COALESCE(SUM(bienes.valor), 0) AS tot_bienes, COUNT(bienes.count) AS count_bienes,
+COALESCE(COUNT(fact_anul.*), 0) AS fact_anul, COALESCE(SUM(otroscert.valor), 0) AS otroscert, COUNT(otroscert.count) AS otroscert_count,
+TRIM(COALESCE(e.apellidos, '') || ' ' || COALESCE(e.nombres, '')) AS nombre_cajero, rc.codigo_caja, COUNT(p.id) AS num_fact, MIN(p.num_comprobante) AS min_fact,
+MAX(p.num_comprobante) AS max_fact
+FROM financiero.ren_pago p INNER JOIN app.acl_user us ON p.cajero=us.id INNER JOIN app.cat_ente e ON e.id=us.ente
+INNER JOIN financiero.ren_cajero rc ON rc.usuario=us.id
+
+LEFT JOIN (SELECT  p.id  FROM financiero.ren_pago p
+INNER JOIN flow.regp_liquidacion liq ON liq.id = p.liquidacion
+ WHERE liq.estado_liquidacion = 3) fact_anul ON ( p.id in( fact_anul.id))
+
+LEFT JOIN (SELECT COALESCE(SUM(pr.valor), 0) AS valor, pr.pago, COUNT(pr.id)  FROM financiero.ren_pago_rubro pr
+WHERE pr.rubro=12 AND pr.pago in (SELECT p.id FROM financiero.ren_pago p
+INNER JOIN flow.regp_liquidacion liq ON liq.id = p.liquidacion
+WHERE liq.estado_liquidacion = 2) group by 2) bienes ON (bienes.pago =p.id)
+
+LEFT JOIN (SELECT COALESCE(SUM(pr.valor), 0) AS valor, pr.pago, COUNT(pr.id) FROM financiero.ren_pago_rubro pr WHERE pr.rubro=98 AND pr.pago in (SELECT p.id FROM financiero.ren_pago p
+INNER JOIN flow.regp_liquidacion liq ON liq.id = p.liquidacion
+WHERE liq.estado_liquidacion = 2) group by 2) comprav ON (comprav.pago=p.id)
+
+LEFT JOIN (SELECT COALESCE(SUM(pr.valor), 0) AS valor, pr.pago, COUNT(pr.id) FROM financiero.ren_pago_rubro pr WHERE pr.rubro NOT IN (12, 98)  AND pr.pago in (SELECT p.id FROM financiero.ren_pago p
+INNER JOIN flow.regp_liquidacion liq ON liq.id = p.liquidacion
+WHERE liq.estado_liquidacion = 2) group by 2) otroscert ON (otroscert.pago =p.id)
+
+WHERE CASE WHEN $P{Usuario} > 0 THEN us.id = $P{Usuario} ELSE TRUE END AND p.estado
+AND p.fecha_pago  between to_timestamp($P{FECHA}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone GROUP BY 1,9,10,e.apellidos,e.nombres ORDER BY 1]]>
+	</queryString>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="tot_com_vent" class="java.math.BigDecimal"/>
+	<field name="comprav_count" class="java.lang.Long"/>
+	<field name="tot_bienes" class="java.math.BigDecimal"/>
+	<field name="count_bienes" class="java.lang.Long"/>
+	<field name="fact_anul" class="java.lang.Long"/>
+	<field name="otroscert" class="java.math.BigDecimal"/>
+	<field name="otroscert_count" class="java.lang.Long"/>
+	<field name="nombre_cajero" class="java.lang.String"/>
+	<field name="codigo_caja" class="java.lang.String"/>
+	<field name="num_fact" class="java.lang.Long"/>
+	<field name="min_fact" class="java.lang.Long"/>
+	<field name="max_fact" class="java.lang.Long"/>
+	<detail>
+		<band height="181" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="afd2f4a6-0fa2-44e3-8387-0c983d942108" x="4" y="6" width="51" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CAJERA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d31fc4bd-cca4-4c66-a25a-b5f2ed52ef58" x="63" y="6" width="321" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Caja " + $F{codigo_caja} + " " + $F{nombre_cajero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8a95367b-f9a4-40e6-b48f-d1117a0f0dbb" x="57" y="35" width="106" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num. Factura  Inical :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="9f3f028d-c628-4607-90e5-c6467b5a3022" x="166" y="35" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{min_fact}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="904faf33-0035-49a4-8425-45276cbc91d1" x="57" y="53" width="106" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num. Factura  Final :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e8552dd1-a155-4110-9cac-6f0665fe99ad" x="165" y="53" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{max_fact}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="024adf08-a321-4490-8584-f7d3ac329e10" x="45" y="75" width="118" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num. Inscrpciones CV:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="acbd999d-4e98-445f-a529-b8f3e5da4e58" x="165" y="75" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{comprav_count}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="261b3db3-1dc1-4eb1-b461-4d51eeeb6e72" x="30" y="93" width="130" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num.Otras Inscripciones :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3d63edf2-929c-4180-ad61-b277617810f0" x="166" y="93" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{otroscert_count}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9838f07e-da9e-4888-904f-25da1b20765c" x="118" y="111" width="42" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="7229d21f-702e-40c6-ab17-62aab63992f2" x="166" y="111" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{comprav_count} + $F{otroscert_count}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="371b7390-f10c-4830-b4a5-fa5b9d94bde1" x="244" y="35" width="129" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num. Factura  Anuladas :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="2d65815f-e183-4f62-a73c-0dba1282ebee" x="376" y="35" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{fact_anul}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="85aaf2e8-0696-43f9-9c01-28870af6a2b1" x="376" y="53" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{num_fact}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="852c7c07-2527-4e9b-9dcc-cabcdeb02f1c" x="258" y="52" width="115" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num. Total Facturas  :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="2141c500-a773-40df-9a84-6fc082bc741c" x="377" y="75" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{tot_com_vent}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="c1eeaf69-5dc5-4a07-89a6-6b87d9f373b1" x="244" y="75" width="130" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Inscripciones  CV :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="dc055521-a318-48d4-9f2a-9a679871099d" x="231" y="93" width="144" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Otras Inscrpciones s :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3558375d-d089-4776-aa97-7b7d452d9c6e" x="378" y="93" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{otroscert}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="608752c1-3e10-453d-b252-f3e33f2deaa0" x="378" y="111" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{tot_com_vent}.add( $F{otroscert} )]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="6bc45087-023d-4fa1-8cfa-4256bd17d1b8" x="165" y="132" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{count_bienes}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9c8db20c-efc9-4787-ae58-faff2d327295" x="21" y="132" width="141" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Num.Certificado de Bienes:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="fb093dc7-529a-415a-a05d-bd49f8255de3" x="247" y="133" width="126" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[valor Certificado Bienes:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="a9b2d100-9146-474b-8a00-41547cefe51c" x="378" y="133" width="48" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{tot_bienes}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c5eaac72-a9b8-4d64-9de3-757b899521f6" x="385" y="161" width="100" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{totalRecaudados}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="622d80cb-6180-4868-943e-798e638a86ea" x="258" y="161" width="126" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL RECAUDACION:]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="2d0a0346-d5fa-48e9-b4bc-1670b0857475" x="2" y="178" width="500" height="1"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

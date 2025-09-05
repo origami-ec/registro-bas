@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        Solicitudes de Inscripción
+        #{userSession.setTopPage('Formulario único de inscripción y cancelación de hipoteca')}
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-toggleswitch {
+                vertical-align: bottom;
+            }
+        </style>
+        <h:form id="frmMainSol">
+            <p:panel id="datSol" header="Datos de inscripción">
+                <p:panelGrid layout="grid" columns="4" style="margin-bottom: 15px;">
+                    <co:inputTextButton label="C.I. Nro." value="#{solicitudesInscripcion.solicitud.sol_cedula}"
+                                        actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 1)}"
+                                        isAjaxButton="true" updateButton="frmMainSol:datSol" listenerAjaxButton="#{solicitudesInscripcion.selectObject}" />
+                    <co:inputText label="Nombres" value="#{solicitudesInscripcion.solicitud.sol_nombres}" />
+                    <co:inputTextButton label="Ciudad" value="#{solicitudesInscripcion.ciudad.nombre}"
+                                        actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyDomicilios', 2)}"
+                                        isAjaxButton="true" listenerAjaxButton="#{solicitudesInscripcion.selectObject}" />
+                    <co:inputText label="Dirección" value="#{solicitudesInscripcion.solicitud.sol_calles}" />
+                    <co:inputText label="Teléfono" value="#{solicitudesInscripcion.solicitud.sol_convencional}" typeInput="number" />
+                    <co:inputText label="Celular" value="#{solicitudesInscripcion.solicitud.sol_celular}" typeInput="number" />
+                    <co:inputText label="Correo" value="#{solicitudesInscripcion.solicitud.sol_correo}" />
+                    <co:inputText label="Propiedad" value="#{solicitudesInscripcion.solicitud.clave_catastral}" />
+                </p:panelGrid>
+            </p:panel>
+            <p:fieldset legend="SECCIÓN A" toggleable="true" style="margin-bottom: 15px;" >
+                <p:panelGrid columns="2" layout="grid">
+                    <co:inputTextButton label="Tipo de inscripción que se requiere" value="#{solicitudesInscripcion.acto.nombre}"
+                                        actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyactos', 3)}"
+                                        isAjaxButton="true" updateButton="frmMainSol:papelesList:papelesList" listenerAjaxButton="#{solicitudesInscripcion.selectObject}"
+                                        >
+                    </co:inputTextButton>
+                    <co:inputSelectMany id="papelesList" catalogo="#{solicitudesInscripcion.acto.regPapelCollection}" var="ctlg5" columns="4"
+                                        itemLabel="#{ctlg5.papel}" itemValue="#{ctlg5}" value="#{solicitudesInscripcion.papeles}"
+                                        label="Tipo de relación con los que intervinien en el contrato"  />
+                </p:panelGrid>
+            </p:fieldset>
+            <p:fieldset legend="SECCIÓN B" toggleable="true" >
+                <p:panel id="datSeccionB" header="La propiedad a inscribir tiene actualmente los siguientes datos en el registro de la propiedad" >
+                    <p:panelGrid layout="grid" columns="4" style="margin-bottom: 15px;">
+                        <co:inputDate label="Fecha ingreso a revisión" value="#{solicitudesInscripcion.solicitud.fecha_solicitud}" />
+                        <co:inputDate label="Fecha escritura notaria" value="#{solicitudesInscripcion.solicitud.fechaEscritura}" />
+                        <co:inputTextButton label="Notaria pública" value="#{solicitudesInscripcion.notaria.nombre}"
+                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazynotarias', 1)}"
+                                            isAjaxButton="true" updateButton="frmMainSol:datSol" listenerAjaxButton="#{solicitudesInscripcion.selectObject}" />
+                        <co:inputDate label="Fecha de inscripción" value="#{solicitudesInscripcion.solicitud.fechaInscripcion}" />
+                        <co:inputText label="Número de inscripción" value="#{solicitudesInscripcion.solicitud.sol_numero_casa}" />
+                        <co:inputSelect label="Provincia" value="#{solicitudesInscripcion.solicitud.sol_provincia}" useConverter="false"
+                                        catalogo="#{solicitudesInscripcion.provincias}" var="ctlgp" itemLabel="#{ctlgp}" itemValue="#{ctlgp}" >
+                            <p:ajax event="ajax" update="frmMainSol:datSeccionB"  />
+                            <!--<p:ajax event="ajax" update="frmMainSol:cantonSel:cantonSel"  />-->
+                        </co:inputSelect>
+                        <co:inputSelect id="cantonSel" label="Cantón" value="#{solicitudesInscripcion.solicitud.sol_ciudad}" useConverter="false"
+                                        catalogo="#{solicitudesInscripcion.cantones}" var="ctlgc1" itemLabel="#{ctlgc1}" itemValue="#{ctlgc1}" />
+                        <co:inputTextButton label="Parroquia" value="#{solicitudesInscripcion.ciudad.nombre}"
+                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyDomicilios', 1)}"
+                                            isAjaxButton="true" updateButton="frmMainSol:datSol" listenerAjaxButton="#{solicitudesInscripcion.selectObject}" />
+                        <co:inputText label="Clave catastral" value="#{solicitudesInscripcion.solicitud.clave_catastral}" />
+                        <h:panelGroup>
+                            <p:outputLabel value="NO EXISTE ANTECEDENTES ES ADJUDICACIÓN DE LA SECRETARÍA DE TIERRAS" class="FontBold Wid100"  />
+                            <p:selectOneRadio value="#{solicitudesInscripcion.solicitud.tipo_solicitud}" unselectable="true">
+                                <f:selectItem itemLabel="Si" itemValue="#{1}" />
+                                <f:selectItem itemLabel="No" itemValue="#{0}" />
+                            </p:selectOneRadio>
+                        </h:panelGroup>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel id="datPropiedad" header="Datos de la Propiedad">
+                    <p:panelGrid columns="2" layout="grid">
+                        <p:panelGrid layout="grid" columns="2">
+                            <co:inputText label="Lote Nro." value="#{solicitudesInscripcion.solicitud.ben_nombres}" />
+                            <co:inputText label="Manzana" value="#{solicitudesInscripcion.solicitud.ben_apellidos}" />
+                            <co:inputText label="Sector" value="#{solicitudesInscripcion.solicitud.ben_telefono}" />
+                            <co:inputText label="Parroquia" value="#{solicitudesInscripcion.solicitud.sol_parroquia}" />
+                            <co:inputText label="Número Predio" value="#{solicitudesInscripcion.solicitud.numero_ficha}" typeInput="number" />
+                            <co:inputText label="Clave Catastral" value="#{solicitudesInscripcion.solicitud.ben_documento}" />
+                            <co:inputDate label="Fecha Inscripcion" value="#{solicitudesInscripcion.solicitud.fechaInscripcion1}" maxdate="sysdate" />
+                            <co:inputText label="Número Inscripcion" value="#{solicitudesInscripcion.solicitud.ben_correo}" typeInput="number" />
+                        </p:panelGrid>
+                        <p:panelGrid columns="2" class="Wid100">
+                            <co:inputSelect catalogo="#{solicitudesInscripcion.catalogoPropiedadHorizontal.ctlgItemCollection}" var="cph1"
+                                            itemLabel="#{cph1.valor}" itemValue="#{cph1}" value="#{solicitudesInscripcion.tipoInmueble}"
+                                            label="Tipo bien" />
+                            <co:inputText label="Número" value="#{solicitudesInscripcion.solicitud.tipo_inmueble}" typeInput="number" />
+                        </p:panelGrid>
+
+                    </p:panelGrid>
+                </p:panel>
+            </p:fieldset>
+            <br/><br/>
+            <center>
+                <p:outputLabel value="Imprimir Documento" />
+                <p:selectOneRadio value="#{solicitudesInscripcion.imprimirDocumento}" unselectable="true">
+                    <f:selectItem itemLabel="Si" itemValue="#{true}" />
+                    <f:selectItem itemLabel="No" itemValue="#{false}" />
+                </p:selectOneRadio>
+                <br/>
+                <p:commandButton value="Guardar" icon="fa fa-save" actionListener="#{solicitudesInscripcion.saveCancelacion()}" />
+            </center>
+            <br/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

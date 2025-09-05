@@ -1,0 +1,381 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"> 
+    <ui:define name="title">Visualizar Documentos</ui:define>
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{editarDocumentoMB.doPreRenderView()}"/>
+            <f:viewParam name="archivoId" value="#{editarDocumentoMB.archivoId}" />
+        </f:metadata>
+    </ui:define>
+    <ui:define name="content">
+        <!--<center><h2>VISUALIZAR DOCUMENTOS</h2></center>-->
+        <h:form id="formMain">
+            <h:panelGrid style="margin: 0 auto;" columns="3">
+                <p:outputLabel value="TIPO DE VISUALIZACIÓN:" 
+                               style="font-size: 20px;font-weight: bolder;color: darkblue;"/>
+                <p:spacer width="20" height="1"/>
+                <p:selectOneRadio value="#{editarDocumentoMB.visualizacion}" style="font-size: 18px;font-weight: bolder;" >
+                    <f:selectItem itemLabel="Páginas" itemValue="1" />
+                    <f:selectItem itemLabel="Documento" itemValue="2" />
+                    <p:ajax event="change" update="formMain" />
+                </p:selectOneRadio>
+            </h:panelGrid>
+            <h:panelGroup rendered="#{editarDocumentoMB.visualizacion eq 2}">
+                <iframe id="visor" style="" width="100%" height="700" allowfullscreen="" webkitallowfullscreen="" 
+                        src="#{editarDocumentoMB.visorUrl}" />
+            </h:panelGroup>
+            <h:panelGrid id="pnlIndex" columns="2" columnClasses="fifty-percent, fifty-percent" 
+                         styleClass="ui-panelgrid-blank"  style="width: 100% !important" rendered="false" >
+                <h:panelGroup > 
+                    <p:outputLabel value="Indexación: " style="width: 100%; font-weight: bolder"/><br/>
+                    <p:inputText  value="#{editarDocumentoMB.archivo.tipoIndexacion}"  readonly="true"  style="width: 100%" /> <br/>
+                    <p:outputLabel value="Describa su documento" style="width: 100%; font-weight: bolder"/><br/>
+                    <p:inputText value="#{editarDocumentoMB.archivo.detalleDocumento}" readonly="true"  style="width: 100%" /> <br/><br/><br/>
+                    <h:panelGrid columns="3" style="width: 300px;" rendered="false">
+                        <p:outputLabel value="Folio:" style="font-weight: bolder; color: black"/>
+                        <p:inputText />
+                        <p:commandButton value="Foliar" 
+                                         icon="fa fa-print" 
+                                         styleClass="success-button rounded-button"
+                                         style="width: auto;" > 
+                        </p:commandButton>
+                    </h:panelGrid>
+                    <h:panelGrid id="pnlBtns" columns="4">
+                        <h:panelGroup>
+
+                            <p:outputLabel value="Agregar anotación" style="font-weight: bolder; color: black"/><br/>
+                            <p:selectOneMenu value="#{editarDocumentoMB.tipoAnotacion}" style="width: 100%">
+                                <p:ajax  listener="#{editarDocumentoMB.limpiarNotaSeleccionada()}" update="dtPdfs, formNota"/>
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="NOTA" itemValue="NOTA"/>
+                                <f:selectItem itemLabel="LINEA" itemValue="LINEA"/>
+                                <f:selectItem itemLabel="SELLOS"  itemValue="SELLOS"/>
+                                <f:selectItem itemLabel="REMARCADO"  itemValue="REMARCADO"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <center>
+                                <p:outputLabel value=""/><br/>
+                                <p:commandButton value="Imprimir archivo" 
+                                                 title="Imprimir archivo"
+                                                 icon="fa fa-print" 
+                                                 styleClass="success-button rounded-button"
+                                                 actionListener="#{editarDocumentoMB.visualizarDocumento()}" update="pnlIndex"
+                                                 style="width: auto;" > 
+                                </p:commandButton>
+                            </center>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <center>
+                                <p:outputLabel value=""/><br/>
+                                <p:commandButton value="Imprimir notas" 
+                                                 title="Imprimir notas"
+                                                 icon="fa fa-print" 
+                                                 styleClass="help-button rounded-button"
+                                                 actionListener="#{editarDocumentoMB.imprimirNotas()}" update="pnlIndex"
+                                                 style="width: auto;" > 
+                                </p:commandButton>
+                            </center>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <center>
+                                <p:outputLabel value=""/><br/>
+                                <p:commandButton value="Actualizar datos" 
+                                                 title="Actualizar datos"
+                                                 icon="fa fa-save" 
+                                                 styleClass="info-button rounded-button"
+                                                 actionListener="#{editarDocumentoMB.actualizarIndexacion()}" update="pnlIndex"
+                                                 style="width: auto;" > 
+                                </p:commandButton>
+                            </center>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:dataTable id="dtIndicesFrm" var="index" value="#{editarDocumentoMB.archivo.detalles}" 
+                                 editable="true" lazy="false">
+                        <p:column headerText="Descripción" width="100">
+                            <p:outputLabel value="* " style="color: red" rendered="#{index.obligatorio}"/>
+                            <p:outputLabel value="#{index.descripcion}" />
+                        </p:column>
+                        <p:column headerText="Detalle">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <p:outputLabel value="#{index.detalle}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <br/>
+                                    <p:inputText id="modelInput" value="#{index.detalle}" style="width:100%;"
+                                                 rendered="#{index.tipoDato eq 'TEXTO'}"/>
+                                    <p:inputText id="text2" value="#{index.detalle}" rendered="#{index.tipoDato eq 'NUMERO'}" style="width:100%;">
+                                        <p:keyFilter mask="num" />
+                                    </p:inputText>
+                                    <p:selectBooleanButton onLabel="SI" offLabel="NO" value="#{index.detalle}" rendered="#{index.tipoDato eq 'LOGICO'}"
+                                                           onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem;" />
+
+                                    <p:calendar id="datetime" value="#{index.detalle}"  style="width:100%; " 
+                                                showOn="button" placeholder="dd-MM-yyyy" navigator="true"
+                                                pattern="dd-MM-yyyy" rendered="#{index.tipoDato eq 'FECHA'}">
+                                        <f:convertDateTime pattern="dd-MM-yyyy" />
+                                    </p:calendar>
+
+                                    <p:selectOneMenu value="#{index.detalle}"  style="width:100%;" rendered="#{index.tipoDato eq 'CATEGORIA'}"> 
+                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                        <f:selectItems var="i" value="#{index.categorias}" itemLabel="#{i}" itemValue="#{i}"/>
+                                    </p:selectOneMenu>
+                                    <br/>
+
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column style="width:6rem" headerText="***">
+                            <p:rowEditor editTitle="Editar #{index.descripcion}" cancelTitle="Cancelar" 
+                                         saveTitle="Grabar datos #{index.descripcion}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:panelGrid>
+
+            <h:panelGrid id="pnlDocumento" columns="1" style="width: 100% !important" rendered="#{editarDocumentoMB.visualizacion eq 1}" >
+                <h:panelGrid id="pnlImagen" columns="1" >
+                    <p:dataGrid  id="dtPdfs" value="#{editarDocumentoMB.archivo.imagenes}" var="imagen" lazy="false"
+                                 rowIndexVar="index"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"                                     
+                                 columns="1" layout="grid" emptyMessage="Cargue su archivo" style="width: 100%"
+                                 rows="1" paginator="true"  >
+                        <p:fieldset legend="Notas" toggleable="true"   toggleSpeed="500" rendered="false" >
+                            <p:dataGrid id="dtNotas" value="#{imagen.notas}" var="nota"  
+                                        rowIndexVar="i" 
+                                        rows="6" paginator="true"
+                                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="6,12,18" >
+
+                                <f:facet name="header">
+                                    <p:outputLabel value="Ver todas las notas" style="font-weight: bolder; color: black"/><br/>
+                                    <p:inputSwitch id="temp1" value="#{editarDocumentoMB.verTodasNotas}" >
+                                        <p:ajax update=":formMain:dtPdfs"/>
+                                    </p:inputSwitch>
+                                </f:facet>
+                                <div class="product-grid-item card" style="margin-bottom: 0">
+                                    <div class="product-grid-item-top">
+                                        <div>
+                                            <i class="pi pi-tag product-category-icon"/>
+                                            <span class="product-category" >
+                                                <p:outputLabel value="#{nota.titulo}" style="font-weight: bolder; color: #{nota.color}; font-size: 14px; text-transform: uppercase"/><br/>
+                                                <p:outputLabel value="#{nota.fecha}" style="font-weight: bolder; color: #{nota.color}"/> <br/>
+                                                <p:outputLabel value="#{nota.tipo}" style="font-weight: bold"/>
+                                            </span>
+                                        </div>
+
+                                    </div><br/>
+                                    <div class="product-grid-item-content">
+                                        <div class="product-name">#{nota.nota}</div><br/>
+                                        <div class="product-description">#{nota.usuario.nombres}</div>
+                                        <div align="rigth">
+                                            <p:commandLink actionListener="#{editarDocumentoMB.visualizarNota(nota)}" title="Visualizar nota: #{nota.titulo}" >
+                                                <i class="fa fa-eye" style="font-size: 1.2em; margin-right: 5px;  margin-top: 10px; color: blue"></i>
+                                            </p:commandLink>
+                                            <p:spacer width="5" />
+                                            <p:commandLink id="temp2" actionListener="#{editarDocumentoMB.eliminarNota(nota, i, index)}" title="Eliminar nota: #{nota.titulo}" update="dtPdfs">
+                                                <p:confirm message="Esta seguro de eliminar la nota: #{nota.titulo}" header="Confirmación" />
+                                                <i class="fa fa-trash" style="font-size: 1.2em; margin-right: 5px;  margin-top: 10px; color: red"></i>
+                                            </p:commandLink>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </p:dataGrid>
+
+                        </p:fieldset>
+
+                        <h:panelGrid id="pnlImagenDet" columns="1"  >
+                            <h:panelGroup>
+                                <ui:include src="anotaciones.xhtml" />
+                                <ui:repeat var="nota" value="#{imagen.notas}"  rendered="#{editarDocumentoMB.verTodasNotas}">
+                                    <h:panelGroup  rendered="#{nota.tipo eq 'NOTA' or nota.tipo eq 'LINEA'}"
+                                                   style="
+                                                   background-color: #{nota.color};
+                                                   width: #{nota.ancho}px;
+                                                   height: #{nota.alto}px;
+                                                   margin-left: #{nota.posicionX1}px;
+                                                   margin-top: #{nota.posicionY1}px;
+                                                   margin-right: #{nota.posicionX1}px;
+                                                   margin-bottom: #{nota.posicionY1}px;
+                                                   border-radius: 25px;
+                                                   border: 1px solid captiontext;
+                                                   position: absolute;">
+                                        <br/>
+                                        <h:outputLabel value="#{nota.titulo}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{nota.tipo eq 'NOTA'}" /><br/>
+                                        <h:outputLabel value="#{nota.fecha}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{nota.tipo eq 'NOTA'}" /><br/>
+                                        <h:outputLabel value="#{nota.usuario.nombres}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{nota.tipo eq 'NOTA'}"  /><br/><br/>
+                                        <center>
+                                            <h:outputLabel value="#{nota.nota}" escape="false" style="color: black"/><br/>
+                                        </center>
+                                    </h:panelGroup> 
+
+                                    <h:panelGroup rendered="#{nota.tipo eq 'SELLOS'}"
+                                                  style="
+                                                  width: #{nota.ancho}px;
+                                                  height: #{nota.alto}px;
+                                                  margin-left: #{nota.posicionX1}px;
+                                                  margin-top: #{nota.posicionY1}px;
+                                                  margin-right: #{nota.posicionX1}px;
+                                                  margin-bottom: #{nota.posicionY1}px;
+                                                  position: absolute; ">
+                                        <br/>
+                                        <center>
+                                            <p:graphicImage value="#{nota.nota}"  style="color: black;  width: #{nota.ancho}px;  height: #{nota.alto}px;"/>
+                                        </center>
+                                    </h:panelGroup>
+                                    <h:panelGroup  rendered="#{nota.tipo eq 'REMARCADO'}"
+                                                   style="
+                                                   background-color: #{nota.color};
+                                                   width: #{nota.ancho}px;
+                                                   height: #{nota.alto}px;
+                                                   margin-left: #{nota.posicionX1}px;
+                                                   margin-top: #{nota.posicionY1}px;
+                                                   margin-right: #{nota.posicionX1}px;
+                                                   margin-bottom: #{nota.posicionY1}px;
+                                                   border-radius: 10px;
+                                                   opacity: 0.5;
+                                                   position: absolute;"
+                                                   >
+                                        <br/>
+                                        <h:outputLabel value="#{nota.titulo}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{nota.tipo eq 'NOTA'}" /><br/>
+                                        <h:outputLabel value="#{nota.fecha}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{nota.tipo eq 'NOTA'}" /><br/>
+                                        <h:outputLabel value="#{nota.usuario.nombres}" escape="false" style="margin-top: 20px; margin-left: 10px; color: black; font-weight: bolder" rendered="#{nota.tipo eq 'NOTA'}"  /><br/><br/>
+                                        <center>
+                                            <h:outputLabel value="#{nota.nota}" escape="false" style="color: black"/><br/>
+                                        </center>
+                                    </h:panelGroup> 
+                                </ui:repeat>
+
+
+
+
+                                <p:graphicImage id="img" value="#{imagen.apiUrl}"  style="width: 100%; border: 1px solid; border-color: #39414b "
+                                                rendered="#{editarDocumentoMB.archivo.formato eq 'PDF'}"/>
+
+
+                                <poue:imageAreaSelect id="areaSelect"
+                                                      for="img" 
+                                                      minHeight="50" minWidth="150" 
+                                                      maxHeight="200" maxWidth="650"
+                                                      widgetVar="areaSelct"
+                                                      rendered="#{editarDocumentoMB.tipoAnotacion ne null and editarDocumentoMB.archivo.formato eq 'PDF'}"
+                                                      handles="true" >
+                                    <p:ajax event="selectEnd" listener="#{editarDocumentoMB.selectEndListener}"/>
+                                </poue:imageAreaSelect>
+
+
+
+
+
+                                <p:graphicImage id="imgEdit" value="#{imagen.apiUrl}"  style="width: 100%; border: 1px solid; border-color: #39414b "
+                                                rendered="#{!editarDocumentoMB.recortarImagen and editarDocumentoMB.archivo.formato eq 'IMG'}"/>
+
+                                <p:imageCropper  value="#{editarDocumentoMB.croppedImage}"
+                                                 image="#{imagen.apiUrl}"
+                                                 rendered="#{editarDocumentoMB.recortarImagen and editarDocumentoMB.archivo.formato eq 'IMG'}"
+                                                 id="imgCrop"
+                                                 zoomOnWheel="false" />
+
+                                <poue:imageAreaSelect id="areaSelectImg"
+                                                      for="imgEdit" 
+                                                      minHeight="50" minWidth="150" 
+                                                      maxHeight="200" maxWidth="250"
+                                                      widgetVar="areaSelct"
+                                                      rendered="#{editarDocumentoMB.crearNota and editarDocumentoMB.archivo.formato eq 'IMG'}"
+                                                      handles="true" >
+                                    <p:ajax event="selectEnd" listener="#{editarDocumentoMB.selectEndListener}"/>
+                                </poue:imageAreaSelect>
+
+                            </h:panelGroup> 
+                        </h:panelGrid>
+
+                    </p:dataGrid>    
+                </h:panelGrid>
+            </h:panelGrid>
+
+        </h:form>
+
+        <p:dialog id="dlgNota" widgetVar="dlgNota" width="750"  header="Agregar anotación"  
+                  modal="true" showEffect="fade" 
+                  hideEffect="fade" resizable="false"  closable="true" height="330">
+
+            <h:form id="formNota"  prependId="false"  >
+                <center>
+                    <p:outputLabel value="Agregar #{editarDocumentoMB.tipoAnotacion}" style="font-weight: bolder"/>
+                </center>
+                <br/>
+                <p:panelGrid columns="2" id="pnlNota"  styleClass="ui-panelgrid-blank" columnClasses="fifty-percent, fifty-percent" style="width: 100% !important">
+                    <h:panelGroup id="listColores"  rendered="#{editarDocumentoMB.tipoAnotacion ne 'SELLOS'}">
+                        <p:outputLabel value="Eliga el color" style="font-weight: bolder"/><br/>
+                        <p:selectOneMenu value="#{editarDocumentoMB.color}" panelStyle="width: 200px" style="width: 100%" converter="dtoConverter">
+                            <f:selectItem itemLabel="Escoja el color" itemValue="#{null}"/>
+                            <f:selectItems value="#{editarDocumentoMB.colores}" var="color" itemValue="#{color}" itemLabel="#{color.nombre}"  />
+
+                        </p:selectOneMenu>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup id="listSellos"  rendered="#{editarDocumentoMB.tipoAnotacion eq 'SELLOS'}">
+                        <p:outputLabel value="Eliga el sello" style="font-weight: bolder"/><br/>
+                        <p:selectOneMenu id="advanced" value="#{editarDocumentoMB.sello}" converter="dtoConverter"  
+                                         style="width: 100%" var="s"   panelStyle="width:180px" >
+                            <f:selectItems value="#{editarDocumentoMB.sellos}" var="sello"
+                                           itemLabel="#{sello.status}" itemValue="#{sello}"/>
+
+                            <p:column style="width:30%" headerText="Sello">
+                                <p:graphicImage value="#{s.data}" style="width: 100px; height: 100px"  />
+                            </p:column>
+                            <p:column headerText="Descripción"> 
+                                <h:outputText value="#{s.status}"/><br/> 
+                            </p:column>
+
+                        </p:selectOneMenu>
+
+
+                    </h:panelGroup>
+                    <h:panelGroup >
+                        <p:outputLabel value="Escriba un título" style="font-weight: bolder"/><br/>
+                        <p:inputText value="#{editarDocumentoMB.nota.titulo}" maxlength="80" placeholder="Escriba aquí un titulo" style="width: 100%"/><br/>
+                        <p:outputLabel value="Escriba una descripción" style="font-weight: bolder" rendered="#{editarDocumentoMB.tipoAnotacion eq 'NOTA'}"/><br/>
+                        <p:inputTextarea value="#{editarDocumentoMB.nota.nota}" placeholder="Escriba aquí una  descripción" cols="40" rows="10" maxlength="300" rendered="#{editarDocumentoMB.tipoAnotacion eq 'NOTA'}"/>
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <center>
+                    <p:commandButton value="Aceptar" 
+                                     title="Crear anotación"
+                                     icon="pi pi-save" 
+                                     styleClass="info-button rounded-button p-mr-2 p-mb-2" 
+                                     actionListener="#{editarDocumentoMB.grabarNota()}"  
+                                     style="width: auto;"  > 
+                        <p:confirm header="Confirmar" message="Esta seguro de grabar la anotación?" />
+                    </p:commandButton>
+                    <p:commandButton value="Cancelar" 
+                                     title="Cancelar crear anotación"
+                                     icon="pi pi-save" 
+                                     styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                     actionListener="#{editarDocumentoMB.cerrarDialogoNota()}"  
+                                     style="width: auto;" > 
+                    </p:commandButton>
+                </center> 
+            </h:form>
+        </p:dialog> 
+
+    </ui:define>
+</ui:composition>

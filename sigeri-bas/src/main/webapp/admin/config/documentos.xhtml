@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="top"><h3>Manuales</h3></ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Manuales</h2></center> 
+            <center>
+                <p:panelGrid>
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column>
+                                Nombre del Documento
+                            </p:column>
+                            <p:column>
+                                Descargar
+                            </p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="MANUAL SUGUIR"/>
+                        </p:column>
+                        <p:column>
+                            <!--PRODUCCION 'workspace://SpacesStore/3dbdb0f1-a98e-4bf2-9fc9-3bec9a04f663'-->
+                            <!--LOCAL      'workspace://SpacesStore/3dcaa5e0-9670-42e2-ae72-214d88e718df'-->
+                            <p:commandLink actionListener="#{documentosRp.descargarDocumento('workspace://SpacesStore/3dbdb0f1-a98e-4bf2-9fc9-3bec9a04f663')}">
+                                <p:graphicImage value="/resources/icons/down.png"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="MANUAL DE USUARIO DE VENTANILLA VIRTUAL"/>
+                        </p:column>
+                        <p:column>
+                            <!--PRODUCCION 'workspace://SpacesStore/4948b698-60a7-40bb-92ee-e4c551b55740'-->
+                            <!--LOCAL      'workspace://SpacesStore/d1d1dc36-9a43-4883-9f84-de5e6a6a8d98'-->
+                            <p:commandLink actionListener="#{documentosRp.descargarDocumento('workspace://SpacesStore/4948b698-60a7-40bb-92ee-e4c551b55740')}">
+                                <p:graphicImage value="/resources/icons/down.png"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="MANUAL DE USUARIO DE LA APLICACION MOVIL"/>
+                        </p:column>
+                        <p:column>
+                            <!--PRODUCCION 'workspace://SpacesStore/98f954e3-2311-4af0-965c-10834315d1a5'-->
+                            <!--LOCAL      'workspace://SpacesStore/5157a802-3223-4b41-8222-ac19ff549bfe'-->
+                            <p:commandLink actionListener="#{documentosRp.descargarDocumento('workspace://SpacesStore/98f954e3-2311-4af0-965c-10834315d1a5')}">
+                                <p:graphicImage value="/resources/icons/down.png"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:row>
+<!--                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="DICCIONARIO DE DATOS V.1.0"/>
+                        </p:column>
+                        <p:column>
+                            PRODUCCION 'workspace://SpacesStore/cc1bc726-32b9-4cfb-a9fc-6a0dc55652e3'
+                            LOCAL      'workspace://SpacesStore/9c7a7229-868f-48b3-a8fc-31a9113439a9'
+                            <p:commandLink actionListener="#{documentosRp.descargarDocumento('workspace://SpacesStore/cc1bc726-32b9-4cfb-a9fc-6a0dc55652e3')}">
+                                <p:graphicImage value="/resources/icons/down.png"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:row>-->
+                </p:panelGrid>
+            </center>
+        </h:form>
+    </ui:define>
+</ui:composition>

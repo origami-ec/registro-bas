@@ -1,0 +1,351 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Facturas Electronicas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Facturas Electronicas</h2></center>
+            <p:tabView id="tabFacturacion">
+                <p:tab title="Comprobacion de Autorizacion">
+                    <h:panelGrid styleClass="noBorder" columns="1">
+                        <p:outputLabel value="Nota: NO INTENTAR REENVIAR FACTURAS EN ESTADO NO AUTORIZADO o DEVUELTA, PRIMERO SE DEBEN CORREGIR LOS DATOS DEL COMPROBANTE." style="font-weight: bolder; font-size: 14px;"/>
+                    </h:panelGrid> <br></br>
+                    <h:panelGrid  columns="7" style="font-weight: bolder">
+                        <h:panelGroup>
+                            Estado: <br/> 
+                            <p:selectOneMenu value="#{facturacionElectronica.estado}" >
+                                <f:selectItem itemLabel="AUTORIZADO" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="OTROS ESTADOS" itemValue="#{2}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:spacer width="15" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Usuario: <br/>
+                            <p:selectOneMenu value="#{facturacionElectronica.caja}" converter="entityConverter">
+                                <f:selectItem itemLabel="TODOS" itemValue="#{null}"/>
+                                <f:selectItems value="#{facturacionElectronica.cajeros}" var="caj" itemLabel="#{caj.usuario}" itemValue="#{caj}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>                            
+                            <p:spacer width="15" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Fecha de Ingreso: <br/>
+                            <p:calendar value="#{facturacionElectronica.ingreso}" maxdate="sysdate" pattern="dd/MM/yyyy" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:spacer width="5" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value=""/> <br></br>
+                            <p:commandButton value="Consulta de Facturas" styleClass="btnStyle" icon="ui-icon-refresh" 
+                                             actionListener="#{facturacionElectronica.consultarFacturasElectronicas()}"/>    
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+                    <br></br>
+                    <p:dataTable value="#{facturacionElectronica.facturas}" var="fac" style="text-align: center;font-size: 10px;"
+                                 scrollable="true" scrollHeight="400" rowIndexVar="index" id="dtFacturas"
+                                 filterEvent="enter">
+                        <p:column headerText="**" width="35">
+                            #{index + 1}
+                        </p:column>
+                        <p:column headerText="Tramite" width="70" filterBy="#{fac.numTramiteRp}">
+                            #{fac.numTramiteRp}
+                        </p:column>
+                        <p:column headerText="Estado" width="70">
+                            #{fac.estadoWs}
+                        </p:column>
+                        <p:column headerText="Mensaje" width="70">
+                            #{fac.mensajeWs}
+                        </p:column>
+                        <p:column headerText="No Documento" width="100">
+                            #{fac.codigoComprobante}
+                        </p:column>
+                        <p:column headerText="Clave de Acceso" width="250">
+                            #{fac.claveAcceso}
+                        </p:column> 
+                        <p:column headerText="Cliente"  width="180">
+                            #{fac.beneficiario.nombreCompleto}
+                        </p:column>
+                        <p:column headerText="Total" width="75">
+                            #{fac.totalPagar}
+                        </p:column>
+                        <p:column headerText="Renviar Factura" width="40">
+                            <p:commandLink actionListener="#{facturacionElectronica.reenvioFacturas(fac)}" 
+                                           title="#{fac.numTramiteRp}" 
+                                           update="mainForm:tabFacturacion:dtFacturas">
+                                <p:graphicImage value="/resources/icons/refres.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Alcance de Pagos Autorización" >
+                    <p:dataTable id="dtEmisiones" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" style="text-align: center;font-size: 10px;"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{facturacionElectronica.emisiones}" var="em" filterEvent="enter">
+                        <p:column headerText="Tramite"  filterBy="#{em.numTramite}" width="80">
+                            <h:outputText value="#{em.numTramite}"></h:outputText>
+                        </p:column>
+                        <p:column headerText="No Factura" filterBy="#{em.codigoComprobante}" width="120" filterStyle="width: 95%">
+                            <h:outputText value="#{em.codigoComprobante}"/>
+                        </p:column>
+
+                        <p:column headerText="F.Emision" width="50">
+                            <h:outputText value="#{em.fecha}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Total $" width="80">
+                            <p:outputLabel value="#{em.totalPagar}"><f:convertNumber minFractionDigits="2"/></p:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="No Autorizacion" width="200" >
+                            <h:outputText  value="#{em.numeroAutorizacion}"/>
+                        </p:column>
+                        <p:column headerText="CI/RUC" width="100">
+                            <h:outputText value="#{em.solicitante.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{em.solicitante.nombreCompleto}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="50">
+                            <h:outputText value="#{em.estadoWs}"/>
+                        </p:column>
+                        <p:column headerText="Observacion" width="80">
+                            <h:outputText value="#{em.observacion}"/>
+                        </p:column>
+                        <p:column headerText="PDF" width="20">
+                            <!--<p:commandLink actionListener="# {facturacionElectronica.downloadFactura(em)}" title="# {em.codigoComprobante}">-->
+                            <p:commandLink actionListener="#{facturacionElectronica.generarComprobante(em.id)}" title="#{em.codigoComprobante}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="***" width="20">
+                            <p:commandLink actionListener="#{facturacionElectronica.reenvioEmision(em)}" update="dtEmisiones" title="#{em.codigoComprobante}">
+                                <p:graphicImage value="/resources/icons/refres.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Notas de Crédito">
+                    <p:dataTable paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" style="text-align: center;"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{notasCredito.lazy}" var="nc" filterEvent="enter">
+                        <p:column headerText="No Tramite" filterBy="#{nc.factura.numTramiteRp}" width="100" filterStyle="width: 95%">
+                            <h:outputText  value="#{nc.factura.numTramiteRp}"/>
+                        </p:column>
+                        <p:column headerText="No Factura Sustento" filterBy="#{nc.factura.codigoComprobante}" width="140" filterStyle="width: 95%">
+                            <h:outputText  value="#{nc.factura.codigoComprobante}"/>
+                        </p:column>
+                        <p:column headerText="F.Emision Sustento" width="100">
+                            <h:outputText value="#{nc.factura.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Valor Total $" width="100">
+                            <p:outputLabel value="#{nc.valorTotal}"><f:convertNumber minFractionDigits="2"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Estado" width="100">
+                            <h:outputText value="#{nc.estado}"/>
+                        </p:column>
+                        <p:column headerText="No Documento" filterBy="#{nc.numeroDocumento}" width="140" filterStyle="width: 95%">
+                            <h:outputText  value="#{nc.numeroDocumento}"/>
+                        </p:column>
+                        <p:column headerText="No Autorizacion" filterBy="#{nc.numeroAutorizacion}" width="140" filterStyle="width: 95%">
+                            <h:outputText  value="#{nc.numeroAutorizacion}"/>
+                        </p:column>
+                        <p:column headerText="F.Emision" width="100">
+                            <h:outputText value="#{nc.fechaEmision}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="PDF" width="40" rendered="false">
+                            <p:commandLink actionListener="#{facturacionElectronica.downloadNotaCredito(nc)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="***" width="30">
+                            <p:commandLink actionListener="#{facturacionElectronica.reenvioNotaCredito(nc)}" title="#{nc.numeroDocumento}">
+                                <p:graphicImage value="/resources/icons/refres.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Facturas de Solicitante" rendered="false" >
+                    <h:panelGrid id="pnlSolicitante" style="font-weight: bold" columns="5">
+
+                        <h:panelGroup style="block">
+                            <p:outputLabel value="CI/RUC:" /> <br></br>
+                            <p:inputText value="#{facturacionElectronica.solicitante.ciRuc}" readonly="true"/>    
+                        </h:panelGroup>
+                        <h:panelGroup style="block">
+                            <p:outputLabel value="Nombre:" /> <br></br>
+                            <p:inputText value="#{facturacionElectronica.solicitante.nombreCompleto}" size="50" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="block">
+                            <p:outputLabel value="" /> <br></br>
+                            <p:commandButton value="Buscar Solicitante" 
+                                             icon="ui-icon-person" 
+                                             styleClass="btnStyle" 
+                                             actionListener="#{facturacionElectronica.showDlg('/resources/dialog/dlglazyente')}"
+                                             >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{facturacionElectronica.selectObject}" 
+                                        update="mainForm:tabFacturacion:pnlSolicitante, dtActos"/>
+                            </p:commandButton>    
+                        </h:panelGroup>
+
+                        <!--                        <h:panelGroup style="block">
+                                                    <p:outputLabel value="" /> <br></br>
+                                                    <p:commandButton value="Consultar Facturas" 
+                                                                     styleClass="btnStyle" 
+                                                                     icon="ui-icon-document" 
+                                                                     actionListener="# {facturacionElectronica.consultarComprobantes()}"
+                                                                     update="dtActos"/>
+                                                </h:panelGroup>-->
+
+                    </h:panelGrid>
+                    <!--                    <h:panelGrid columns="5" style="font-weight: bold" >
+                                            <h:panelGroup style="block">
+                                                <p:outputLabel value="Desde:" /> <br></br>
+                                                <p:calendar value="# {facturacionElectronica.desde}" pattern="dd/MM/yyyy"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup style="block">
+                                                <p:outputLabel value="Hasta:" /> <br></br>
+                                                <p:calendar value="# {facturacionElectronica.hasta}" pattern="dd/MM/yyyy"/>
+                                            </h:panelGroup>
+                                            
+                    
+                                        </h:panelGrid>-->
+                    <br></br>
+                    <p:dataTable id="dtActos" var="comprobante" 
+                                 value="#{facturacionElectronica.comprobantesElectronicos}"   
+                                 rowIndexVar="index"
+                                 filterEvent="enter"
+                                 style="text-align: center; margin: 0 auto;" emptyMessage="Sin elementos..." 
+                                 scrollable="true" scrollHeight="550">
+                        <f:facet name="header">Comprobantes Electrónicos</f:facet>
+                        <p:column headerText="**" width="35">
+                            #{index + 1}
+                        </p:column>
+                        <p:column headerText="Tipo de Comprobante" width="10%">
+                            <p:outputLabel value="#{comprobante.tipoComprobante}"/>
+                        </p:column>
+                        <p:column headerText="Número de Autorización" >
+                            <p:outputLabel value="#{comprobante.numAutorizacion}"/>
+                        </p:column>
+                        <p:column headerText="Clave de Acceso">
+                            <p:outputLabel value="#{comprobante.claveAcceso}"/>
+                        </p:column>
+                        <p:column headerText="Número de Comprobante" filterMatchMode="contains" filterBy="#{comprobante.numFacturaFormato}">
+                            <p:outputLabel value="#{comprobante.numFacturaFormato}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Autorización" width="10%">
+                            <p:outputLabel value="#{comprobante.fechaAutorizacion}"/>
+                        </p:column>  
+                        <p:column headerText="Valor Total" width="10%">
+                            <p:outputLabel value="#{comprobante.valorTotal}"/>
+                        </p:column>
+                        <p:column headerText="RIDE" width="10%">
+                            <p:commandLink actionListener="#{facturacionElectronica.generarReporteFacturacionElectronica(comprobante.pdfPath)}" ajax="false">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>  
+                        <p:column headerText="XML" width="10%">
+                            <p:commandLink actionListener="#{facturacionElectronica.xmlComprobanteSRI(comprobante.xmlPath)}"  >
+                                <p:graphicImage value="/resources/icons/xml.jpg" height="16"/>   
+                            </p:commandLink>
+                        </p:column>  
+                        <p:column headerText="Reenviar Correo" width="40">
+                            <p:commandLink actionListener="#{facturacionElectronica.cargarCorreoFacturaElectronicaSRI(comprobante)}" >
+                                <p:graphicImage value="/resources/icons/enviar.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Facturas Anteriores" rendered="false">
+                    <p:panelGrid id="pnlComandos" styleClass="noBorder" columns="7">
+                        Usuario:
+                        <p:selectOneMenu value="#{facturacionElectronica.user}" converter="entityConverter" disabled="#{facturacionElectronica.block}">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                            <f:selectItems value="#{facturacionElectronica.cajeros}" var="caj" itemLabel="#{caj.usuario}" itemValue="#{caj}"/>
+                        </p:selectOneMenu>
+                        Fecha de Ingreso:
+                        <p:calendar value="#{facturacionElectronica.fecha}" maxdate="sysdate" pattern="dd/MM/yyyy" disabled="#{facturacionElectronica.block}"/>
+                        <p:commandButton value="Cargar Facturas Autorizadas" styleClass="btnStyle" icon="ui-icon-refresh" disabled="#{facturacionElectronica.block}"
+                                         actionListener="#{facturacionElectronica.cargarFacturasAutorizadas()}"/>
+                        <p:commandButton value="Generar RIDE" styleClass="btnStyle" icon="ui-icon-document" disabled="#{facturacionElectronica.block}"
+                                         actionListener="#{facturacionElectronica.generarRIDE()}"/>
+                        <p:commandButton value="Enviar Emails" styleClass="btnStyle" icon="ui-icon-check" disabled="#{facturacionElectronica.block}"
+                                         actionListener="#{facturacionElectronica.enviarTodosLosCorreos()}"/>
+                    </p:panelGrid>
+                    <p:dataTable value="#{facturacionElectronica.liquidaciones}" var="liq" style="text-align: center;"
+                                 scrollable="true" scrollHeight="400" rowIndexVar="index">
+                        <p:column headerText="**" width="35">
+                            #{index + 1}
+                        </p:column>
+                        <p:column headerText="Tramite" width="75">
+                            #{liq.numTramiteRp}
+                        </p:column>
+                        <p:column headerText="Factura" width="70">
+                            #{liq.numeroComprobante}
+                        </p:column>
+                        <p:column headerText="CI/RUC" width="100" rendered="false">
+                            #{liq.solicitante.ciRuc}
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            #{liq.solicitante.nombreCompleto}
+                        </p:column>
+                        <p:column headerText="No de Autorizacion" width="400">
+                            #{liq.numeroAutorizacion}
+                        </p:column>
+                        <p:column headerText="Fecha Auto." width="140">
+                            <h:outputText value="#{liq.fechaAutorizacion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Sub-Total" width="100" rendered="false">
+                            #{liq.subTotal}
+                        </p:column>
+                        <p:column headerText="Desc.Ley" width="100" rendered="false">
+                            #{liq.descuentoValor}
+                        </p:column>
+                        <p:column headerText="Desc.Limit." width="100" rendered="false">
+                            #{liq.descLimitCobro}
+                        </p:column>
+                        <p:column headerText="Total" width="75">
+                            #{liq.totalPagar}
+                        </p:column>
+                        <p:column headerText="Mail" width="40">
+                            <p:commandLink actionListener="#{facturacionElectronica.enviarNotificacion(liq)}" title="#{liq.numTramiteRp}">
+                                <p:graphicImage value="/resources/icons/email.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog id="dlgReenvioCorreo" widgetVar="dlgReenvioCorreo" header="Reenviar RIDE Correo" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formCorreo">
+                <center>
+                    <p:outputLabel value="#{facturacionElectronica.comprobanteSRI.numFacturaFormato}" style="font-weight: bolder;font-size: 16px; color: green"/>
+                </center>
+                <br></br>
+                <p:outputLabel value="Correo Electrónico" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputText value="#{facturacionElectronica.comprobanteSRI.contribuyente.email}" 
+                             style="width: 100%" />
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Aceptar" styleClass="btnStyle" icon="ui-icon-check"
+                                     actionListener="#{facturacionElectronica.reenviarCorreoFacturaElectronicaSRI()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

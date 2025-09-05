@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RazonDetalleSocios" language="groovy" pageWidth="494" pageHeight="802" columnWidth="494" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b1a0441b-d62e-4907-a2d4-f708dfcdb358">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_MOVIMIENTO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select int.nombre as nombres, int.ced_ruc, tp.nombre as tipo_participacion,
+ms.cantidad, ms.valor
+from app.reg_movimiento_socios ms
+left join app.reg_ente_interviniente int on ms.ente_interv = int.id
+left join app.ctlg_tipo_participacion tp on tp.id = ms.tipo_participacion
+where ms.movimiento = $P{ID_MOVIMIENTO}]]>
+	</queryString>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="ced_ruc" class="java.lang.String"/>
+	<field name="tipo_participacion" class="java.lang.String"/>
+	<field name="cantidad" class="java.math.BigDecimal"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="195" height="14" uuid="20235b8b-fca7-47e5-864f-fd76e89e4c25"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Socios:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="195" height="14" uuid="64e32692-9ddf-4214-a631-e9d3b3c11d27"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nombres]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="196" y="0" width="138" height="14" uuid="69f8f39d-7b55-4d5f-a005-f7e5041c5aa9"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cédula/RUC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="335" y="0" width="159" height="14" uuid="156fbf06-7226-4db1-8d1a-2e199474f9a2"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tipo participación]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="195" height="14" uuid="391c185c-fddf-4e32-8f9c-b2d9315d0621"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="196" y="0" width="138" height="14" uuid="cfe56ce2-7dbf-4b92-9cda-fcae9e936731"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_ruc}.length() == 15 ? "**********" : $F{ced_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="335" y="0" width="159" height="14" uuid="a7c5fa97-c6ad-4d03-beb6-52bd51fd3ae6"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_participacion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

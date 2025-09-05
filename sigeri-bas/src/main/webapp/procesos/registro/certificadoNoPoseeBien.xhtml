@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Certificados Xpress</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+
+            <div class="card card-w-title">
+                <center><h2>Certificados Xpress</h2></center>
+                <p:dataTable id="dtTareas1" value="#{tareaCertificadoNoPoseeBienRp.tareas}" 
+                             rowIndexVar="i"
+                             var="det" 
+                             paginator="true" lazy="true" rows="15" 
+                             rowsPerPageTemplate="15,30,100"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             emptyMessage="No se encontró ningún Item." 
+                             style="text-align: center;" filterEvent="enter" resizableColumns="true"
+                             >
+                    <p:column headerText="**" width="20">
+                        #{i + 1}
+                    </p:column>
+                    <p:column headerText="Trámite" filterBy="#{det.tramite.numTramite}" width="70">
+                        <p:outputLabel value="#{det.detalle.liquidacion.numTramiteRp}"/>
+                    </p:column>
+                    <!--                    <p:column headerText="# Factura" filterBy="# {det.detalle.liquidacion.codigoComprobante}">
+                                            <p:outputLabel value="# {det.detalle.liquidacion.codigoComprobante}"/>
+                                        </p:column>-->
+                    <p:column headerText="# Certificado" filterBy="#{det.certificado.numCertificado}" width="70">
+                        <p:outputLabel value="#{det.certificado.numCertificado}"/>
+                    </p:column>
+                    <p:column headerText="Solicitante" filterBy="#{det.detalle.liquidacion.solicitante.apellidos}">
+                        <p:outputLabel value="#{det.detalle.liquidacion.solicitante.nombreCompleto}"/>
+                    </p:column>
+                    <p:column headerText="Uso del Documento">
+                        <p:outputLabel value="#{det.detalle.liquidacion.usoDocumento.valor}"/>
+                    </p:column>
+                    <p:column headerText="Fecha" width="100">
+                        <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Certificador" width="100">
+                        <p:outputLabel value="#{tareaCertificadoNoPoseeBienRp.usuario(det.certificado.userCreador)}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Realizado" width="50">
+                        <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{det.realizado}" title="Realizado"/>
+                        <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!det.realizado}" title="NO Realizado"/> 
+                    </p:column>
+                    <p:column headerText="Aprobado" width="50">
+                        <p:graphicImage value="/resources/icons/emojiHappy.png" height="16" rendered="#{det.revisado}" title="Aprobado"/>
+                        <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{empty  det.tramite.observacionesCollection and !det.revisado}" title="Pendiente"/> 
+                        
+                        <p:commandLink title="Rechazado" actionListener="#{tareaCertificadoNoPoseeBienRp.showInfo(det)}" rendered="#{not empty  det.tramite.observacionesCollection and !det.revisado}">
+                            <p:graphicImage value="/resources/icons/emoji_sad.png" height="16"  /> 
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Acciones" width="80">
+                        <p:commandLink title="Imprimir" 
+                                       actionListener="#{tareaCertificadoNoPoseeBienRp.imprimirCertificado(det)}" 
+                                       disabled="#{!det.revisado}">
+                            <p:graphicImage value="/resources/icons/reporte.png" height="16" />
+                        </p:commandLink>
+                        <p:spacer width="10"/>
+                        <p:commandLink rendered="#{tareaCertificadoNoPoseeBienRp.habilitarEdicion}" title="Editar"
+                                       actionListener="#{tareaCertificadoNoPoseeBienRp.showDlgEditar(det.certificado)}">
+                            <p:graphicImage value="/resources/icons/okEmoji.png" height="16"/>   
+                        </p:commandLink>
+                        <p:spacer width="10"/>
+                        <p:commandLink actionListener="#{tareaCertificadoNoPoseeBienRp.realizarTarea(det)}"
+                                       title="Realizar"
+                                       disabled="#{det.realizado}">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgVerInfo" header="Informacion de Trámite" widgetVar="dlgVerInfoRp" resizable="false" 
+                  closeOnEscape="true" modal="true" width="700" height="500">
+            <h:form id="formInformLiq">
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="No de Tramite:" style="font-weight: bold; font-size: 18px;color: #d2322d"/>
+                    <p:outputLabel value="#{tareaCertificadoNoPoseeBienRp.regpTareasTramiteSeleccionada.detalle.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/>
+                </h:panelGrid>
+                <p:tabView id="tabTramite">
+
+                    <p:tab title="Observaciones">
+                        <p:dataTable value="#{tareaCertificadoNoPoseeBienRp.regpTareasTramiteSeleccionada.tramite.observacionesCollection}" emptyMessage="Sin elementos..."
+                                     var="obs" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Tarea" width="150">
+                                <p:outputLabel value="#{obs.tarea}"/>
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <p:outputLabel value="#{obs.observacion}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgHabilitarEdicion" widgetVar="dlgHabilitarEdicion" 
+                  header="Habilitar Edición de Certificado"
+                  closeOnEscape="true" closable="true"
+                  resizable="false" modal="true" position="center">
+            <h:form id="formHabilitar">
+                <h:panelGrid columns="3" style="font-weight: bolder">
+                    <h:panelGroup>
+                        <p:outputLabel value="No Certificado:" /> <br></br>
+                        <p:inputText value="#{tareaCertificadoNoPoseeBienRp.cert.numCertificado}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="No Tramite:" /> <br></br>
+                        <p:inputText value="#{tareaCertificadoNoPoseeBienRp.cert.numTramite}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value=" Fecha de Emision:" /> <br></br>
+                        <p:inputText value="#{tareaCertificadoNoPoseeBienRp.cert.fechaEmision}" readonly="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="font-weight: bolder">
+                    <h:panelGroup>
+                        <p:outputLabel for="observacion" value="Observación" /> <br></br>
+                        <p:inputTextarea id="observacion" required="true" 
+                                         value="#{tareaCertificadoNoPoseeBienRp.observacion}" 
+                                         rows="5" autoResize="false"
+                                         cols="60" 
+                                         style="width: 100%" maxlength="900"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <h:panelGrid  columns="3">
+                        <h:panelGroup>
+                            <p:commandButton value="Aceptar" 
+                                             actionListener="#{tareaCertificadoNoPoseeBienRp.aceptarEdicion(true)}"
+                                             update="mainForm"/>
+                        </h:panelGroup>
+                        <p:spacer width="10"/>
+                        <h:panelGroup>
+                            <p:commandButton value="Cancelar" actionListener="#{tareaCertificadoNoPoseeBienRp.aceptarEdicion(false)}"/>    
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </center>
+                <br></br>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Notas Devolutivas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">NOTAS DEVOLUTIVAS REGISTRADAS</h3></center>
+            <p:dataTable paginator="true" lazy="true" rows="15" style="text-align: center" rowsPerPageTemplate="15,30,50" 
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords}"
+                         value="#{notasDevolutivasRpIngresadas.notaDevolutivas}" var="notaDevolutiva" emptyMessage="No se encontró Fichas" filterEvent="enter">
+
+                <p:column headerText="Nro Trámite" filterBy="#{notaDevolutiva.tramite.numTramite}" width="100">
+                    #{notaDevolutiva.tramite.numTramite}
+                </p:column>
+                <p:column headerText="Nro Devolutiva" filterBy="#{notaDevolutiva.numNotaDevolutiva}" width="100">
+                    #{notaDevolutiva.numNotaDevolutiva}
+                </p:column>
+                <p:column headerText="Fecha de Registro" width="110">
+                    <h:outputText value="#{notaDevolutiva.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Apellidos" filterBy="#{notaDevolutiva.para.apellidos}" >
+                    #{notaDevolutiva.para.apellidos}
+                </p:column>
+                <p:column headerText="Nombres" filterBy="#{notaDevolutiva.para.nombres}" >
+                    #{notaDevolutiva.para.nombres}
+                </p:column>
+                <p:column headerText="Elaborado por" width="80">
+                    #{notaDevolutiva.elaborado}
+                </p:column>
+                <!--<p:column headerText="Asunto" >
+                    # {notaDevolutiva.asunto}
+                </p:column>
+                <p:column headerText="Fecha Retiro" width="100">
+                    <h:outputText value="# {notaDevolutiva.fechaRetiro}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>-->
+                <p:column headerText="Fecha Reingreso" width="110">
+                    <h:outputText value="#{notaDevolutiva.fechaReingreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Acciones" width="120">
+                    <center>
+                        <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.editarNotaDevolutiva(notaDevolutiva)}"
+                                         title="Editar" icon="pi pi-pencil"/>
+                        <p:spacer width="10"/>
+                        <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.descargarNotaDevolutiva(notaDevolutiva.id)}"
+                                         title="Visualizar Nota Devolutiva" icon="pi pi-file-pdf"/>
+                        <p:spacer width="10"/>
+                        <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.showDlgEnviar(notaDevolutiva)}" 
+                                         title="Reenviar Correo" icon="pi pi-envelope"/>
+                    </center>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgNotaDevolutiva" header="Editar Nota Devolutiva" widgetVar="dlgNotaDevolutiva" 
+                  modal="true" closable="true" closeOnEscape="true" >
+            <h:form id="frmNota">
+                <h:panelGrid columns="3">
+                    <p:outputLabel value="ASUNTO: " style="font-size: 20px; font-weight: bolder"/>
+                    <p:spacer width="20" />
+                    <p:outputLabel value="#{notasDevolutivasRpIngresadas.notaDevolutiva.asunto}" 
+                                   style="color: blue !important; font-size: 20px; font-weight: bolder"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="font-size: 16px;">
+                    <p:textEditor widgetVar="editorNotaDevolutiva" secure="false"
+                                  value="#{notasDevolutivasRpIngresadas.notaDevolutiva.detalle}" 
+                                  style="margin-bottom:10px; width: 670px; height: 350px; " 
+                                  placeholder="Escriba aquí su Nota Devolutiva">
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+
+                            </span>
+                        </f:facet>
+                    </p:textEditor>
+                </h:panelGrid>
+                <br/><br/>
+                <h:panelGrid style="margin: 0 auto;" columns="1">
+                    <p:commandButton value="Guardar" icon="pi pi-save"
+                                     actionListener="#{notasDevolutivasRpIngresadas.actualizarDetalleNotaDevolutiva()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgSendDevolutiva" header="Reenviar Nota Devolutiva" widgetVar="dlgSendDevolutiva" 
+                  modal="true" closable="true" closeOnEscape="true" >
+            <h:form id="frmMailNota">
+                <h:panelGrid columns="3">
+                    <p:outputLabel value="ASUNTO: " style="font-size: 20px; font-weight: bolder"/>
+                    <p:spacer width="20" />
+                    <p:outputLabel value="#{notasDevolutivasRpIngresadas.notaDevolutiva.asunto}" 
+                                   style="color: blue !important; font-size: 20px; font-weight: bolder"/>
+                    <p:outputLabel value="CORREO: " style="font-size: 20px; font-weight: bolder"/>
+                    <p:spacer width="20" />
+                    <p:outputLabel value="#{notasDevolutivasRpIngresadas.notaDevolutiva.tramite.solicitante.correo1}" 
+                                   style="color: blue !important; font-size: 20px; font-weight: bolder"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="font-size: 16px;">
+                    <p:textEditor widgetVar="editorNotaDevolutiva" secure="false" readonly="true"
+                                  value="#{notasDevolutivasRpIngresadas.notaDevolutiva.detalle}" 
+                                  style="margin-bottom:10px; width: 670px; height: 250px; " 
+                                  placeholder="Escriba aquí su Nota Devolutiva">
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+
+                            </span>
+                        </f:facet>
+                    </p:textEditor>
+                </h:panelGrid>
+                <br/><br/>
+                <h:panelGrid style="margin: 0 auto;" columns="1">
+                    <p:commandButton value="Enviar al Correo" icon="pi pi-save" 
+                                     actionListener="#{notasDevolutivasRpIngresadas.sendMailDevolutiva()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

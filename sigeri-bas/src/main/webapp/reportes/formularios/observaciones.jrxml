@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="observaciones" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6a6c0ec6-3540-412b-a30b-9b5e8c489342">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="heigth_page" scaleImage="Clip" vAlign="Middle"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\LOJA\\registropropiedad\\src\\main\\webapp\\reportes\\formularios\\"]]></defaultValueExpression>
+	</parameter>
+	<pageFooter>
+		<band height="75" splitType="Immediate">
+			<subreport>
+				<reportElement stretchType="RelativeToBandHeight" x="2" y="0" width="553" height="75" uuid="7318c0d2-eb6f-491d-b487-745065d60261"/>
+				<subreportParameter name="TITLE"/>
+				<subreportParameter name="LOGO"/>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="615" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="1" width="555" height="207" uuid="ce98fac6-6654-43dc-99e5-79c7399a1ea5"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<staticText>
+					<reportElement x="5" y="0" width="169" height="20" uuid="d4fd962f-3eee-48f6-809d-0b9d2f74a5fa"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[FECHA DE INGRESO A REVISIÓN:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="20" width="215" height="20" uuid="de8bd019-c83a-4f42-9435-34af4a9215b6"/>
+					<textElement>
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[NOMBRE DE FUNCIONARIO QUIEN REVISA:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="220" y="20" width="308" height="20" uuid="b117ad49-5851-4a46-884e-79568b76529f"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="40" width="365" height="20" uuid="3d8d6e89-ff49-46cb-99fa-4fbe62c3fceb"/>
+					<text><![CDATA[SE DEVUELVE EL TRÁMITE PARA QUE SUBSANE DEFECTOS DE FORMA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="499" y="46" width="15" height="14" uuid="4baefd09-038d-43a1-8561-fee2cf3702e8"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="442" y="46" width="14" height="14" uuid="9e2622f1-2eac-438c-9f0d-2ef663412641"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement x="427" y="46" width="15" height="14" uuid="4bc8b9ca-6c92-463f-b6df-0544abffbd59"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="514" y="46" width="14" height="14" uuid="9358088f-d867-46f7-93d8-45b3270752e7"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="5" y="60" width="526" height="20" uuid="13d70e2e-7b41-45c7-88af-c3f8f411fe70"/>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="111" width="15" height="14" uuid="27efac12-2603-48e7-895f-5eadfd1021d7"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="111" width="322" height="15" uuid="af9fb485-b784-41ec-bb06-b85b57d7aa63"/>
+					<text><![CDATA[SE MARGINA:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="111" width="14" height="14" uuid="11966cfa-f622-43e5-be3b-b6e6d5bf8a9a"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="111" width="15" height="14" uuid="0d445236-1421-47f1-8a51-4d5f42c7d99d"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="111" width="14" height="14" uuid="e25418d3-734c-4301-8124-51a865e578cd"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="125" width="15" height="14" uuid="15bf20de-b287-4b6f-8c38-39d2dfd71ef0"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="125" width="15" height="14" uuid="b68ff49d-85c0-4d5a-8f84-7264def4673f"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="125" width="14" height="14" uuid="c54bc3cc-e467-4f44-824a-524c3e1e7030"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="125" width="322" height="15" uuid="79a65810-f036-4b44-bd9d-16645f392ae1"/>
+					<text><![CDATA[SE INGRESA EL TRÁMITE PARA NEGATIVA:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="125" width="14" height="14" uuid="3eb72bdc-e3f7-4177-a145-ea81c325e4ae"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="140" width="15" height="14" uuid="551e34bf-fb5b-43e8-a55c-fe3055a9635c"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="140" width="15" height="14" uuid="d70c7588-0307-4db5-8cd8-df120765595c"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="140" width="14" height="14" uuid="60430915-c106-4fa7-8b4c-a83b8c7b69f1"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="140" width="322" height="15" uuid="d7da0d1b-149f-44a1-9b90-d6a8f5f199f9"/>
+					<text><![CDATA[TRÁMITE APTO PARA INSCRIPCIÓN:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="140" width="14" height="14" uuid="7c76ad63-f658-4319-970d-1cef6f4aa461"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="193" y="174" width="163" height="20" uuid="c83839e0-e198-4081-a244-cfe6cde18f8d"/>
+					<textElement textAlignment="Right" verticalAlignment="Bottom">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FIRMA FUNCIONARIO QUE REVISÓ:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="174" width="199" height="20" uuid="cf910065-3f2e-45f5-94d0-e4ec6ac488a2"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField isBlankWhenNull="true">
+				<reportElement x="174" y="1" width="308" height="20" uuid="5ff11233-8f25-4766-bac9-3bdd903670a2"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+			</textField>
+			<frame>
+				<reportElement x="0" y="216" width="555" height="104" uuid="be6ab78d-aa59-4286-b68c-9133c836f4a7"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<staticText>
+					<reportElement x="5" y="4" width="246" height="20" uuid="e650a90e-976d-4adf-a509-7ef35b883c64"/>
+					<text><![CDATA[SE DEVUELVE EL TRÁMITE AL SOLICITANTE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="480" y="10" width="24" height="14" uuid="8c4f8d7e-fa34-47e4-89a9-c2b5e91fc562"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="342" y="10" width="24" height="14" uuid="4ed93fba-6c53-4519-b89b-2d59993ac7d9"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement x="317" y="10" width="25" height="14" uuid="ffc8dc01-c300-4e61-9024-86f64361df0c"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="504" y="10" width="24" height="14" uuid="53d40d13-2866-4740-a3ae-ac95934e4094"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="317" y="25" width="39" height="14" uuid="40ad5ccf-801e-4c38-92a4-3840d6888c85"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FIRMA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="25" width="172" height="14" uuid="b6623367-5c59-4ee3-9f4d-7696ae61b4d2"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="317" y="39" width="95" height="14" uuid="020b749b-57b6-42ff-b771-bbf567fa8a84"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APELLIDOS Y NOMBRES]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="412" y="39" width="116" height="14" uuid="d4be90c4-8c44-4d3d-9950-9268851ae251"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="317" y="53" width="39" height="14" uuid="bc09e578-ef8f-4cf7-abcc-09baa7b81ea5"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[C.I.:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="53" width="172" height="14" uuid="6deec3f6-0e09-4c55-a60c-389c8b022659"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="79" width="523" height="20" uuid="a70a3f98-edae-459a-aa09-a0ad68832fbc"/>
+					<textElement verticalAlignment="Bottom" markup="html"/>
+					<textFieldExpression><![CDATA["<b>Nota: </b>Usted tiene que subsanar el defecto de forma antes de 60 dias, según Artículo 13 de la Lay de Registros"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement x="0" y="329" width="555" height="138" uuid="5a04f01e-f89f-492d-99fc-742a3eb9ed38"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<staticText>
+					<reportElement x="5" y="0" width="264" height="20" uuid="cbd2a19c-6800-473e-8725-6031f82a725c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[VERIFICACIÓN DE HABER SUBSANADO DEFECTOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="20" width="215" height="20" uuid="dcfc170f-7df5-4df8-abbf-e5ac9fb8e3c7"/>
+					<textElement>
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[FECHA DE REINGRESO DEL TRÁMITE:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="220" y="20" width="308" height="20" uuid="ded079d9-06b8-4286-941b-8f36cacbce1e"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="40" width="15" height="14" uuid="31d9ff03-8b11-458d-8ae4-2282faf5596e"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="40" width="322" height="15" uuid="2efd8905-1a5b-4378-81b1-24455ff64c94"/>
+					<text><![CDATA[SUBSANO LOS DEFECTOS DE FORMAEN 60 DÍAS]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="40" width="14" height="14" uuid="fddc11eb-b0a6-49a8-b480-1c2d67538b39"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="40" width="15" height="14" uuid="bdebb6af-d6a5-4d55-9992-730b2df562c1"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="40" width="14" height="14" uuid="d00ec157-0cf5-43a0-be31-93e18d175d6e"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="54" width="15" height="14" uuid="95c9041a-23cb-43a8-abc3-a8f991fa6b68"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="54" width="15" height="14" uuid="8a5d5a31-8f85-4fe4-92e0-6518b216f25b"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="54" width="14" height="14" uuid="8a476916-55b6-4026-bca8-a316160b9c7d"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="54" width="322" height="15" uuid="ae4ab13f-1954-4d5d-9e10-1ccafd39d70a"/>
+					<text><![CDATA[TRÁMITE APTO PARA INSCRIPCIÓN]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="54" width="14" height="14" uuid="9bd2f953-3c04-4a17-b7ad-6485cd7377af"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="174" y="86" width="158" height="20" uuid="ead7a482-f0b1-4381-8695-c3cfa826a827"/>
+					<textElement textAlignment="Right" verticalAlignment="Bottom">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FIRMA RESPONSABLE REINGRESO:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="332" y="86" width="199" height="20" uuid="d90624f8-d02f-4dcd-bb6b-a7342b331d39"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="269" y="106" width="262" height="20" uuid="b85ff609-fa5b-4232-84c5-176ca4954928"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="135" y="106" width="134" height="20" uuid="9df62262-8088-4901-8b00-4d94a0877fa1"/>
+					<textElement textAlignment="Right" verticalAlignment="Bottom">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APELLIDOS Y NOMBRES:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="279" y="116" width="262" height="20" uuid="4c0c8109-88b7-4218-98f8-6c335157f3be"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="145" y="116" width="134" height="20" uuid="76448217-9c74-4503-9023-3f35f577e495"/>
+					<textElement textAlignment="Right" verticalAlignment="Bottom">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APELLIDOS Y NOMBRES:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="477" width="555" height="138" uuid="1f9c16ef-1c39-4eaa-a1a8-82d890f6a055"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="5" width="15" height="14" uuid="5cee39fa-7c67-45e5-8349-090cbbf06643"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="5" width="322" height="15" uuid="4ea07fa0-12ad-492d-a8df-549557a6a79f"/>
+					<text><![CDATA[SE REALIZA INSCRIPCIÓN]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="5" width="14" height="14" uuid="cfd2390f-8f7f-4fad-beff-67a2c54df44b"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="5" width="15" height="14" uuid="1f5b778a-1a1e-4854-ac93-609601ab9275"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="5" width="14" height="14" uuid="01fdd52e-c4c6-4c97-9b22-cb03e1599456"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="341" y="19" width="15" height="14" uuid="e28cbc3f-5414-4794-9717-2bb774f16f13"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="427" y="19" width="15" height="14" uuid="16012222-ad72-43ee-bc9f-6f93e7160c39"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="442" y="19" width="14" height="14" uuid="488bd2d3-7f6c-4d5d-a89f-4746a6e33b16"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="19" width="322" height="15" uuid="9890be08-3da1-4ee9-9c3d-b87d7cb19f83"/>
+					<text><![CDATA[SE INGRESA AL SISTEMA INFORMÁTICO]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="356" y="19" width="14" height="14" uuid="3fa0245b-8382-4aac-a80b-a4a1abf0f4f0"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="148" y="86" width="184" height="20" uuid="4822cdec-d24a-4fca-b04f-839f680b52c2"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FIRMA RESPONSABLE INGRESO AL SISTEMA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="332" y="86" width="199" height="20" uuid="480b4a82-b6e0-4ff4-a077-4a7df5a07467"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="332" y="106" width="199" height="20" uuid="81439682-20d8-46bb-8133-c0de5095305e"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="148" y="106" width="184" height="20" uuid="efd47910-4e4b-4455-b70f-5ee37beddafd"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APELLIDOS Y NOMBRES:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="79" y="47" width="449" height="15" uuid="85a207b0-ca2a-470f-b416-75d8108003f4"/>
+					<box>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textFieldExpression><![CDATA[]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="5" y="47" width="72" height="15" uuid="e3c5e4f8-801b-4520-9425-da1e0e2eb4ed"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[OBSERVACIONES:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,354 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <div class="card card-w-title">
+
+                <div style="text-align: center">
+                    <p:outputLabel value="TRAMITE: #{certificarNoPoseeBien.liquidacion.numTramiteRp}" class="FontBold icon-bar" style="color: darkred; text-transform: uppercase; font-size: 28px; font-weight: bold" escape="false"  />
+                </div>
+                <center>
+                    <h2 style="font-weight: bold">
+                        <p:outputLabel value="Certificado de no Poseer Bienes" rendered="#{certificarNoPoseeBien.render eq 1}" />
+                        <p:outputLabel value="Copia de Razón de Inscripción" rendered="#{certificarNoPoseeBien.render eq 4}" />
+                    </h2>
+                </center>
+                <h:panelGrid columns="2" style="font-weight: bolder;margin: 0 auto; width: 80%;" rendered="#{certificarNoPoseeBien.render eq 1}" >
+                    <h:panelGroup>
+                        <p:outputLabel value="A nombre de:" /> <br></br>
+                        <p:inputText value="#{certificarNoPoseeBien.certificado.linderosRegistrales}" size="50" style="text-transform: uppercase;"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Posee Único Bien?" /><br></br>
+                        <p:inputSwitch value="#{certificarNoPoseeBien.unicoBien}" onLabel="Si" offLabel="No">
+                            <p:ajax  update="unicoBien" />
+                        </p:inputSwitch>    
+                    </h:panelGroup>
+
+                </h:panelGrid>
+
+                <h:panelGrid id="unicoBien" columns="1" style="font-weight: bolder;margin: 0 auto; width: 80%;" rendered="#{certificarNoPoseeBien.render eq 1}" >
+                    <h:panelGroup>
+                        <p:outputLabel value="Identificación:" /> <br></br>
+                        <p:inputText value="#{certificarNoPoseeBien.certificado.beneficiario}" size="50"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Solicitante:" /> <br></br>
+                        <p:inputText value="#{certificarNoPoseeBien.certificado.nombreSolicitante}"  
+                                     size="50"
+                                     style="text-transform: uppercase;"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Motivo:" /> <br></br>
+                        <p:inputTextarea value="#{certificarNoPoseeBien.certificado.usoDocumento}"  style="text-transform: uppercase;" rows="5" cols="49"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{!certificarNoPoseeBien.unicoBien}">
+                        <p:outputLabel value="Adicional:" /> 
+                        <p:selectBooleanCheckbox value="#{certificarNoPoseeBien.requiereCambio}" >
+                            <p:ajax update="adicional"  listener="#{certificarNoPoseeBien.limpiarData()}"/>
+                        </p:selectBooleanCheckbox>    <br></br>
+                        <p:inputTextarea id="adicional" disabled="#{!certificarNoPoseeBien.requiereCambio}"
+                                         value="#{certificarNoPoseeBien.certificado.descripcionBien}" 
+                                         rows="5" cols="49"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{certificarNoPoseeBien.unicoBien}">
+                        <p:outputLabel value="Parroquia:" /> <br></br>
+                        <p:inputText value="#{certificarNoPoseeBien.certificado.parroquia}" size="50" style="text-transform: uppercase;"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{certificarNoPoseeBien.unicoBien}">
+                        <p:outputLabel value="# Inscripción:" /> <br></br>
+                        <p:inputNumber decimalPlaces="0" value="#{certificarNoPoseeBien.inscripcion}" size="20" style="text-transform: uppercase;"/>
+                    </h:panelGroup>    
+                    <h:panelGroup rendered="#{certificarNoPoseeBien.unicoBien}">
+                        <p:outputLabel value="Fecha Inscripción:" /> <br></br>
+                        <p:calendar value="#{certificarNoPoseeBien.fechaInscripcion}" pattern="dd/MM/yyyy" 
+                                    maxdate="sysdate"  />
+                    </h:panelGroup>    
+
+                </h:panelGrid>
+
+                <br/>
+                <center>
+<!--                    <p:commandButton value="Guardar" actionListener="# {certificarNoPoseeBien.guardarCertificadoNoBienes()}" styleClass="btnStyle" icon="fa fa-bolt" rendered="#{certificarNoPoseeBien.render eq 1}" />
+                    <p:spacer width="20" height="1"/>-->
+                    <p:commandButton value="Realizar Tarea" actionListener="#{certificarNoPoseeBien.completarSubTarea()}" styleClass="btnStyle" icon="fa fa-calendar" rendered="#{certificarNoPoseeBien.render eq 1}" />
+                </center>
+
+                <!--CERTIFICADO SIMPLE/HISTORIADO/LINDERADO/UNICO BIEN-->
+                <p:panel id="pnlCertificado" header="#{certificarNoPoseeBien.tt.detalle.acto.nombre}" rendered="#{certificarNoPoseeBien.render eq 2}">
+                    <p:fieldset legend="INFORMACIÓN DE LA FICHA REGISTRAL" style="height: 670px;">
+                        <h:panelGrid style="width: 100%;">
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Nº FICHA:" style="font-weight: bolder; font-size: 14px;"/>
+                                    <p:spacer width="20" height="1"/>
+                                    <p:inputText value="#{certificarNoPoseeBien.numFicha}"/>
+                                    <p:spacer width="20" height="1"/>
+                                    <p:commandButton value="Buscar Ficha" styleClass="btnStyle" icon="fa fa-institution" 
+                                                     actionListener="#{certificarNoPoseeBien.buscarFichaRegistral()}"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="Borrar Listas" styleClass="btnStyle" icon="fa fa-trash" style="float: right;" 
+                                                     actionListener="#{certificarNoPoseeBien.borrarListas()}" update="mainForm:pnlCertificado">
+                                        <p:confirm header="Seguro de borrar todo?" message="Utilizar esta opción con cuidado." icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:row>
+                        </h:panelGrid>
+                        <p:panel header="LINDEROS REGISTRALES">
+                            **Nota: Solo modificar cuando no se pueden determinar los linderos.
+                            <p:inputTextarea value="#{certificarNoPoseeBien.certificado.linderosRegistrales}" style="width: 100%;" rows="6" autoResize="false"/>
+                        </p:panel>
+                        <p:dataTable id="dtPropS" value="#{certificarNoPoseeBien.propietarios}" var="props" scrollable="true" scrollHeight="100" 
+                                     rowIndexVar="indexP" emptyMessage="Sin Propietarios." resizableColumns="true">
+                            <f:facet name="header">Propietarios del Bien Inmueble</f:facet>
+                            <p:column headerText="No" width="20">
+                                #{indexP+1}
+                            </p:column>
+                            <p:column headerText="CI/RUC/PAS">
+                                <p:outputLabel value="#{props.documento}"/>
+                            </p:column>
+                            <p:column headerText="NOMBRES">
+                                <p:outputLabel value="#{props.nombres}"/>
+                            </p:column>
+                            <p:column headerText="Del." width="20">
+                                <p:commandLink actionListener="#{certificarNoPoseeBien.eliminarProp(indexP)}" update="mainForm:pnlCertificado">
+                                    <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                    <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                        <p:dataTable id="dtHistoriaS" value="#{certificarNoPoseeBien.historia}" var="movs" scrollable="true" scrollHeight="200" 
+                                     rowIndexVar="index" emptyMessage="Sin Movimientos." resizableColumns="true">
+                            <f:facet name="header">Movimientos Registrales</f:facet>
+                            <p:column headerText="No" width="20">
+                                #{index+1}
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{movs.movimiento.libro.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Acto">
+                                <p:outputLabel value="#{movs.movimiento.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <p:outputLabel id="obMov" value="#{movs.movimiento.observacion}"/>
+                                <p:tooltip for="obMov" value="#{movs.movimiento.observacion}" position="top" />
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80">
+                                <p:outputLabel value="#{movs.movimiento.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="80">
+                                <p:outputLabel value="#{movs.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Insc." width="80">
+                                <p:outputLabel value="#{movs.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Del." width="20">
+                                <p:commandLink actionListener="#{certificarNoPoseeBien.eliminarMovimiento(index)}" update="mainForm:pnlCertificado">
+                                    <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                    <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:fieldset>
+                    <p:fieldset legend="CONTENIDO DEL CERTIFICADO">
+                        <h:panelGrid columns="1">
+                            <p:outputLabel value="SOLVENCIA:" style="font-weight: bolder; font-size: 14px;"/>
+                            <p:selectOneRadio value="#{certificarNoPoseeBien.contenido}" layout="responsive" columns="1" converter="entityConverter">
+                                <f:selectItems value="#{certificarNoPoseeBien.contenidos}" var="con" itemLabel="#{con.valor}" itemValue="#{con}" />
+                                <p:ajax event="change" listener="#{certificarNoPoseeBien.updateSolvencia()}" update="pnlCertificado"/>
+                            </p:selectOneRadio>
+                            <p:inputTextarea id="textSolvencia" value="#{certificarNoPoseeBien.solvencia}" rows="3" autoResize="true" style="width: 100%;"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                            <p:inputText value="#{certificarNoPoseeBien.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                            <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                            <p:inputText value="#{certificarNoPoseeBien.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                        </h:panelGrid>
+                    </p:fieldset><br/>
+                    <center>
+                        <p:commandButton value="Guardar" actionListener="#{certificarNoPoseeBien.guardarCertificadoConficha()}" styleClass="btnStyle" icon="fa fa-bolt"/>
+                        <p:spacer width="20" height="1"/>
+                        <p:commandButton value="Realizar Tarea" actionListener="#{certificarNoPoseeBien.completarSubTarea()}" styleClass="btnStyle" icon="fa fa-calendar"/>
+                    </center>
+                </p:panel>
+
+                <!-- CERTIFICADOS INFORME DE BIENES -->
+                <p:panel header="#{certificarNoPoseeBien.tt.detalle.acto.nombre}" rendered="#{certificarNoPoseeBien.render eq 3}">
+                    <p:panelGrid styleClass="noBorder" columns="3">
+                        No de Ficha: (Obligatorio)
+                        <p:inputText value="#{certificarNoPoseeBien.numFicha}"/>
+                        <p:commandButton value="Buscar Ficha" styleClass="btnStyle" icon="ui-icon-serch" actionListener="#{certificarNoPoseeBien.buscarFichaRegistral()}"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="1">
+                        LINDEROS REGISTRALES:
+                        <p:inputTextarea value="#{certificarNoPoseeBien.ficha.linderos}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                        FECHA DE EMISION:
+                        <p:calendar value="#{certificarNoPoseeBien.fecha}" pattern="dd/MM/yyyy HH:mm"/>
+                        SOLVENCIA:
+                        <p:inputTextarea value="#{certificarNoPoseeBien.solvencia}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                    </p:panelGrid>
+                    <center>
+                        <p:commandButton value="Guardar" actionListener="#{certificarNoPoseeBien.guardarCertificadoConficha()}" styleClass="btnStyle"/>
+                        <p:spacer width="20" height="1"/>
+                        <p:commandButton value="Realizar Tarea" actionListener="#{certificarNoPoseeBien.completarSubTarea()}" styleClass="btnStyle"/>
+                    </center>
+                </p:panel>
+
+                <!-- COPIA DE RAZON DE INSCRIPCION -->
+                <h:panelGrid id="pnlRazon" rendered="#{certificarNoPoseeBien.render eq 4}">
+
+                    <p:fieldset legend="Movimientos Registrales">
+                        <div align="right">
+                            <p:commandButton value="Agregar Inscripcion" icon="ui-icon-search" 
+                                             actionListener="#{certificarNoPoseeBien.showDlgWith('/resources/dialog/dlglazymov')}">
+                                <p:ajax event="dialogReturn" listener="#{certificarNoPoseeBien.selectObjectMov}" update="pnlRazon"/>
+                            </p:commandButton>
+                        </div>
+                        <br></br>
+                        <p:dataTable id="dtHistoriaC" value="#{certificarNoPoseeBien.historia}" var="movsr" 
+                                     scrollable="true" scrollHeight="200" 
+                                     rowIndexVar="indexR" emptyMessage="Sin Movimientos." resizableColumns="true">
+                            <p:column headerText="No" width="20">
+                                #{indexR+1}
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{movsr.movimiento.libro.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Acto">
+                                <p:outputLabel value="#{movsr.movimiento.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <p:outputLabel id="obMovR" value="#{movsr.movimiento.observacion}"/>
+                                <p:tooltip for="obMovR" value="#{movsr.movimiento.observacion}" position="top" />
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80">
+                                <p:outputLabel value="#{movsr.movimiento.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="80">
+                                <p:outputLabel value="#{movsr.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Insc." width="80">
+                                <p:outputLabel value="#{movsr.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Del." width="20">
+                                <p:commandLink actionListener="#{certificarNoPoseeBien.eliminarMovimiento(indexR)}" update="mainForm:pnlRazon">
+                                    <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                    <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:fieldset>
+
+                    <p:fieldset legend="Información de Solicitud">
+                        <h:panelGrid columns="1" style="width: 49%; float: left; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel value="Solicitante:" style="font-weight: bolder; font-size: 14px;"/> <br></br>
+                                <p:inputText value="#{certificarNoPoseeBien.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Motivo de Solicitud:" style="font-weight: bolder; font-size: 14px;"/><br></br>
+                                <p:inputText value="#{certificarNoPoseeBien.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value=""/><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value=""/><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value=""/><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value=""/><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value=""/><br></br>
+                            </h:panelGroup>
+<!--                            
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup></h:panelGroup>-->
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" style="width: 49%; float: right; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel value="Observaciones:" style="font-weight: bolder; font-size: 14px;"/><br></br>
+                                <p:inputTextarea value="#{certificarNoPoseeBien.certificado.observacion}" rows="10" cols="80" 
+                                                 scrollHeight="250" autoResize="false"
+                                                 placeholder="Información Adicional"/>        
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <br></br>
+                        <center>
+                            <p:commandButton value="Realizar Tarea" 
+                                             actionListener="#{certificarNoPoseeBien.completarSubTarea()}"
+                                             icon="fa fa-bolt"/>
+                        </center>
+                        <br></br>
+
+                    </p:fieldset>
+
+                </h:panelGrid>
+                <p:confirmDialog global="true">
+                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+            </div>
+        </h:form>
+
+        <p:dialog header="Movimientos Registrales" widgetVar="dlgMovimientos" modal="true" width="800">
+            <h:form id="frmMovs">
+                <h:panelGrid columns="2" style="width: 100%;">
+                    <p:outputLabel value="Ficha Registral Nº #{certificarNoPoseeBien.ficha.numFicha}" style="font-weight: bolder;font-size: 16px;"/>
+                    <p:commandButton value="Cargar Movimientos" actionListener="#{certificarNoPoseeBien.agregarAllMovs()}" styleClass="btnStyle"
+                                     style="float: right;" icon="fa fa-history"/>
+                </h:panelGrid>
+                <p:dataTable id="dtMov" value="#{certificarNoPoseeBien.movimientos}" scrollable="true" scrollHeight="300"
+                             var="mov" rowIndexVar="rowIndex" style="text-align: center;" resizableColumns="true"
+                             selection="#{certificarNoPoseeBien.temps}" rowKey="#{mov.id}">
+                    <p:column selectionMode="multiple" width="20"/>
+                    <p:column headerText="No" width="20">
+                        #{rowIndex + 1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{mov.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{mov.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Repertorio" width="70">
+                        <p:outputLabel value="#{mov.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="70" sortBy="#{mov.numInscripcion}">
+                        <p:outputLabel value="#{mov.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Insc." width="70" sortBy="#{mov.fechaInscripcion}">
+                        <p:outputLabel value="#{mov.fechaInscripcion}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Observacion" width="120">
+                        <p:outputLabel id="obMov" value="#{mov.observacion}"/>
+                        <p:tooltip for="obMov" value="#{mov.observacion}" position="top" />
+                    </p:column>
+                    <!--<p:column headerText="**" width="30">
+                        <p:commandLink actionListener="# {certificarNoPoseeBien.agregarHistoria(mov)}">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>-->
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

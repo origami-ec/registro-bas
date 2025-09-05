@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="top"><h3>Marginacion Fisica de Contratos</h3></ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <p:panelGrid styleClass="noBorder" columns="6" style="font-size: 16px;font-weight: bolder;">
+                <p:outputLabel value="Nombre Tarea:" style="font-weight: bolder;color: #005f9c"/>
+                #{marginacionRp.taskDataByTaskID.name}
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                #{marginacionRp.ht.numTramite}
+            </p:panelGrid>
+            <p:tabView id="mainTab">
+                <p:tab title="Informacion de Tramite">
+                    <p:panelGrid styleClass="noBorder" columns="4" style="font-size: 16px;">
+                        <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{marginacionRp.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                        <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{marginacionRp.liquidacion.solicitante.nombreCompleto}" style="text-transform: uppercase;font-weight: bolder;"/>
+                    </p:panelGrid>
+                    <p:dataTable value="#{marginacionRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" resizableColumns="true"
+                                 reflow="true" style="text-align: center" emptyMessage="Sin observaciones..." scrollable="true" scrollHeight="300">
+                        <p:column headerText="Contrato">
+                            <h:outputText value="#{det.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <h:outputText value="#{det.liquidacion.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <h:outputText value="#{det.inscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fech.Insc." width="120">
+                            <p:outputLabel value="#{det.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <!--<p:column headerText="Avaluo" width="100">
+                            <h:outputText value="# {det.avaluo}"/>
+                        </p:column>
+                        <p:column headerText="Cuantia" width="100">
+                            <h:outputText value="# {det.cuantia}"/>
+                        </p:column>-->
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Documentos Adjuntos">
+                    <p:dataTable id="dtArchivos" value="#{marginacionRp.processInstanceAllAttachmentsFiles}" rendered="#{marginacionRp.hasDoc}"
+                                 emptyMessage="Sin elementos..." scrollHeight="300" var="file" style="text-align: center;" scrollable="true">
+                        <p:column headerText="Nombre">
+                            <p:outputLabel value="#{file.name}"/>
+                        </p:column>
+                        <p:column headerText="Tipo">
+                            <p:outputLabel value="#{file.description}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="130">
+                            <p:outputLabel value="#{file.time}">
+                                <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Descargar" width="80">
+                            <p:commandLink actionListener="#{marginacionRp.descargarDocumento(file.url)}">
+                                <p:graphicImage value="/resources/icons/down.png"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable value="#{marginacionRp.docs}" style="text-align: center;" scrollable="true"
+                                 emptyMessage="Sin elementos..." scrollHeight="300" var="doc" rendered="#{!marginacionRp.hasDoc}">
+                        <p:column headerText="Nombre Archivo">
+                            <p:outputLabel value="#{doc.nombreArchivo}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" width="120">
+                            <p:outputLabel value="#{doc.contentType}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="140">
+                            <p:outputLabel value="#{doc.fecha}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Descargar" width="80">
+                            <p:commandLink actionListener="#{marginacionRp.downloadDocHabilitante(doc)}">
+                                <p:graphicImage value="/resources/icons/down.png"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Observacion">
+                    <p:panelGrid styleClass="noBorder" columns="1" style="text-align: center;margin: 0 auto;">
+                        <p:inputTextarea value="#{marginacionRp.observacion}" rows="10" cols="100"/>
+                        <p:commandButton value="Completar Tarea" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{marginacionRp.completarTarea()}">
+                            <p:confirm header="Confirmación" message="Seguro de Completar Tarea?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true">
+                            <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </p:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,380 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Administración de Usuarios</ui:define>
+    <ui:define name="content">
+        <h:form id="formUsuarios">
+            <center><h2>ADMINISTRACIÓN DE: USUARIOS, ROLES Y DEPARTAMENTOS</h2></center>
+            <p:accordionPanel id="accMantenimiento">
+                <p:tab title="USUARIOS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <center>
+                        <p:commandButton value="Nuevo Usuario" icon="pi pi-plus" actionListener="#{usuarios.showDlgNewUser()}" />
+                    </center>
+                    <p:dataTable id="dtuser" reflow="true" paginator="true" lazy="true" rows="10" rowsPerPageTemplate="10,50,100" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{usuarios.usuariosLazy}" var="user" emptyMessage="No se encontró ningún Item." style="text-align: center;background-color: #000000;">
+                        <p:column headerText="Usuario" filterBy="#{user.usuario}" sortBy="#{user.usuario}" filterStyle="width: 75%">
+                            <h:outputText value="#{user.usuario}"/>
+                        </p:column>
+                        <p:column headerText="Identificacion" filterBy="#{user.ente.ciRuc}" filterMatchMode="contains" filterStyle="width: 75%">
+                            <h:outputText value="#{user.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Apellidos" filterBy="#{user.ente.apellidos}" filterMatchMode="contains" filterStyle="width: 75%">
+                            <h:outputText value="#{user.ente.apellidos}"/>
+                        </p:column>
+                        <p:column headerText="Nombres" filterBy="#{user.ente.nombres}" filterMatchMode="contains" filterStyle="width: 75%">
+                            <h:outputText value="#{user.ente.nombres}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="60">
+                            <p:outputLabel value="Activo" rendered="#{user.sisEnabled}"/>
+                            <p:outputLabel value="Inactivo" rendered="#{!user.sisEnabled}"/>
+                        </p:column>
+                        <p:column headerText="Cambiar Clave" width="60">
+                            <p:commandButton title="Cambiar clave" icon="pi pi-key" 
+                                             actionListener="#{usuarios.showDlgEditUser(user)}" />
+                        </p:column>
+                        <p:column headerText="Cambiar Roles" width="60">
+                            <p:commandButton title="Cambiar roles" icon="pi pi-list" 
+                                             actionListener="#{usuarios.showDlgEditarRoles(user)}" />
+                        </p:column>
+                        <p:column headerText="Cambiar Persona" width="60">
+                            <p:commandButton title="Cambiar persona" icon="pi pi-user" 
+                                             actionListener="#{usuarios.showDlgConsulta(user, '/resources/dialog/dlglazyente')}">
+                                <p:ajax event="dialogReturn" listener="#{usuarios.selectEnte}" update="dtuser"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Cambiar Estado" width="60">
+                            <p:commandButton title="Cambiar estado" icon="pi pi-tags" 
+                                             actionListener="#{usuarios.showDlgRegistroUser(user)}" />
+                        </p:column>
+                        <p:column headerText="Ver Detalle" width="60">
+                            <p:commandButton title="detalle" icon="pi pi-folder-open" 
+                                             actionListener="#{usuarios.showDlgViewUser(user)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="ROLES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <center>
+                        <p:commandButton value="Nuevo Rol" icon="pi pi-plus" actionListener="#{usuarios.showDlgRol()}" styleClass="btnStyle"/>
+                    </center>
+                    <p:dataTable id="dtRoles" reflow="true" paginator="true" lazy="true" rows="10" rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 value="#{usuarios.roles}" var="usrol" emptyMessage="No se encontró ningún Item" style="text-align: center;width: 70%;margin: 0 auto;">
+                        <p:column headerText="Nombre" filterBy="#{usrol.nombre}" filterStyle="width: 95%;">
+                            <h:outputText value="#{usrol.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Departamento" width="200">
+                            <h:outputText value="#{usrol.departamento.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="100">
+                            <h:outputText value="ACTIVO" rendered="#{usrol.estado}"/>
+                            <h:outputText value="INACTIVO" rendered="#{!usrol.estado}"/>
+                        </p:column>
+                        <p:column headerText="Editar" width="40">
+                            <p:commandButton actionListener="#{usuarios.showDlgEditRol(usrol)}" icon="pi pi-pencil"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="DEPARTAMENTOS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <center>
+                        <p:commandButton value="Nuevo Departamento" icon="pi pi-plus" actionListener="#{usuarios.showDlgDept()}" styleClass="btnStyle"/>
+                    </center>
+                    <p:dataTable id="dtDepts" reflow="true" paginator="true" lazy="true" rows="10" rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 value="#{usuarios.depts}" var="roldept" emptyMessage="No se encontró ningún Item" style="text-align: center;width: 60%;margin: 0 auto;">
+                        <p:column headerText="Departamento" filterBy="#{roldept.nombre}" filterStyle="width: 95%;">
+                            <h:outputText value="#{roldept.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="100">
+                            <h:outputText value="ACTIVO" rendered="#{roldept.estado}"/>
+                            <h:outputText value="INACTIVO" rendered="#{!roldept.estado}"/>
+                        </p:column>
+                        <p:column headerText="Editar" width="40">
+                            <p:commandButton actionListener="#{usuarios.showDlgEditDept(roldept)}" icon="pi pi-pencil"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog id="dlgDetalleCliente" header="Detalle de Usuario" widgetVar="dlgDetalleClient" modal="true" resizable="false"
+                  closeOnEscape="true" position="center">
+            <h:form id="formDetalleCliente">
+                <ui:include src="/admin/plantilla/enteView.xhtml">
+                    <ui:param name="ente" value="#{usuarios.ente}"/>
+                </ui:include>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgEditarUser" header="Editar Password" widgetVar="dlgCambioClave" modal="true" resizable="false" 
+                  closeOnEscape="false" position="center">
+            <h:form id="formCambioClave">
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="Usuario:" style="font-weight: bolder"/>
+                    <p:outputLabel value="#{usuarios.acluser.usuario}" 
+                                   style="font-weight: bolder;font-size: 20px;color: #0033FF;text-transform: uppercase;"/>
+                    <p:outputLabel value="Clave temporal:" style="font-weight: bolder"/>
+                    <p:inputText id="passTemp" value="#{usuarios.passTwo}" readonly="true" placeholder="Generada automáticamente" 
+                                 style="width: 200px;"/>
+                </h:panelGrid>
+                <p:spacer height="15" width="1"/>
+                <div align="center">
+                    <p:commandButton value="Generar nueva clave" icon="pi pi-key" actionListener="#{usuarios.nuevaClave()}" 
+                                     update="formCambioClave" process="formCambioClave"/>
+                    <p:spacer width="10" />
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{usuarios.cambioClave()}"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Cambio Estado de Usuario" widgetVar="dlgEstadoUser" modal="true" resizable="false" position="center">
+            <h:form id="formEstadoUser">
+                <p:panelGrid columns="4" styleClass="ui-panelgrid-blank" style="font-weight: bolder;font-size: 14px;">
+                    Usuario:
+                    <p:outputLabel value="#{usuarios.acluser.usuario}" style="font-weight: bolder;font-size: 14px;color: #0033FF;"/>
+                    Estado:
+                    <p:selectOneMenu value="#{usuarios.acluser.sisEnabled}">
+                        <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" style="width: 100%;font-weight: bolder;font-size: 14px;">
+                    Motivo:
+                    <p:inputTextarea value="#{usuarios.motivo}" autoResize="false" rows="5" style="width: 100%;"/>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{usuarios.registrarUsuario()}"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Informacion de Usuario" widgetVar="dlgInfoUser" modal="true" resizable="false" position="center" width="500" height="300">
+            <h:form id="formInfoUser">
+                <p:tabView>
+                    <p:tab title="Persona">
+                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="2" style="font-size: 14px;font-weight: bolder;">
+                            Usuario:
+                            <p:inputText value="#{usuarios.acluser.usuario}" readonly="true"/>
+                            Estado:
+                            <p:inputText value="ACTIVO" readonly="true" rendered="#{usuarios.acluser.sisEnabled}"/>
+                            <p:inputText value="INACTIVO" readonly="true" rendered="#{!usuarios.acluser.sisEnabled}"/>
+                            Cedula:
+                            <p:inputText value="#{usuarios.acluser.ente.ciRuc}" readonly="true"/>
+                            Nombres:
+                            <p:inputText value="#{usuarios.acluser.ente.nombreCompleto}" size="40" readonly="true"/>
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Roles">
+                        <p:dataTable value="#{usuarios.acluser.aclRolCollection}" var="role" scrollable="true" style="text-align: center;"
+                                     emptyMessage="No se asignaron roles." scrollHeight="200">
+                            <p:column  headerText="Rol" >
+                                <h:outputText value="#{role.nombre}"/>
+                            </p:column>
+                            <p:column  headerText="Departamento">
+                                <h:outputText value="#{role.departamento.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Cambios de Estado">
+                        <p:dataTable value="#{usuarios.acluser.aclRegistroUserCollection}" var="reg" scrollable="true" style="text-align: center;"
+                                     emptyMessage="Sin elementos." scrollHeight="200">
+                            <p:column headerText="Fecha" width="150">
+                                <h:outputText value="#{reg.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                            </p:column>
+                            <p:column headerText="Motivo">
+                                <h:outputText value="#{reg.motivo}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgCambioRoles" header="Editar Roles" widgetVar="dlgRoles" modal="true" resizable="false" 
+                  closeOnEscape="false" position="center">
+            <h:form id="formCambioRol">
+                <p:panelGrid style="width: 500px;" styleClass="ui-noborder">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Usuario:" style="font-weight: bolder;"/>
+                        </p:column>
+                        <p:column colspan="2">
+                            <p:outputLabel value="#{usuarios.acluser.usuario}" 
+                                           style="font-weight: bolder;font-size: 20px;color: #0033FF;text-transform: uppercase;"/>
+                        </p:column>
+                    </p:row>
+                    <p:row rendered="false">
+                        <p:column>
+                            <p:outputLabel value="Estado:" style="font-weight: bolder;"/>
+                        </p:column>
+                        <p:column colspan="2">
+                            <p:selectOneMenu value="#{usuarios.acluser.sisEnabled}">
+                                <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Roles:" style="font-weight: bolder"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{usuarios.rol}" converter="entityConverter" filter="true">
+                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                <f:selectItems value="#{usuarios.listRols}" var="rols" itemValue="#{rols}" itemLabel="#{rols.nombre} - #{rols.departamento.nombre}"/>
+                            </p:selectOneMenu>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="Agregar" icon="pi pi-plus" actionListener="#{usuarios.agregarRol()}"
+                                             update="formCambioRol:dtRolesUser"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <p:dataTable id="dtRolesUser" value="#{usuarios.rolsUser}" var="rol" scrollable="true" 
+                                         emptyMessage="No se asignaron roles." scrollHeight="100">
+                                <p:column  headerText="Rol" style="text-align: center;">
+                                    <h:outputText value="#{rol.nombre}"/>
+                                </p:column>
+                                <p:column  headerText="Departamento">
+                                    <h:outputText value="#{rol.departamento.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Del." width="40">
+                                    <p:commandButton icon="pi pi-trash" actionListener="#{usuarios.eliminarRol(rol)}" update="dtRolesUser"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3" style="text-align: center">
+                            <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{usuarios.editarRoles()}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Nuevo Usuario" widgetVar="dlgNUsr" modal="true" resizable="false" closeOnEscape="false" position="center">
+            <h:form id="frmNewUsr">
+                <p:outputLabel value="La contraseña la proveerá el sistema." 
+                               style="font-weight: bolder; width: 100% !important; font-size: 20px; display: block;color: orangered;"/>
+                <br />
+                <p:tabView id="tabUsuario" style="width: 520px;height: 250px;">
+                    <p:tab title="Datos Personales">
+                        <h:panelGrid columns="5" style="font-weight: bolder;">
+                            Cédula:
+                            <p:spacer height="1" width="40"/>
+                            <p:inputText value="#{usuarios.cedula}"/>
+                            <p:spacer height="1" width="20"/>
+                            <p:commandButton value="Buscar" icon="pi pi-search" actionListener="#{usuarios.buscarEnte()}" update="frmNewUsr"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3" style="font-weight: bolder;">
+                            Nombres:
+                            <p:spacer height="1" width="25"/>
+                            <p:inputText value="#{usuarios.ente.nombres}" style="width: 300px;" readonly="true"/>
+                            Apellidos:
+                            <p:spacer height="1" width="25"/>
+                            <p:inputText value="#{usuarios.ente.apellidos}" style="width: 300px;" readonly="true"/>
+                            Correo:
+                            <p:spacer height="1" width="25"/>
+                            <p:inputText value="#{usuarios.ente.correo1}" style="width: 300px;" readonly="true"/>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Usuario y Roles">
+                        <h:panelGrid columns="5" style="font-weight: bolder;">
+                            Usuario:
+                            <p:spacer height="1" width="25"/>
+                            <p:inputText value="#{usuarios.usuario}"/>
+                            <p:spacer height="1" width="25"/>
+                            <p:commandButton value="Validar" icon="pi pi-search" actionListener="#{usuarios.comprobarUsuario()}"/>
+                            Roles:
+                            <p:spacer height="1" width="25"/>
+                            <p:selectOneMenu value="#{usuarios.rol}" converter="entityConverter" filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                <f:selectItems value="#{usuarios.listRols}" var="rols" itemValue="#{rols}" itemLabel="#{rols.nombre}"/>
+                            </p:selectOneMenu>
+                            <p:spacer height="1" width="25"/>
+                            <p:commandButton value="Agregar" icon="pi pi-plus" actionListener="#{usuarios.agregarRol()}" update="dtRolesUsuario"/>
+                        </h:panelGrid>
+                        <p:dataTable id="dtRolesUsuario" value="#{usuarios.rolsUser}" var="roluser"
+                                     emptyMessage="No se asignaron roles." scrollable="true" scrollHeight="100">
+                            <p:column headerText="Rol">
+                                <p:outputLabel value="#{roluser.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Departamento" >
+                                <p:outputLabel value="#{roluser.departamento.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+                <br/>
+                <div align="center">
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{usuarios.guardarNuevoUser()}"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Administracion de Roles" widgetVar="dlgRolUser" modal="true" resizable="false" position="center">
+            <h:form id="formRolsUser">
+                <h:panelGrid columns="3" style="font-weight: bolder;">
+                    Nombre:
+                    <p:spacer height="1" width="25"/>
+                    <p:inputText value="#{usuarios.rol.nombre}" size="40"/>
+                    Departamento:
+                    <p:spacer height="1" width="25"/>
+                    <p:selectOneMenu  value="#{usuarios.rol.departamento}" converter="entityConverter" filter="true">  
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                        <f:selectItems value="#{usuarios.departamentos}" var="dep" itemLabel="#{dep.nombre}" itemValue="#{dep}"/>  
+                    </p:selectOneMenu>
+                    Estado:
+                    <p:spacer height="1" width="25"/>
+                    <p:selectOneMenu value="#{usuarios.rol.estado}" >
+                        <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" styleClass="btnStyle" actionListener="#{usuarios.saveRoles()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Administracion de Departamentos" widgetVar="dlgDepts" modal="true" resizable="false" position="center">
+            <h:form id="formDepts">
+                <h:panelGrid columns="3" style="font-weight: bolder;">
+                    Nombre: 
+                    <p:spacer height="1" width="25"/>
+                    <p:inputText value="#{usuarios.dept.nombre}" size="40"/>
+                    Estado: 
+                    <p:spacer height="1" width="25"/>
+                    <p:selectOneMenu value="#{usuarios.dept.estado}" >
+                        <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" styleClass="btnStyle" actionListener="#{usuarios.saveDepts()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Usuario Nuevo Creado" widgetVar="dlgInfoUserPass" modal="true" resizable="false" position="center" closable="false">
+            <h:form id="fmrInfoUserPass">
+                <h:panelGrid styleClass="noBorder" columns="2">
+                    <co:inputText label="Usuario" value="#{usuarios.usuario}" readonly="true" />
+                    <co:inputText label="Clave Temporal" value="#{usuarios.passTwo}" readonly="true" />
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Aceptar" styleClass="btnStyle" actionListener="#{usuarios.inicializarVariables()}" 
+                                     oncomplete="PF('dlgInfoUserPass').hide();"/>
+                </center>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

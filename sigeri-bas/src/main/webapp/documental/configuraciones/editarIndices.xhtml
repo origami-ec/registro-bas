@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Campos para Indexación</ui:define>
+    <ui:define name="content">
+        <h:form id="formMain"  prependId="false">
+            <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                <p:outputLabel value="Campos para Indexación"
+                               style="font-family:  'Courier New', monospace !important;
+                               font-size: 30px;
+                               font-weight: bolder;
+                               text-align: left;
+                               color: black" />
+            </h:panelGrid>
+            <h:panelGrid id="pnlFormulario" columns="2" columnClasses="forty-percent, sixty-percent">
+                <h:panelGroup>
+                    <h:panelGrid id="pnlDatosFormato" columns="1" style="width: 90%">
+                        <f:facet name="header">
+                            <center>
+                                <p:outputLabel value="Datos del formulario de indexación" style="font-weight: bolder"/>
+                            </center>
+                        </f:facet>
+                        <h:panelGroup>
+                            <p:outputLabel value="Descripción del formulario" style="font-weight: bolder" /><br/>
+                            <p:inputText value="#{indexacionMB.formulario}" style="width: 100%"/>
+                        </h:panelGroup>
+                        <h:panelGrid id="pnlDatosCampos" columns="2" style="width: 100%" columnClasses="fifty-percent, fifty-percent">
+
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Tipo de dato" style="font-weight: bolder" /><br/>
+                                <p:selectOneMenu  value="#{indexacionMB.tipoDato}" converter="dtoConverter" style="width: 100%">
+                                    <p:ajax update="pnlDatosCampos"/>
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true" />
+                                    <f:selectItems value="#{indexacionMB.tiposDatos}" var="t" itemLabel="#{t.descripcion}" itemValue="#{t}"/> 
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Descripción del campo" style="font-weight: bolder" /><br/>
+                                <p:inputText value="#{indexacionMB.campo}" style="width: 100%"/>
+                            </h:panelGroup>                            
+                            <h:panelGroup>
+                                <p:outputLabel value="El campo es obligatorio" style="font-weight: bolder" /><br/>
+                                <p:inputSwitch value="#{indexacionMB.obligatorio}"/>
+                            </h:panelGroup>                            
+                            <h:panelGroup rendered="#{indexacionMB.tipoDato.descripcion eq 'CATEGORIA'}">
+                                <p:outputLabel value="Categoría" style="font-weight: bolder" /><br/>
+                                <p:inputText value="#{indexacionMB.categoria}" style="width: 100%"/><br/><br/>                                 
+                                <center>
+                                    <p:commandButton value="Agregar categoría" icon="fa fa-plus" 
+                                                     styleClass="help-button rounded-button" actionListener="#{indexacionMB.agregarCategoria()}"
+                                                     process="pnlDatosFormato" update="pnlDatosFormato"  /> 
+                                </center>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{indexacionMB.tipoDato.descripcion eq 'CATEGORIA'}">
+                                <p:outputLabel value="Escriba una categoría" style="font-weight: bolder" /><br/>
+                                <p:dataList var="cat" value="#{indexacionMB.categorias}" emptyMessage="Ingrese una categoría">
+                                    #{cat}
+                                </p:dataList>
+                            </h:panelGroup>
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup rendered="#{indexacionMB.tipoDato.descripcion eq 'CATEGORIA'}"></h:panelGroup>
+                            <h:panelGroup rendered="#{indexacionMB.tipoDato.descripcion eq 'CATEGORIA'}"></h:panelGroup>
+                            <f:facet name="footer" >
+                                <center>
+                                    <br/>
+                                    <p:commandButton value="Agregar campo" icon="fa fa-plus" 
+                                                     styleClass="info-button rounded-button" actionListener="#{indexacionMB.agregarCampoFormulario()}"
+                                                     process="pnlDatosFormato" update="pnlFormulario"  /> 
+                                    <p:spacer width="5" />
+                                    <p:commandButton value="Campos predeterminados" icon="fa fa-refresh" rendered="false"   disabled="#{!indexacionMB.activaGenerar}"
+                                                     styleClass="info-button rounded-button" actionListener="#{indexacionMB.generarIndicesPredeterminados()}"
+                                                     process="pnlDatosFormato" update="pnlDatosFormato"  /> 
+                                </center>    
+                            </f:facet>
+                        </h:panelGrid>
+
+                        <br/>
+
+                        <p:dataTable id="dtIndicesFrm" var="index" value="#{indexacionMB.indicesFormulario}" rowIndexVar="i" lazy="false">
+                            <p:column headerText="Campo">
+                                #{index.descripcion}<br/>
+                                <ui:repeat var="c" value="#{index.categorias}"  >
+                                    <p:outputLabel value="#{c}" style="margin-left: 10px"/><br/>
+                                </ui:repeat>
+                            </p:column>
+                            <p:column headerText="Tipo de dato">
+                                #{index.tipoDato}
+                            </p:column>
+                            <p:column headerText="Acciones">
+                                <center>
+                                    <p:commandLink actionListener="#{indexacionMB.eliminarIndiceFormulario(i)}" 
+                                                   process="dtIndicesFrm"  update="dtIndicesFrm"
+                                                   style="margin-right: 10px" title="Eliminar indice: #{index.descripcion}">
+                                        <i class="fa fa-close" style="font-size: 1.2em; margin-right: 5px; color: red"></i>
+                                    </p:commandLink>
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                        <br/>
+                        <f:facet name="footer">
+                            <center>
+                                <p:commandButton value="Grabar indexación" title="Grabar indexación" icon="fa fa-save"  
+                                                 styleClass="rounded-button" actionListener="#{indexacionMB.guardarIndice()}"
+                                                 process="pnlDatosFormato" update="pnlDatosFormato, dtDatos"  /> 
+                            </center>
+                        </f:facet>
+
+                    </h:panelGrid>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:dataTable id="dtDatos" reflow="true" paginator="true" lazy="true" rows="10" 
+                                 rowsPerPageTemplate="10,20,30" 
+                                 rowIndexVar="i" 
+                                 filterEvent="enter"
+
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{indexacionMB.lazy}" var="data" 
+                                 emptyMessage="No se encontró ningún formato"  
+                                 paginatorPosition="bottom" >
+                        <p:column headerText="***" width="20">
+                            <p:outputLabel value="#{i + 1}" />
+                        </p:column>
+                        <!--<p:column headerText="Fecha" width="70">
+                            <p:outputLabel value="# {data.fecha}" />
+                        </p:column>-->
+                        <p:column headerText="Desripción">
+                            <p:outputLabel value="#{data.descripcion}" />
+                        </p:column> 
+                        <p:column headerText="Acciones" width="100" >
+                            <center> 
+                                <p:commandLink actionListener="#{indexacionMB.editarIndexacion(data)}"  
+                                               styleClass="edit" style="margin-right: 10px" title="Editar indexación"  update="pnlDatosFormato, dtDatos" >
+                                    <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                </p:commandLink>
+                                <p:spacer width="20" />
+                                <p:commandLink actionListener="#{indexacionMB.eliminarIndexacion(data)}"  
+                                               style="margin-right: 10px" title="Eliminar indexación"  update="pnlDatosFormato, dtDatos" >
+                                    <i class="fa fa-trash" style="font-size: 1.2em; margin-right: 5px; color: red"></i>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+
+            </h:panelGrid>
+
+
+        </h:form>
+
+
+
+    </ui:define>
+</ui:composition>

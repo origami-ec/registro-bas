@@ -1,0 +1,691 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Editar Solicitud</ui:define>
+    <ui:define name="content">
+        <h:outputScript name="firma_2.js" library="js" />
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">EDITAR SOLICITUD</h3></center>        
+            <h:panelGrid columns="3" style="font-weight: bolder;width: 100%; text-align: center;color: grey;margin: 0 auto;">
+                <h:panelGroup style="block">
+                    <p:outputLabel value="No de Tramite:" style="font-size: 20px;"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{editarProforma.liquidacion.numTramiteRp}" style="font-size: 20px;"/>
+                </h:panelGroup>
+                <h:panelGroup style="block">
+                    <p:outputLabel value="Fecha Proforma:" style="font-size: 20px;"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{editarProforma.liquidacion.fechaCreacion}" style="font-size: 20px;">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </h:panelGroup>
+                <h:panelGroup style="block">
+                    <p:outputLabel value="Usuario Creacion:" style="font-size: 20px;"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{editarProforma.getNameUserByIdAclUser(editarProforma.liquidacion.userCreacion)}" 
+                                   style="font-size: 20px;"/>
+                </h:panelGroup>
+            </h:panelGrid>
+            <p:accordionPanel id="accPanelRP">
+                <p:tab title="CONTRATOS DEL TRAMITE" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGroup id="pnlActos" style="width: 40%;float: left;">
+                        <p:dataTable id="dtActos" var="data" value="#{editarProforma.actos}"   
+                                     emptyMessage="Sin elementos..."
+                                     paginator="true" 
+                                     paginatorPosition="bottom" lazy="true" 
+                                     resizableColumns="true" rows="10" filterEvent="enter" 
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}" >
+                            <p:column headerText="NOMBRE" filterBy="#{data.nombre}" >
+                                <h:outputText value="#{data.nombre}"/>
+                            </p:column>
+                            <p:column headerText="TIPO" width="60">
+                                <h:outputText value="#{data.arancel.tipoArancel}" style="font-size: 10px;"/>
+                            </p:column>
+                            <p:column headerText="VALOR $" width="60" style="text-align: right;">
+                                <p:outputLabel value="SIN ARANCEL" rendered="#{data.arancel eq null}"/>
+                                <p:outputLabel value="#{data.arancel.valor}" rendered="#{data.arancel.valorFijo}"/>
+                                <p:outputLabel value="CUANTÍA" rendered="#{!data.arancel.valorFijo}"/>
+                            </p:column>
+                            <p:column headerText="***" width="25">
+                                <p:commandButton title="Seleccionar" icon="pi pi-forward" 
+                                                 actionListener="#{editarProforma.onRowSelect(data)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                    <h:panelGroup id="pnlValores" style="width: 60%;float: right">
+                        <p:panel id="pnlContratos" >
+                            <p:dataTable id="dtSubTotal" value="#{editarProforma.actosPorPagar}" var="det" 
+                                         rowIndexVar="rowIndex" resizableColumns="false" 
+                                         emptyMessage="Sin Contratos" scrollable="true" scrollHeight="200">
+                                <f:facet name="header">CONTRATOS SELECCIONADOS</f:facet>
+                                <p:column headerText="**" width="20">
+                                    <p:outputLabel value="#{rowIndex + 1}"/>
+                                </p:column>
+                                <p:column headerText="Contratos" >
+                                    <p:outputLabel id="actoContra" value="#{det.acto.nombre}"/>
+                                    <p:tooltip for="actoContra" value="#{det.acto.nombre}" position="top" />
+                                </p:column>
+                                <p:column headerText="Cant." width="30" style="text-align: right;">
+                                    <p:outputLabel value="#{det.cantidad}" />
+                                </p:column>
+                                <p:column headerText="Valor Unitario" width="60" style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorUnitario}" />
+                                </p:column>
+                                <p:column headerText="%Desc." width="40" style="text-align: right;">
+                                    <p:outputLabel id="labelDesc" value="#{det.exoneracion.porcentaje}" />
+                                    <p:tooltip for="labelDesc" value="#{det.exoneracion.concepto}" />
+                                </p:column>
+                                <p:column headerText="Gasto General" width="40" style="text-align: right;">
+                                    <p:outputLabel value="#{det.recargo}" />
+                                </p:column>
+                                <p:column headerText="Valor Total" width="60" style="text-align: right;">
+                                    <p:outputLabel value="#{det.valorTotal}" />
+                                </p:column>
+                                <p:column headerText="Acciones" width="70">
+                                    <p:commandButton actionListener="#{editarProforma.showDlgEditActo(rowIndex)}" 
+                                                     icon="pi pi-pencil" title="Editar" />
+                                    <p:spacer width="5" height="1"/>                                   
+                                    <p:commandButton actionListener="#{editarProforma.eliminarDetalle(rowIndex)}" 
+                                                     icon="pi pi-trash" title="Eliminar" update="dtSubTotal"/>
+                                </p:column>
+                            </p:dataTable>
+                            <div align="right">
+                                <h:panelGrid columns="2" style="font-weight: bolder;text-align: right;">
+                                    <!--<p:outputLabel value="SUBTOTAL: $"/>
+                                    <p:inputNumber value="# {editarProforma.subTotal}" readonly="true"/>
+                                    <p:outputLabel value="ADICIONAL: $"/>
+                                    <p:inputNumber value="# {editarProforma.recargoAplicado}" readonly="true"/>
+                                    <p:outputLabel value="DESCUENTO: $"/>
+                                    <p:inputNumber value="# {editarProforma.descPorLey}" readonly="true" style="color: red;"/>-->
+                                    <p:outputLabel value="TOTAL: $" style="font-weight: bolder;font-size: 16px;color: blue;"/>
+                                    <p:inputNumber value="#{editarProforma.totalPagar}" readonly="true"/>
+                                </h:panelGrid>
+                            </div>
+                        </p:panel>                        
+                        <h:panelGroup id="pnlUsoDoc" style="font-weight: bolder;width: 100%;">
+                            <h:panelGrid columns="2" style="width: 100%;">
+                                <p:spacer width="1" height="20" />
+                                <p:spacer width="1" height="20" />
+                                <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;" >
+                                    TIPO DE TRÁMITE:
+                                    <p:selectOneRadio value="#{editarProforma.liquidacion.versionDescuento}" layout="lineDirection">
+                                        <f:selectItem itemLabel="NORMAL" itemValue="#{1}"/>
+                                        <f:selectItem itemLabel="JUDICIAL" itemValue="#{2}"/>
+                                        <f:selectItem itemLabel="S.I.N.E." itemValue="#{3}"/>
+                                    </p:selectOneRadio>
+                                </h:panelGrid>
+                                <!--<h:panelGrid columns="2" style="margin: 0 auto;" >
+                                    TRAMITE JUDICIAL:
+                                    <p:selectBooleanCheckbox value="# {editarProforma.liquidacion.esJuridico}" />
+                                </h:panelGrid>-->
+                                <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;" >
+                                    NRO DE OFICIO:
+                                    <p:inputText value="#{editarProforma.liquidacion.numFormulario}" size="35"/>
+                                </h:panelGrid>
+                                <p:spacer width="1" height="20" />
+                                <p:spacer width="1" height="20" />
+                                <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;" >
+                                    <p:outputLabel value="PESO DE TRAMITE:" />
+                                    <p:selectOneMenu value="#{editarProforma.liquidacion.pesoTramite}" id="pesoTra" 
+                                                     autoWidth="false" style="width: 250px;">
+                                        <f:selectItem itemLabel="Peso 1" itemValue="#{1}"/>
+                                        <f:selectItem itemLabel="Peso 2" itemValue="#{2}"/>
+                                        <f:selectItem itemLabel="Peso 3" itemValue="#{3}"/>
+                                    </p:selectOneMenu>                   
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                                    <p:outputLabel value="MOTIVO DE SOLICITUD:" />
+                                    <p:selectOneMenu value="#{editarProforma.usoDocumento}" converter="entityConverter" 
+                                                     filter="true" autoWidth="false" style="width: 250px;">
+                                        <f:selectItems value="#{editarProforma.usosDocumentos}" var="it" 
+                                                       itemLabel="#{it.valor}" itemValue="#{it}"/>
+                                    </p:selectOneMenu>
+                                    <h:panelGroup style="font-weight: bolder;width: 100%;">
+                                        <p:commandButton value="Nuevo" icon="pi pi-plus" 
+                                                         actionListener="#{editarProforma.showDlgUsoDoc()}"/>
+                                        <p:spacer width="10" />
+                                        <p:commandButton value="Editar" icon="pi pi-pencil" 
+                                                         actionListener="#{editarProforma.showDlgEditUsoDoc()}"/>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </p:tab>
+
+                <p:tab title="INFORMACIÓN DE LA PROPIEDAD"  titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGrid columns="1" style="width: 100%;font-weight: bold;" >
+                        <p:outputLabel value="Direccion, Lote, Casa, Dept.:" />
+                        <p:inputTextarea value="#{editarProforma.liquidacion.ingresoDireccion}" style="width: 100%;" 
+                                         placeholder="Direccion del Inmueble / Sector-Manzana-Solar-Lote-Casa-Unidad"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="4" style="width: 100%;font-weight: bold;font-size: 18px;">
+                        <h:panelGroup>
+                            <co:inputDate label="Fecha de Celebracion:" value="#{editarProforma.liquidacion.fecharepertorioingreso}" maxdate="sysdate" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <co:inputDate label="Fecha de Inscripcion:" value="#{editarProforma.liquidacion.fechainscripcioningreso}" maxdate="sysdate" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Nro. Repertorio:"/><br/>
+                            <p:inputText value="#{editarProforma.liquidacion.ingresoNumRepertorio}" />
+                        </h:panelGroup>
+                        <!--<h:panelGroup>
+                            <p:outputLabel value="Nro. Inscripción:"/><br/>
+                            <p:inputNumber value="# {editarProforma.liquidacion.numInscripcion}" decimalPlaces="0" thousandSeparator="" />
+                        </h:panelGroup>-->
+                        <h:panelGroup>
+                            <p:outputLabel value="Nro. de Ficha:"/><br/>
+                            <p:inputNumber value="#{editarProforma.liquidacion.numFicha}" decimalPlaces="0" thousandSeparator="" />
+                        </h:panelGroup>
+                    </h:panelGrid><br/>
+                    <h:panelGrid columns="1" style="width: 100%;font-weight: bolder;" >
+                        Datos Adicionales:
+                        <p:inputTextarea value="#{editarProforma.liquidacion.infAdicionalProf}" style="width: 100%;" 
+                                         placeholder="Información adicional necesaria para el trámite"/>
+                    </h:panelGrid>
+                </p:tab>
+
+                <p:tab title="REINGRESO DE TRAMITES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;" rendered="true">
+                    <p:panel header="INFORMACION DEL TRAMITE ANTERIOR" >
+                        <h:panelGrid columns="5" style="font-weight: bolder; size: 14px;">
+                            <!--<p:outputLabel value="Tramite Sin Valor:" />
+                            <p:selectBooleanCheckbox value="# {editarProforma.liquidacion.reingreso}" />
+                            <p:spacer width="20" height="1"/>
+                            <p:outputLabel value="No de Comprobante:" />
+                            <p:inputNumber value="# {editarProforma.liquidacion.numeroComprobante}" decimalPlaces="0" thousandSeparator=""
+                                           onkeypress="if (event.keyCode == 13) {
+                                                       return false;
+                                                   }"/>
+                            <p:spacer width="20" height="1"/>-->
+                            <p:outputLabel value="No de Repertorio:" />
+                            <p:inputNumber value="#{editarProforma.liquidacion.repertorio}" decimalPlaces="0" thousandSeparator=""/>
+                            <p:spacer width="20" height="1"/>
+                            <p:outputLabel value="Fecha de Repertorio:" />
+                            <!--<p:calendar value="# {editarProforma.liquidacion.fechaRepertorio}" pattern="dd/MM/yyyy" />-->
+                            <co:inputDate value="#{editarProforma.liquidacion.fechaRepertorio}" maxdate="sysdate" />
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+
+                <p:tab title="DATOS PARA LA FACTURA" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:panel id="pnlBeneficiario" header="INFORMACIÓN PARA TITULO DE CREDITO" style="width: 49%; float: left;">
+                        <h:panelGrid style="font-weight: bolder;margin: 0 auto;" columns="1">
+                            <h:panelGroup>
+                                <p:outputLabel value="Identificación:" /> <br></br>
+                                <p:inputText id="beneficiarioCiRuc" value="#{editarProforma.beneficiario.ciRuc}" 
+                                             size="43" placeholder="Ingrese numero de Identificacion"
+                                             readonly="#{editarProforma.beneficiario.id ne null}"
+                                             onkeypress="if (event.keyCode == 13) {
+                                                         return false;
+                                                     }"
+                                             onkeyup="focusNextOnEnterProforma(event, 'mainForm:accPanelRP:numeroInscripcion:inputNumber_input', 2)"/>
+                                <p:spacer width="10" />
+                                <p:commandButton  icon="pi pi-search" update="pnlBeneficiario"
+                                                  actionListener="#{editarProforma.buscarBeneficiario()}" >
+                                    <p:ajax event="dialogReturn" listener="#{editarProforma.selectBeneficiario}" update="pnlBeneficiario, pnlSolicitante"/>
+                                </p:commandButton>
+                                <p:remoteCommand name="buscarBeneficiario" actionListener="#{editarProforma.buscarBeneficiario()}"/>
+                                <p:spacer width="10" />
+                                <p:commandButton  icon="pi pi-trash" update="pnlBeneficiario"
+                                                  actionListener="#{editarProforma.limpiarDatosBeneficiario()}" />
+                                <p:spacer width="10" />
+                                <p:selectBooleanCheckbox value="#{editarProforma.beneficiarioEsSolicitante}" rendered="false" >
+                                    <p:ajax update="pnlBeneficiario" listener="#{editarProforma.actualizarBeneficiarioEsSolicitante()}" />
+                                </p:selectBooleanCheckbox>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{editarProforma.beneficiario.esPersona}">
+                                <p:outputLabel value="Apellidos" /> <br></br>
+                                <p:inputText value="#{editarProforma.beneficiario.apellidos}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{editarProforma.beneficiario.esPersona}">
+                                <p:outputLabel value="Nombres:" /> <br></br>
+                                <p:inputText value="#{editarProforma.beneficiario.nombres}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!editarProforma.beneficiario.esPersona}">
+                                <p:outputLabel value="Razón Social" /> <br></br>
+                                <p:inputText value="#{editarProforma.beneficiario.razonSocial}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <!--<h:panelGroup rendered="# {!editarProforma.beneficiario.esPersona}">
+                                <p:outputLabel value="Nombre Comercial" /> <br></br>
+                                <p:inputText value="# {editarProforma.beneficiario.nombreComercial}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>-->
+                            <h:panelGroup rendered="#{editarProforma.beneficiario.esPersona}">
+                                <p:outputLabel value="Estado Civil:" /> <br></br>
+                                <p:selectOneMenu value="#{editarProforma.beneficiario.estadoCivil}" converter="entityConverter" style="width: 435px;">  
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                    <f:selectItems value="#{editarProforma.estadosCiviles}" var="b" itemLabel="#{b.valor}" itemValue="#{b}"/>  
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Dirección" /> <br></br>
+                                <p:inputText value="#{editarProforma.beneficiario.direccion}" size="60" style="text-transform: uppercase;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Correo:" /> <br></br>
+                                <p:inputText value="#{editarProforma.beneficiario.correo1}" size="60"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Teléfono:" /> <br></br>
+                                <p:inputText value="#{editarProforma.beneficiario.telefono1}" size="60"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandButton title="Actualizar datos de la factura" icon="pi pi-refresh" update="pnlBeneficiario, pnlSolicitante"
+                                             actionListener="#{editarProforma.actualizarDatosBeneficiario()}" />
+                        </center>
+                    </p:panel>
+                    <p:panel id="pnlSolicitante" header="DATOS ADICIONALES" style="width: 49%; float: right;">
+                        <h:panelGrid columns="3" style="margin: 0 auto;font-weight: bolder;font-size: 16px;">
+                            Correo del Trámite:
+                            <p:spacer width="30"/>
+                            <p:inputText value="#{editarProforma.liquidacion.correoTramite}" size="50"/>
+                        </h:panelGrid><br/>
+                        <h:panelGrid columns="1" style="margin: 0 auto;">
+                            <p:commandButton id="btnGeneraProforma" value="Actualizar Proforma" icon="pi pi-save" update="pnlUsoDoc" 
+                                             style="background-color: green;font-size: 18px;"
+                                             actionListener="#{editarProforma.guardarLiquidacion()}" disabled="#{editarProforma.block}"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog id="dglIngresoCuantia" widgetVar="dlgCuantia" resizable="false" header="Información de Contrato" 
+                  modal="true" width="900" closable="true" closeOnEscape="true" >
+            <h:form id="formCuantia">
+                <p:panel header="CONTRATO: #{editarProforma.rld.acto.nameTruncate2}" 
+                         rendered="#{!editarProforma.rld.acto.solvencia}">
+                    <p:panelGrid style="font-weight: bolder;width: 100%;" styleClass="ui-noborder">
+                        <p:row>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Avalúo: $" /><br/>
+                                    <p:inputNumber value="#{editarProforma.avaluo}" decimalPlaces="2" modifyValueOnWheel="false" 
+                                                   decimalSeparator="." thousandSeparator="," />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cuantía: $" /><br/>
+                                    <p:inputNumber value="#{editarProforma.cuantia}" decimalPlaces="2" modifyValueOnWheel="false" 
+                                                   decimalSeparator="." thousandSeparator="," />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="% Descuento:" /><br/>
+                                    <p:inputText id="textExoneracion1" value="#{editarProforma.rld.exoneracion.concepto}" readonly="true" size="30" />
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-percentage" actionListener="#{editarProforma.showDlg('/resources/dialog/dlglazyexoneracion')}">
+                                        <p:ajax event="dialogReturn" listener="#{editarProforma.selectObjectExo}" update="textExoneracion1"/>
+                                    </p:commandButton>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="DOCUMENTO: #{editarProforma.rld.acto.nombre}" 
+                         rendered="#{editarProforma.rld.acto.solvencia}">
+                    <p:panelGrid style="font-weight: bolder;width: 100%;" styleClass="ui-noborder">
+                        <p:row>
+                            <p:column rendered="#{editarProforma.rld.acto.transaccion eq 'CC'}">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cantidad de Certificados:" /><br/>
+                                    <p:inputNumber value="#{editarProforma.rld.cantidad}" decimalPlaces="0" 
+                                                   thousandSeparator="" modifyValueOnWheel="false" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column rendered="#{editarProforma.rld.acto.transaccion eq 'CA'}">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cantidad de Años:" /><br/>
+                                    <p:inputNumber value="#{editarProforma.rld.numPredio}" required="true" 
+                                                   decimalPlaces="0" thousandSeparator="" modifyValueOnWheel="false" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column rendered="#{editarProforma.rld.acto.transaccion eq 'CV'}">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cantidad de Ventas:" /><br/>
+                                    <p:inputNumber value="#{editarProforma.rld.numPredio}" required="true"
+                                                   decimalPlaces="0" thousandSeparator="" modifyValueOnWheel="false" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="% Descuento:" /><br/>
+                                    <p:inputText id="textExoneracion2" value="#{editarProforma.rld.exoneracion.concepto}" 
+                                                 readonly="true" size="30" />
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-percentage" actionListener="#{editarProforma.showDlg('/resources/dialog/dlglazyexoneracion')}">
+                                        <p:ajax event="dialogReturn" listener="#{editarProforma.selectObjectExo}" update="textExoneracion2"/>
+                                    </p:commandButton>
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <center>
+                                        <p:outputLabel value="¿Amplicación de Certificado?" /><br/>
+                                        <p:selectBooleanCheckbox value="#{editarProforma.rld.aplicaDescuento}" >
+                                            <p:ajax process="@this" />
+                                        </p:selectBooleanCheckbox >
+                                    </center>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="INTERVINIENTES">
+                    <h:panelGrid columns="5" rendered="false">
+                        <h:panelGroup id="agregaSolicitante">
+                            <p:outputLabel value="Solicitante" style="font-weight: bold" /> <br></br>
+                            <center>
+                                <p:selectBooleanCheckbox  value="#{editarProforma.agregaSolicitante}" >
+                                    <p:ajax update="dtIntervinientes,agregaSolicitante"
+                                            listener="#{editarProforma.agregarSolicitanteInterviniente()}" />
+                                </p:selectBooleanCheckbox>
+                            </center>
+                        </h:panelGroup>
+                        <p:spacer width="10"/>
+                        <h:panelGroup id="agregaBeneficiario">
+                            <p:outputLabel value="Propietario" style="font-weight: bold"  /> <br></br>
+                            <center>
+                                <p:selectBooleanCheckbox  value="#{editarProforma.agregaBeneficiario}" >
+                                    <p:ajax update="dtIntervinientes, agregaBeneficiario"
+                                            listener="#{editarProforma.agregarBeneficiarioInterviniente()}" />
+                                </p:selectBooleanCheckbox>
+                            </center>
+                        </h:panelGroup>
+                        <p:spacer width="10"/>
+                        <h:panelGroup>
+
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <div align="right">
+                        <p:commandButton value="Agregar Intervinientee" icon="pi pi-user-plus" 
+                                         actionListener="#{editarProforma.showDlg('/resources/dialog/dlglazyente')}">
+                            <p:ajax event="dialogReturn" listener="#{editarProforma.selectInterv}" update="dtIntervinientes"/>
+                        </p:commandButton>
+                    </div>
+                    <br></br>
+                    <p:dataTable id="dtIntervinientes" value="#{editarProforma.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="250" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140" rendered="#{!editarProforma.rld.acto.solvencia}">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="***" width="40" rendered="#{!editarProforma.rld.acto.solvencia}">
+                            <p:commandButton title="Seleccionar papel" icon="pi pi-list" 
+                                             actionListener="#{editarProforma.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:ajax event="dialogReturn" listener="#{editarProforma.selectObjectPapel}" update="dtIntervinientes"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Borrar" width="40">
+                            <p:commandButton icon="pi pi-trash" title="Eliminar" actionListener="#{editarProforma.eliminarInterviniente(index)}"
+                                             update="dtIntervinientes,formCuantia:agregaSolicitante,formCuantia:agregaBeneficiario"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel><br/>
+                <center><p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{editarProforma.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglEditCuantia" widgetVar="dglEditCuantia" header="Información del Contrato" 
+                  resizable="false" modal="true" width="900" closable="false" closeOnEscape="false">
+            <h:form id="formEditCuantia">
+                <p:panel header="CONTRATO: #{editarProforma.rld.acto.nameTruncate2}" 
+                         rendered="#{!editarProforma.rld.acto.solvencia}">
+                    <p:panelGrid style="font-weight: bolder;width: 100%;" styleClass="ui-noborder">
+                        <p:row>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Avalúo: $" /><br/>
+                                    <p:inputNumber value="#{editarProforma.avaluo}" decimalPlaces="2" modifyValueOnWheel="false" 
+                                                   decimalSeparator="." thousandSeparator="," />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cuantía: $" /><br/>
+                                    <p:inputNumber value="#{editarProforma.cuantia}" decimalPlaces="2" modifyValueOnWheel="false" 
+                                                   decimalSeparator="." thousandSeparator="," />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="% Descuento:" /><br/>
+                                    <p:inputText id="textExoneracion1" value="#{editarProforma.rld.exoneracion.concepto}" readonly="true" size="30" />
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-percentage" actionListener="#{editarProforma.showDlg('/resources/dialog/dlglazyexoneracion')}">
+                                        <p:ajax event="dialogReturn" listener="#{editarProforma.selectObjectExo}" update="textExoneracion1"/>
+                                    </p:commandButton>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="DOCUMENTO: #{editarProforma.rld.acto.nombre}" 
+                         rendered="#{editarProforma.rld.acto.solvencia}" >
+                    <p:panelGrid style="font-weight: bolder;width: 100%;" styleClass="ui-noborder">
+                        <p:row>
+                            <p:column rendered="#{editarProforma.rld.acto.transaccion eq 'CC'}">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cantidad de Certificados:" /><br/>
+                                    <p:inputNumber value="#{editarProforma.rld.cantidad}" disabled="false" 
+                                                   decimalPlaces="0" thousandSeparator="" modifyValueOnWheel="false" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column rendered="#{editarProforma.rld.acto.transaccion eq 'CA'}">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cantidad de Años:" /><br/>
+                                    <p:inputNumber value="#{editarProforma.rld.numPredio}" required="true" 
+                                                   decimalPlaces="0" thousandSeparator="" modifyValueOnWheel="false" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column rendered="#{editarProforma.rld.acto.transaccion eq 'CV'}">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cantidad de Ventas:" /><br/>
+                                    <p:inputNumber value="#{editarProforma.rld.numPredio}" required="true"
+                                                   decimalPlaces="0" thousandSeparator="" modifyValueOnWheel="false" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <p:outputLabel value="% Descuento:" /><br/>
+                                    <p:inputText id="textExoneracion4" value="#{editarProforma.rld.exoneracion.concepto}" readonly="true" size="30" />
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-percentage" actionListener="#{editarProforma.showDlg('/resources/dialog/dlglazyexoneracion')}">
+                                        <p:ajax event="dialogReturn" listener="#{editarProforma.selectObjectExo}" update="textExoneracion4"/>
+                                    </p:commandButton>
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <center>
+                                        <p:outputLabel value="¿Amplicación de Certificado?" /><br/>
+                                        <p:selectBooleanCheckbox value="#{editarProforma.rld.aplicaDescuento}" >
+                                            <p:ajax process="@this" />
+                                        </p:selectBooleanCheckbox >
+                                    </center>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <p:commandButton value="Agregar Interviniente" icon="pi pi-user-plus" 
+                                         actionListener="#{editarProforma.showDlg('/resources/dialog/dlglazyente')}">
+                            <p:ajax event="dialogReturn" listener="#{editarProforma.selectInterv}" update="dtEditIntrv"/>
+                        </p:commandButton>
+                    </div>
+                    <br></br>
+                    <p:dataTable id="dtEditIntrv" value="#{editarProforma.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140" rendered="#{!editarProforma.rld.acto.solvencia}">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="***" width="40" rendered="#{!editarProforma.rld.acto.solvencia}">
+                            <p:commandButton title="Seleccionar papel" icon="pi pi-list" 
+                                             actionListener="#{editarProforma.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:ajax event="dialogReturn" listener="#{editarProforma.selectObjectPapel}" update="dtEditIntrv"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Borrar" width="40">
+                            <p:commandButton icon="pi pi-trash" title="Eliminar" actionListener="#{editarProforma.eliminarInterviniente(index)}"
+                                             update="dtEditIntrv"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel><br/>
+                <center><p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{editarProforma.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglUsoDoc" widgetVar="usoDocumento" header="Uso Documento" resizable="false" modal="true">
+            <h:form id="formUsoDoc">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nombre:" style="font-weight: bolder;font-size: 12px"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{editarProforma.nuevoUsoDoc.valor}" size="40" maxlength="39"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{editarProforma.guardarUsoDoc()}"/></center>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglSolicitudes" widgetVar="dglSolicitudes"
+                  width="790"  resizable="false" modal="true"
+                  showHeader="false">
+            <h:form id="frmSolicitudes">
+                <h2><center>Oficios/Memorandums</center></h2>
+                <p:dataTable id="dtTareasDinardap" reflow="true" 
+                             paginator="true" lazy="true" rows="10" resizableColumns="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             value="#{editarProforma.tareasLazy}" var="tar"
+                             emptyMessage="Sin elementos..." filterEvent="enter" style="text-align: center;"
+                             rowStyleClass="#{!tar.realizado ? 'orange' : null}">
+                    <p:column headerText="No.Solicitud" filterBy="#{tar.numeroSolicitud}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{tar.numeroSolicitud}"/>
+                    </p:column>
+                    <p:column headerText="Institucion Solicitante" filterBy="#{tar.institucion}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{tar.institucion}"/>
+                    </p:column>
+                    <p:column headerText="Usuario Solicitante" filterBy="#{tar.solicitante}" filterStyle="width: 95%">
+                        <p:outputLabel value="#{tar.solicitante}"/>
+                    </p:column>
+                    <p:column headerText="Fecha Ing." width="80" sortBy="#{tar.fecha}">
+                        <p:outputLabel value="#{tar.fecha}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>  
+                    <p:column headerText="***" width="20" >
+                        <p:commandLink actionListener="#{editarProforma.seleccionarSolicitud(tar, false)}">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>  
+                </p:dataTable>
+                <br></br>
+                <center><p:commandButton value="Cerrar" icon="ui-icon-close"
+                                         oncomplete="PF('dglSolicitudes').hide()"/></center>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglSolicitudesJuridico" widgetVar="dglSolicitudesJuridico" width="790" 
+                  showHeader="false" resizable="false" modal="true">
+            <h:form id="frmSolicitudesJuridico">
+                <h2><center>Oficios/Memorandums</center></h2>
+                <p:dataTable id="dtTareasDinardapJuridico" reflow="true" paginator="true" lazy="true" rows="10" resizableColumns="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             value="#{editarProforma.tareasLazy}" var="tar" emptyMessage="Sin elementos..." filterEvent="enter" style="text-align: center;"
+                             rowStyleClass="#{!tar.realizado ? 'orange' : null}">
+                    <p:column headerText="Ticket" filterBy="#{tar.ticket}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurTicket" value="#{tar.ticket}"/>
+                        <p:tooltip for="jurTicket" value="#{tar.ticket}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Juicio" filterBy="#{tar.numeroSolicitud}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurNumJuicio" value="#{tar.numeroSolicitud}"/>
+                        <p:tooltip for="jurNumJuicio" value="#{tar.numeroSolicitud}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Institucion Solicitante" filterBy="#{tar.institucion}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurInstitucion" value="#{tar.institucion}"/>
+                        <p:tooltip for="jurInstitucion" value="#{tar.institucion}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Deudor / Prohibición Solicitante" filterBy="#{tar.solicitante}" filterStyle="width: 95%">
+                        <p:outputLabel id="jurDeudor" value="#{tar.solicitante}"/>
+                        <p:tooltip for="jurDeudor" value="#{tar.solicitante}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Acto" >
+                        <p:outputLabel id="jurActo" value="#{tar.acto.nombre}"/>
+                        <p:tooltip for="jurActo" value="#{tar.acto.nombre}" position="top"/>
+                    </p:column>
+                    <p:column headerText="Fecha Ing." width="80">
+                        <p:outputLabel value="#{tar.fecha}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Estado" width="80" >
+                        <p:outputLabel value="#{tar.estadoTramite}"/>
+                    </p:column>
+                    <p:column headerText="***" width="20" >
+                        <p:commandLink actionListener="#{editarProforma.seleccionarSolicitud(tar, true)}">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>  
+                </p:dataTable>
+                <br></br>
+                <center><p:commandButton value="Cerrar" icon="ui-icon-close"
+                                         oncomplete="PF('dglSolicitudesJuridico').hide()"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dglFichas" width="800" closable="true" closeOnEscape="true" header="Fichas Registrales" resizable="false" modal="true">
+            <h:form id="frmFichas">
+                <p:dataTable paginator="true" lazy="true" rows="10" currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords}" resizableColumns="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             value="#{editarProforma.fichasRegistrales}" var="f" emptyMessage="No se encontró Fichas" filterEvent="enter">
+                    <p:column headerText="Nro de Ficha" filterBy="#{f.numFicha}" sortBy="#{f.numFicha}" width="90" filterStyle="width: 95%">
+                        <h:outputText value="#{f.numFicha}"/>
+                    </p:column>
+                    <p:column headerText="Clave Catastral" filterBy="#{f.claveCatastral}" width="160" filterStyle="width: 95%">
+                        <h:outputText value="#{f.claveCatastral}"/>
+                    </p:column>
+                    <p:column headerText="Parroquia" width="100">
+                        <h:outputText value="#{f.parroquia.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Descripción del Bien">
+                        <h:outputText id="labelDescFicha" value="#{f.descripcionBien}"/>
+                        <p:tooltip for="labelDescFicha" value="#{f.descripcionBien}" position="top"/>
+                    </p:column>
+                    <p:column headerText="**" width="20">
+                        <p:commandLink actionListener="#{editarProforma.seleccionarFicha(f)}">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>  
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

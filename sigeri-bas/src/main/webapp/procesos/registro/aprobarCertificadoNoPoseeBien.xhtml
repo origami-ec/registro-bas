@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Aprobar Certificados Xpress</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+
+            <div class="card card-w-title">
+                <center><h2>Aprobar Certificados Xpress</h2></center>
+                <p:dataTable id="dtTareas1" value="#{aprobarCertificadoNoPoseeBienRp.tareas}" 
+                             rowIndexVar="i"
+                             var="det" 
+                             paginator="true" lazy="true" rows="15" 
+                             rowsPerPageTemplate="15,30,100"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             emptyMessage="No se encontró ningún Item." 
+                             style="text-align: center;" filterEvent="enter" resizableColumns="true"
+                             >
+                    <p:column headerText="**" width="20">
+                        #{i + 1}
+                    </p:column>
+                    <p:column headerText="Trámite" filterBy="#{det.tramite.numTramite}" width="70">
+                        <p:outputLabel value="#{det.detalle.liquidacion.numTramiteRp}"/>
+                    </p:column>
+                    <p:column headerText="# Certificado" filterBy="#{det.certificado.numCertificado}" width="70">
+                        <p:outputLabel value="#{det.certificado.numCertificado}"/>
+                    </p:column>
+                    <p:column headerText="Solicitante" >
+                        <p:outputLabel value="#{det.detalle.liquidacion.solicitante.nombreCompleto}"/>
+                    </p:column>
+                    <p:column headerText="Uso del Documento">
+                        <p:outputLabel value="#{det.detalle.liquidacion.usoDocumento.valor}"/>
+                    </p:column>
+                    <p:column headerText="Fecha" width="100">
+                        <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Certificador" width="100">
+                        <p:outputLabel value="#{aprobarCertificadoNoPoseeBienRp.usuario(det.certificado.userCreador)}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Cert." width="50">
+                        <p:commandLink actionListener="#{aprobarCertificadoNoPoseeBienRp.verCertificado(det.certificado, false)}">
+                            <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>                      
+                    <p:column headerText="Aprobar" width="50">
+                        <p:commandLink title="Aprobar" 
+                                       actionListener="#{aprobarCertificadoNoPoseeBienRp.aprobarGenerarCertificado(det.certificado)}" 
+                                       update="mainForm">
+                            <p:graphicImage value="/resources/icons/check.png" height="16" />
+                            <p:confirm header="Aprobar Certificado" 
+                                       message="Esta Seguro de Aprobar el Trámite # #{det.detalle.liquidacion.numTramiteRp} ?" icon="ui-icon-alert"  
+                                       />
+                        </p:commandLink>
+                        <p:spacer width="10" />
+                        <p:commandLink title="Rechazar" actionListener="#{aprobarCertificadoNoPoseeBienRp.observacionCertificado(det)}" 
+                                       update="mainForm">
+                            <p:graphicImage value="/resources/icons/delete.png" height="16" />
+                        </p:commandLink>
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+            </p:confirmDialog>
+        </h:form>
+
+        <p:dialog id="dlgObervacionesCertificados" widgetVar="dlgObsvsCertificados" header="Rechazar Trámite" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObsCertificados">
+                <p:outputLabel for="observacion" value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea id="observacion" value="#{aprobarCertificadoNoPoseeBienRp.observacion}" rows="5" autoResize="false" required="true"
+                                 style="width: 100%" maxlength="900"/>
+                <br/><br/>
+                <center><p:commandButton value="Completar" styleClass="btnStyle" icon="ui-icon-check" update="mainForm"
+                                         actionListener="#{aprobarCertificadoNoPoseeBienRp.mantenerEstado()}"/></center>
+            </h:form>
+        </p:dialog>
+
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"> 
+    <ui:define name="title">Descuentos</ui:define>
+    <ui:define name="content">
+        <center><h1>DESCUENTOS DE TRAMITE</h1></center>
+        <h:form id="mainForm">
+            <h:panelGrid columns="1" style="margin: 0 auto; font-weight: bolder;width: 60%;">
+                <p:commandButton value="Nuevo Ingreso" icon="pi pi-percentage" style="float: right;" 
+                                 actionListener="#{dlgLazyExoneracion.showDlgNewExo()}"/>
+            </h:panelGrid>
+            <p:dataTable id="dtExos" reflow="true" paginator="true" lazy="true" rows="10" rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         value="#{dlgLazyExoneracion.lazy}" var="exo" emptyMessage="No se encontró ningún Item" style="text-align: center;width: 60%;margin: 0 auto;">
+                <p:column style="text-align: left;" headerText="Concepto" filterBy="#{exo.concepto}" filterStyle="width: 95%;">
+                    <h:outputText value="#{exo.concepto}"/>
+                </p:column>
+                <p:column headerText="Porcentaje" width="100">
+                    <h:outputText value="#{exo.porcentaje}"/>
+                </p:column>
+                <p:column headerText="Estado" width="100">
+                    <h:outputText value="ACTIVO" rendered="#{exo.estado}"/>
+                    <h:outputText value="INACTIVO" rendered="#{!exo.estado}"/>
+                </p:column>
+                <p:column headerText="Edit" width="40">
+                    <p:commandButton icon="pi pi-pencil" actionListener="#{dlgLazyExoneracion.showDlgEditExo(exo)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog widgetVar="dlgExoneracion" header="Exoneracion" modal="true" resizable="false">
+            <h:form id="formExo">
+                <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" style="width: 100%;font-weight: bolder;">
+                    Concepto:
+                    <p:inputText value="#{dlgLazyExoneracion.exo.concepto}" style="width: 100%;"/>
+                    Base Legal:
+                    <p:inputTextarea value="#{dlgLazyExoneracion.exo.baseLegal}" autoResize="false" style="width: 100%;"/>
+                </p:panelGrid>
+                <p:panelGrid styleClass="ui-panelgrid-blank" columns="6" style="width: 100%;font-weight: bolder;" >
+                    <p:outputLabel value="Porcentaje de Descuento: %"/>
+                    <p:inputNumber value="#{dlgLazyExoneracion.exo.entero}" decimalPlaces="2"/>
+                    <p:outputLabel value="Estado:"/>
+                    <p:selectOneMenu value="#{dlgLazyExoneracion.exo.estado}" >
+                        <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="  Es compartida ?:"/>
+                    <p:selectOneMenu value="#{dlgLazyExoneracion.exo.compartida}" >
+                        <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <center>
+                    <p:commandButton icon="pi pi-save" actionListener="#{dlgLazyExoneracion.saveExoneracion()}" value="Guardar" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

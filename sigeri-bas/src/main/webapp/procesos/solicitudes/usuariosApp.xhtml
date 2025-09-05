@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/bpmTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="page_title">Usuarios Ventanilla Pública</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+
+            <div class="card card-w-title">
+                <center><h2>Usuarios Ventanilla Pública</h2></center>
+
+                <br></br>
+                <br></br>
+                <p:dataTable id="dtTareasDinardap" reflow="true" paginator="true" lazy="true" 
+                             rows="20" rowsPerPageTemplate="20,50,100" resizableColumns="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             value="#{usuariosAppMB.lazy}" 
+                             var="u" emptyMessage="Sin elementos..." filterEvent="enter" 
+                             style="text-align: center;">
+
+                    <p:column headerText="Usuario">
+                        <p:outputLabel value="#{u.usuario}"/>
+                    </p:column>
+                    <p:column headerText="Datos" >
+                        <p:outputLabel value="#{u.nombres} #{u.apellidos}"/>
+                    </p:column>
+                    <p:column headerText="***">
+                        <p:commandLink actionListener="#{usuariosAppMB.descargar(u)}" title="Descargar">
+                            <p:graphicImage value="/resources/icons/pdf.png" height="16"/>
+                        </p:commandLink>
+                        <p:spacer width="5" />
+                        <p:commandLink actionListener="#{usuariosAppMB.autorizar(u)}" title="Autorizar">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>
+                        </p:commandLink>
+                        <p:spacer width="5" />
+                        <p:commandLink actionListener="#{usuariosAppMB.rechazarDlg(u)}" title="Rechazar">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObervaciones" header="Agregar Observación" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{usuariosAppMB.obs}" rows="5" autoResize="false" required="true"
+                                 style="width: 100%" maxlength="99"/>
+                <br/><br/>
+                <center><p:commandButton value="Completar" styleClass="btnStyle" icon="ui-icon-check"
+                                         actionListener="#{usuariosAppMB.rechazar()}"/></center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

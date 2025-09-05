@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:outputScript name="js/nanoscroller.js" library="paradise-layout" />
+    <h:outputScript name="js/layout.js" library="paradise-layout" />
+    <h:outputScript name="app.js" library="js" />
+
+    <h:outputStylesheet name="css/primeicons.css" library="paradise-layout" />
+    <h:outputStylesheet name="css/primeflex.min.css" library="paradise-layout" />
+
+    <h:outputStylesheet name="css/nanoscroller.css" library="paradise-layout" />
+    <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="paradise-layout" />
+
+    <p:ajaxStatus onstart="PF('dlgStatus').show()" oncomplete="PF('dlgStatus').hide()" />
+
+    <p:dialog id="dlgStatus" widgetVar="dlgStatus" modal="true" draggable="false"  closable="false"
+              resizable="false" showHeader="false" style=".ui-widget-overlay {background-color: white !important}" >
+        <br/>
+        <p:graphicImage name="images/origami_icono.jpg" width="50" height="50" library="paradise-layout" /><br/>
+        <center>
+            <p:graphicImage name="images/cargando.gif" library="paradise-layout" width="50" height="50" /> 
+        </center>
+    </p:dialog>
+
+    <p:growl globalOnly="true" showDetail="true" showSummary="true" >
+        <p:autoUpdate />
+    </p:growl>
+
+</html>
+

@@ -1,0 +1,651 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Modificación Título de Crédito</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+            </p:confirmDialog>
+            <center><h2>MODIFICAR TÍTULO DE CRÉDITO</h2></center>
+            <p:tabView id="tabViewAnulacion">
+                <p:tab title="MODIFICACIONES EN TITULO DE CREDITO" >
+                    <h:panelGrid columns="6">
+                        <h:panelGroup>
+                            <p:outputLabel value="Nro. de Tramite:" style="font-weight: bold" /><br></br>
+                            <p:inputText value="#{facturacionElectronica.tramite}" />    
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <br></br>
+                            <p:commandButton value="Buscar Tramite" icon="pi pi-search" 
+                                             actionListener="#{facturacionElectronica.findLiquidacion()}"/>
+                        </h:panelGroup>
+                        <p:spacer width="50" height="1"/>
+                        <h:panelGroup>
+                            <p:outputLabel value="Tarea:" style="font-weight: bold" /><br></br>
+                            <p:selectOneMenu value="#{facturacionElectronica.tipoTarea}" style="width: 200px;" >
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                                <f:selectItem itemLabel="CAMBIAR NOMBRE" itemValue="#{1}" />
+                                <f:selectItem itemLabel="ANULAR TITULO" itemValue="#{2}" />
+                                <f:selectItem itemLabel="CAMBIAR TIPO DE COBRO" itemValue="#{3}" />
+                                <f:selectItem itemLabel="REENVIAR CORREO" itemValue="#{4}" />
+                                <p:ajax update="panelBotons,panelCambioTipoPago,tabViewAnulacion" process="@this" event="change" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <p:spacer width="50" height="1"/>
+                        <h:panelGroup id="panelBotons">
+                            <br></br>
+                            <p:spacer width="5" />
+                            <p:commandButton value="Cambiar Persona" icon="pi pi-user" rendered="#{facturacionElectronica.tipoTarea eq 1}"
+                                             actionListener="#{facturacionElectronica.buscarBeneficiario()}">
+                                <p:ajax event="dialogReturn" listener="#{facturacionElectronica.selectSolicitante}"/>
+                            </p:commandButton>
+
+                            <p:commandButton value="Anular Titulo" icon="pi pi-user" rendered="#{facturacionElectronica.tipoTarea eq 2}"
+                                             actionListener="#{facturacionElectronica.darDeBajaTitulo()}" /> 
+                            <p:commandButton value="Cambiar Cobro de Titulo" icon="pi pi-user" rendered="#{facturacionElectronica.tipoTarea eq 3}"
+                                             actionListener="#{facturacionElectronica.cambiarTipoCobro()}">
+                                <p:confirm header="Cambiar forma de Pago" message="¿Esta seguro de continuar?/Se borrará el tipo de pago anterior"/>
+                            </p:commandButton>
+                            <p:commandButton value="Reenviar Correo" icon="pi pi-user" rendered="#{facturacionElectronica.tipoTarea eq 4}"
+                                             actionListener="#{facturacionElectronica.reenviarCorreo()}">
+                                <p:confirm header="Reenviar Correo" message="¿Esta seguro de continuar?"/>
+                            </p:commandButton>
+
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+                    <h:panelGrid id="panelCambioTipoPago" >
+                        <h:panelGroup>
+                            <p:outputLabel value="Tipo de Pago" style="font-weight: bold" rendered="#{facturacionElectronica.tipoTarea eq 3}"/><br></br>                                
+                        </h:panelGroup>
+                        <p:selectOneMenu value="#{facturacionElectronica.tipoPago}" style="width: 200px;" rendered="#{facturacionElectronica.tipoTarea eq 3}">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItem itemLabel="EFECTIVO" itemValue="#{1}" />
+                            <f:selectItem itemLabel="NOTA DE CREDITO" itemValue="#{3}" />
+                            <f:selectItem itemLabel="CHEQUE" itemValue="#{4}" />
+                            <f:selectItem itemLabel="TRANSFERENCIA" itemValue="#{5}" />
+                            <f:selectItem itemLabel="TARJETA" itemValue="#{7}" />
+                            <!--<p:ajax update="panelDatosPorAgregarNota" process="@this" event="change" />-->
+                            <p:ajax update="panelCambioTipoPago"  process="@this" event="change" />
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Valor: " style="font-weight: bold" rendered="#{facturacionElectronica.tipoTarea eq 3}"/>
+                        <p:inputNumber value="#{facturacionElectronica.valorDetaleNew}" rendered="#{facturacionElectronica.tipoTarea eq 3}"/>   
+
+
+
+                        <h:panelGroup id="panelDatosPorAgregarNota" rendered="#{facturacionElectronica.tipoPago eq 3}">
+                            <h:panelGrid columns="1">
+                                <p:outputLabel value="Numero de Nota de Credito" style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.numeroNotaCredito}"/>   
+                            </h:panelGrid>
+                        </h:panelGroup>
+                        <h:panelGroup id="panelDatosPorAgregarCheque" rendered="#{facturacionElectronica.tipoPago eq 4}">     
+                            <h:panelGrid columns="1">
+                                <p:outputLabel value="Banco: " style="font-weight: bold" />
+                                <p:selectOneMenu id="selecbanco" value="#{facturacionElectronica.bancoSelect}" style="width: 200px;" converter="entityConverter">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                    <f:selectItems value="#{facturacionElectronica.bancos}" var="tf" itemLabel="#{tf.descripcion}"/>  
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Numero de Cheque" style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.chNumeroCheque}"/>
+                                <p:outputLabel value="Numero de Cuenta" style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.chNumeroCuenta}"/>
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelDatosPorAgregarTarjeta" rendered="#{facturacionElectronica.tipoPago eq 5}">     
+                            <h:panelGrid columns="1">
+                                <p:outputLabel value="Tarjeta: " style="font-weight: bold" />
+                                <p:selectOneMenu id="selectarjeta" value="#{facturacionElectronica.tarjeta}" style="width: 200px;" converter="entityConverter">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                    <f:selectItems value="#{facturacionElectronica.tarjetas}" var="tf" itemLabel="#{tf.descripcion}"/>                                
+                                    <!--<p:ajax update="panelDatosPorAgregarNota" process="@this" event="change" />-->
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Numero de Tranferencia" style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.trNumTransferencia}"/>                                
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelDatosPorAgregarTranferencia" rendered="#{facturacionElectronica.tipoPago eq 7}">     
+                            <h:panelGrid columns="4">
+                                <p:outputLabel value="Banco " style="font-weight: bold" />
+                                <p:selectOneMenu id="selectarjtrasfe" value="#{facturacionElectronica.bancoSelect}" style="width: 200px;" converter="entityConverter">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                    <f:selectItems value="#{facturacionElectronica.bancos}" var="tf" itemLabel="#{tf.descripcion}"/>                                
+                                    <!--<p:ajax update="panelDatosPorAgregarNota" process="@this" event="change" />-->
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Numero de Autorizacion" style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.autorizacion}"/>  
+                                <p:outputLabel value="Numero de Baucher" style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.baucher}"/> 
+                                <p:outputLabel value="Titular: " style="font-weight: bold"/>
+                                <p:inputText value="#{facturacionElectronica.titular}"/>  
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+                        <h:panelGrid  style="font-size: 12px;font-weight: bolder; width: 50%" rendered="#{facturacionElectronica.tipoTarea eq 3}">
+                            <p:commandButton value="Añadir Tipo de Pago" icon="pi pi-user" rendered="#{facturacionElectronica.tipoTarea eq 3}"
+                                             update="panelCambioTipoPago"         actionListener="#{facturacionElectronica.addTipoPago()}">
+                                <!--<p:ajax update="panelDatosPorAgregarNota" process="@this" event="change" />-->
+                            </p:commandButton><br></br>
+                            <h:panelGroup style="alignment-adjust: after-edge">
+                                <p:dataTable id="listTiposPagosTable" value="#{facturacionElectronica.listaPagosNew}" var="det">
+                                    <f:facet name="header">
+                                        VALOR: <h:outputText value="#{facturacionElectronica.valorTotalListTipoPagos}" />
+                                    </f:facet>
+                                    <p:column headerText="Tipo">
+                                        <p:outputLabel value="#{det.tipoPago eq 1 ? 'EFECTIVO' : (det.tipoPago eq 3 ? 'NOTA DE CRÉDITO' : (det.tipoPago eq 4 ? 'CHEQUE' : (det.tipoPago eq 5 ? 'TRANSFERENCIA' : 'TARJETA')))}" />
+                                    </p:column>
+                                    <p:column headerText="Valor">
+                                        <h:outputText value="#{det.valor}" />
+                                    </p:column>   
+                                    <p:column headerText="***">
+                                        <p:commandButton icon="pi pi-times" actionListener="#{facturacionElectronica.eliminarTipoCobro(det)}" title="Eliminar"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+<!--                            <h:panelGroup rendered="#{facturacionElectronica.tipoTarea eq 3}">
+                                <p:outputLabel value="Tipo de Cobro: " style="font-weight: bold" /><br></br>    
+                                <p:outputLabel value="#{facturacionElectronica.pagodetalle}" style="font-weight: bold" />
+                                <p:dataTable value="#{facturacionElectronica.pagodetalle}" var="det" 
+                                             style="text-align: center;">
+                                    <p:column headerText="Contrato">#{det.acto.nombre}</p:column>
+                                    <p:outputLabel value="#{det.tipoPago eq 1 ? 'EFECTIVO' : (det.tipoPago eq 3 ? 'NOTA DE CRÉDITO' : (det.tipoPago eq 4 ? 'CHEQUE' : (det.tipoPago eq 5 ? 'TRANSFERENCIA' : 'TARJETA')))}" />
+                                </p:dataTable>
+                                <br></br>          
+                            </h:panelGroup>-->
+
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:panel header="Datos de Solicitud">
+
+                        <h:panelGrid columns="2" style="font-size: 12px;font-weight: bolder;">
+                            <h:panelGrid columns="2" style="font-size: 12px;font-weight: bolder;">
+
+                                <h:panelGroup>
+                                    <p:outputLabel value="No de Tramite:" style="font-weight: bold" /><br></br>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="#{facturacionElectronica.proforma.numTramiteRp}"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Solicitud:" style="font-weight: bold" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="#{facturacionElectronica.proforma.fechaCreacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Estado:" style="font-weight: bold" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="#{facturacionElectronica.proforma.estadoLiquidacion.code}"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Total:" style="font-weight: bold" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value=" $ #{facturacionElectronica.proforma.totalPagar}"/>
+                                </h:panelGroup>
+                                Identificacion para Titulo:
+                                <p:outputLabel value="#{facturacionElectronica.proforma.beneficiario.ciRuc}"/>
+                                Nombre para Titulo:
+                                <p:outputLabel value="#{facturacionElectronica.proforma.beneficiario.nombreCompleto}"/>
+                                Tipo de Cobro:
+                                <p:outputLabel value="#{facturacionElectronica.tipocobro eq 1 ? 'EFECTIVO' : (facturacionElectronica.tipocobro eq 3 ? 'NOTA DE CRÉDITO' : (facturacionElectronica.tipocobro eq 4 ? 'CHEQUE' : (facturacionElectronica.tipocobro eq 5 ? 'TRANSFERENCIA' : 'TARJETA')))}" />
+
+                            </h:panelGrid>
+
+                        </h:panelGrid>
+                        <br></br>
+                        <p:dataTable value="#{facturacionElectronica.proforma.regpLiquidacionDetallesCollection}" var="det" 
+                                     style="text-align: center;">
+                            <p:column headerText="Contrato">#{det.acto.nombre}</p:column>
+                            <p:column headerText="Exo." width="100">#{det.exoneracion.concepto}</p:column>
+                            <p:column headerText="Avaluo" width="100">#{det.avaluo}</p:column>
+                            <p:column headerText="Cuantia" width="100">#{det.cuantia}</p:column>
+                            <p:column headerText="Valor Uni." width="100">#{det.valorUnitario}</p:column>
+                            <p:column headerText="Desc." width="100">#{det.descuento}</p:column>
+                            <p:column headerText="Gastos G." width="100">#{det.recargo}</p:column>
+                            <p:column headerText="Valor Total" width="100">#{det.valorTotal}</p:column>
+                        </p:dataTable>
+                        <br></br>
+                        <h:panelGrid styleClass="noBorder" columns="6">
+                            Desc.Limit.Cobro:
+                            <p:outputLabel value="$ #{facturacionElectronica.proforma.descLimitCobro}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Desc.Ley:
+                            <p:outputLabel value="$ #{facturacionElectronica.proforma.descuentoValor}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Total a Cancelar:
+                            <p:outputLabel value="$ #{facturacionElectronica.proforma.totalPagar}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="REIMPRIMIR TITULOS NO GENERADOS">
+                    <h:panelGrid columns="9">
+                        <p:outputLabel value="Nro de Título:" style="font-weight: bolder;"/>
+                        <p:spacer width="20" height="1" />
+                        <p:inputNumber value="#{facturacionElectronica.titulocredito}" decimalPlaces="0" thousandSeparator=""/>
+                        <p:spacer width="20" height="1" />
+                        <p:outputLabel value="Fecha de Ingreso:" style="font-weight: bolder;"/>
+                        <p:spacer width="20" height="1" />
+                        <p:calendar value="#{facturacionElectronica.ingreso}" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:spacer width="20" height="1" />
+                        <p:commandButton value="Generar Titulo" icon="pi pi-print" 
+                                         actionListener="#{facturacionElectronica.printTituloCredito()}" />
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
+
+        </h:form>
+
+        <p:dialog id="dlgEnviarCorreo" widgetVar="dlgEnviarCorreo" header="Enviar Correo" modal="true" width="400" 
+                  resizable="false" position="center"
+                  showHeader="false">
+            <h:form id="formEnviarCorreo">
+                <!--<center>-->
+                <p:outputLabel value='¿Desea enviar el correo?' style="font-weight: bold;font-size: 25px;"/><br></br>
+                <p:outputLabel value="Correo enviado al email: " style="font-weight: bold;font-size: 20px;"/><br></br>
+                <p:outputLabel value="#{facturacionElectronica.ente.correo1}" style="font-weight: bold;font-size: 20px;color: #0033FF;"/>
+                <h:panelGrid styleClass="noBorder" columns="2" style="width: 100%; font-size: 15px">
+                    <h:panelGroup style="width: 100%">
+                        <p:commandButton value="Aceptar"  icon="ui-icon-check" actionListener="#{facturacionElectronica.enviarCorreoProforma()}" style="width: 80%"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup style="width: 100%">
+                        <p:commandButton value="Cerrar"  icon="ui-icon-close" style="width: 80%"
+                                         oncomplete="PF('dlgEnviarCorreo').hide()"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <!--</center>-->                
+            </h:form>            
+        </p:dialog>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Anular Trámite" modal="true" width="400" 
+                  resizable="false" position="center" showHeader="false" >
+            <h:form id="formObs">
+                <h:panelGrid columns="2" style="text-align: center;width: 100%; font-size: 15px">
+                    <p:outputLabel value="No de Tramite: #{facturacionElectronica.proforma.numTramiteRp}" 
+                                   style="font-weight: bolder;font-size: 13px;"/>
+                    <p:outputLabel value="No de Factura: #{facturacionElectronica.proforma.codigoComprobante}" 
+                                   style="font-weight: bolder;font-size: 13px;"/>
+                </h:panelGrid>
+                <br></br>
+                <h:panelGrid columns="1" style="text-align: center;width: 100%; font-size: 15px" >
+                    <p:outputLabel value="Motivo para dar de baja:" style="font-weight: bolder;font-size: 13px;"/>
+                    <p:inputTextarea value="#{facturacionElectronica.observacion}" 
+                                     rows="5" autoResize="false" style="width: 100%;color: #000000" maxlength="900"/>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <p:commandButton value="Anular Trámite" icon="pi pi-ban" 
+                                     actionListener="#{facturacionElectronica.anularTramiteFactura()}"/>
+                </center>
+                <br></br>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="dglIngresoCuantia" widgetVar="dlgCuantia" header="Información del Contrato" resizable="false" 
+                  modal="true" width="900" closable="true" closeOnEscape="true" >
+            <h:form id="formCuantia">
+                <p:panel header="#{facturacionElectronica.rld.acto.nameTruncate2}">
+                    <p:panelGrid styleClass="noBorder" columns="8" style="margin: 0 auto;">
+                        <p:outputLabel value="Avalúo: $" rendered="#{!facturacionElectronica.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{facturacionElectronica.avaluo}" decimalPlaces="2" rendered="#{!facturacionElectronica.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Cuantía: $" rendered="#{!facturacionElectronica.rld.acto.solvencia}"/>
+                        <p:inputNumber value="#{facturacionElectronica.cuantia}" decimalPlaces="2" rendered="#{!facturacionElectronica.rld.acto.solvencia}"/>
+                        <p:outputLabel value="Nro. comparecientes al pago: "/>
+                        <p:inputText value="#{facturacionElectronica.rld.cantidadIntervinientes}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="Nro. Certificados: " rendered="#{facturacionElectronica.rld.acto.solvencia}"/>
+                        <p:inputText value="#{facturacionElectronica.rld.cantidad}" rendered="#{facturacionElectronica.rld.acto.solvencia}"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        Reingreso:
+                        <p:selectBooleanCheckbox value="#{facturacionElectronica.rld.reingreso}"/>
+                        <p:outputLabel value="No de Lotes:" rendered="#{facturacionElectronica.tipocalculo eq 1}"/>
+                        <p:inputNumber value="#{facturacionElectronica.rld.numPredio}" decimalPlaces="0" rendered="#{facturacionElectronica.tipocalculo eq 1}"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="8" style="margin: 0 auto;" rendered="#{facturacionElectronica.certificado}">
+                        <p:outputLabel value="Año ultima trasf.: "/>
+                        <p:inputText  id="anio_traspaso" value="#{facturacionElectronica.rld.anioUltimaTrasnferencia}" maxlength="4"><p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                        <p:outputLabel value="Año antecedente : "/>
+                        <p:inputText id="anio_mov" value="#{facturacionElectronica.rld.anioAntecedenteSolicitado}" maxlength="4"><p:keyFilter regEx="/[\d]/"/> 
+                            <p:ajax event="blur" listener="#{facturacionElectronica.aniosCalculo()}" update="base_calculo" process="anio_traspaso,anio_mov"/>
+                        </p:inputText>
+                        <p:outputLabel value="Años base: "/>
+                        <p:inputText value="15" maxlength="4" readonly="true"> </p:inputText>
+                        <p:outputLabel value="Años exedente: "/>
+                        <p:inputText id="base_calculo" value="#{facturacionElectronica.aniosDiferencia}" readonly="true "/>
+                    </p:panelGrid>
+                    <br></br>
+                    <p:panelGrid styleClass="noBorder" columns="8" style="margin: 0 auto;" rendered="#{facturacionElectronica.diferenciaPagos}">
+                        <p:outputLabel value="Valor de Diferencia $" />
+                        <p:inputNumber value="#{facturacionElectronica.valorDiferenciaActo}" decimalPlaces="2" />
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel header="Intervinientes">
+                    <div align="right">
+                        <h:panelGrid columns="5">
+                            <h:panelGroup>
+                                <p:outputLabel value="Agregar Solicitante" style="font-weight: bold" /> <br></br>
+                                <center>
+                                    <p:selectBooleanCheckbox id="agregaSolicitante" value="#{facturacionElectronica.agregaSolicitante}" >
+                                        <p:ajax update="dtIntervinientes, formCuantia:agregaSolicitante" 
+                                                listener="#{facturacionElectronica.agregarSolicitanteInterviniente()}" />
+                                    </p:selectBooleanCheckbox>
+                                </center>
+                            </h:panelGroup>
+                            <p:spacer width="10"/>
+
+                            <h:panelGroup>
+                                <p:commandButton value="Agregar Intervieniente" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{facturacionElectronica.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{facturacionElectronica.selectInterv}" update="dtIntervinientes"/>
+                                </p:commandButton>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </div>
+                    <br></br>
+                    <p:dataTable id="dtIntervinientes" value="#{facturacionElectronica.listInterv}" var="inter" emptyMessage="Sin elementos..."
+                                 scrollable="true" scrollHeight="175" rowIndexVar="index" style="text-align: center" resizableColumns="true" >
+                        <p:column headerText="C.I/R.U.C" width="120">
+                            <p:outputLabel value="#{inter.ente.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.ente.nombreCompleto}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="140" rendered="#{!facturacionElectronica.rld.acto.solvencia}">
+                            <p:outputLabel value="#{inter.papel.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Pap." width="40" rendered="#{!facturacionElectronica.rld.acto.solvencia}">
+                            <p:commandLink actionListener="#{facturacionElectronica.showDlgPapel('/resources/dialog/dlglazypapeles', index)}">
+                                <p:graphicImage value="/resources/icons/agregar.png" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{facturacionElectronica.selectObjectPapel}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descuento" width="85">
+                            <p:outputLabel value="#{inter.exoneracion.porcentaje}"/>
+                        </p:column>
+                        <p:column headerText="Desc." width="40">
+                            <p:commandLink actionListener="#{facturacionElectronica.showDlgPapel('/resources/dialog/dlglazyexoneracion', index)}">
+                                <p:graphicImage value="/resources/icons/descuento.jpg" height="16"/>
+                                <p:ajax event="dialogReturn" listener="#{facturacionElectronica.selectObjectExo}" update="dtIntervinientes"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink actionListener="#{facturacionElectronica.eliminarInterviniente(index)}" update="dtIntervinientes">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{facturacionElectronica.agregarActo()}"/></center>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog header="Procesar Pago" widgetVar="dlgProcesar" resizable="false" closeOnEscape="true" modal="true" width="70%" position="top" height="600">
+            <h:form id="formProcesar">
+                <p:tabView id="tabDetalle">
+                    <p:tab title="Detalle Pago">
+                        <p:fieldset legend="Datos Proforma">
+                            <p:panelGrid styleClass="noBorder" style="width: 100%;" columns="6">
+                                No Tramite:
+                                <p:outputLabel value="#{facturacionElectronica.liquidacion.numTramiteRp}" style="font-weight: bolder;font-size: 14px;"/>
+                                Fecha Proforma:
+                                <p:outputLabel value="#{facturacionElectronica.liquidacion.fechaCreacion}" style="font-weight: bolder;font-size: 14px;">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </p:outputLabel>
+                                Valor a Cobrar:
+                                <p:outputLabel value="#{facturacionElectronica.liquidacion.totalPagar}" styleClass="lbStyle"/>
+                            </p:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Datos del Cliente" style="font-weight: bold; font-size: 13px;">
+                            <p:panelGrid styleClass="noBorder" style="width: 100%;" columns="4">
+                                CI/RUC:
+                                <p:outputLabel value="#{facturacionElectronica.liquidacion.beneficiario.ciRuc}" style="font-weight: bold; font-size: 14px;"/>
+                                NOMBRES:
+                                <p:outputLabel value="#{facturacionElectronica.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bold; font-size: 14px;"/>
+                            </p:panelGrid>
+                        </p:fieldset>
+
+
+                        <p:panel id="botonesExonerados" rendered="#{!facturacionElectronica.liquidacion.generaFactura}">
+                            <center>
+                                <p:commandButton value="Procesar" styleClass="btnStyle" actionListener="#{facturacionElectronica.cancelarLiquidacion()}" update="formProcesar,mainForm" icon="ui-icon-print" style="font-size: 14px;">
+                                </p:commandButton><p:spacer width="25"/>                        
+                                <p:commandButton value="Cancelar" styleClass="btnStyle" oncomplete="PF('dlgProcesar').hide();" icon="ui-icon-cancel" style="font-size: 14px;"/>
+                            </center>
+                        </p:panel>
+
+                        <p:fieldset legend="Detalle de Cobro"  rendered="#{facturacionElectronica.liquidacion.generaFactura}">
+                            <p:panelGrid id="detCobro" style="width: 100%;" styleClass="noBorder">
+                                <p:row>
+                                    <p:column style="width: 100px;"><p:outputLabel value="Contado" style="font-weight: bolder;"/></p:column>
+                                    <p:column style="width: 100px;"><p:inputText value="#{facturacionElectronica.modelPago.valorTotalEfectivo}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"/></p:column>
+                                    <p:column rowspan="6">
+                                        <p:tabView>
+                                            <p:tab title="1. EFECTIVO">
+                                                <p:panelGrid columns="2">
+                                                    <p:outputLabel value="Valor Recibido"/>
+                                                    <p:inputText value="#{facturacionElectronica.modelPago.valorRecibido}" style="font-weight: bolder; font-size: 12px;">
+                                                        <p:ajax event="blur" listener="#{facturacionElectronica.modelPago.calcularEfectivo()}" update="formProcesar:tabDetalle:detCobro" process="@all"/>
+                                                    </p:inputText>
+                                                    <p:outputLabel value="Valor a Cobrar"/>
+                                                    <p:inputText value="#{facturacionElectronica.modelPago.valorCobrar}" readonly="true" style="font-weight: bolder; font-size: 12px;"/>
+                                                    <p:outputLabel value="Cambio"/><p:inputText value="#{facturacionElectronica.modelPago.valorCambio}" readonly="true" style="font-weight: bolder; font-size: 12px;"/>
+                                                </p:panelGrid>
+                                            </p:tab>
+                                            <p:tab title="2. NOTA DE CREDITO" rendered="false">
+                                                <p:panelGrid>
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Credito"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoNotaCredio.numCredito}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha"/><br/>
+                                                            <p:calendar value="#{facturacionElectronica.modelPago.pagoNotaCredio.fecha}" pattern="dd/MM/yyyy"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{facturacionElectronica.modelPago.pagoNotaCredio.valor}"/>
+                                                        </p:column>
+                                                        <p:column><p:commandButton value="Agregar" actionListener="#{facturacionElectronica.modelPago.agregarPago(3)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtNC" var="nc" value="#{facturacionElectronica.modelPago.listPagoNotaCredio}" style="text-align: center;">
+                                                    <p:column headerText="# Credito"><h:outputText value="#{nc.numCredito}" /></p:column>
+                                                    <p:column headerText="Fecha"><h:outputText value="#{nc.fecha}" ><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>
+                                                    <p:column headerText="Valor"><h:outputText value="#{nc.valor}" /></p:column>
+                                                    <p:column headerText="Del" width="45">
+                                                        <p:commandLink actionListener="#{facturacionElectronica.modelPago.eliminarPagoNC(nc)}" update="formProcesar:tabDetalle:detCobro">
+                                                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="2. CHEQUE">
+                                                <p:panelGrid>
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel value="Banco"/><br/>
+                                                            <p:selectOneMenu value="#{facturacionElectronica.modelPago.pagoCheque.banco}" converter="entityConverter">
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                                                <f:selectItems value="#{facturacionElectronica.bancos}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Cheque"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoCheque.numCheque}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Cuenta"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoCheque.numCuenta}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Valor"/><br/>
+                                                            <p:inputText type="number" value="#{facturacionElectronica.modelPago.pagoCheque.valor}"/>
+                                                        </p:column>
+                                                        <p:column><p:commandButton value="Agregar" actionListener="#{facturacionElectronica.modelPago.agregarPago(4)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtCh" var="ch" value="#{facturacionElectronica.modelPago.listPagoCheque}" style="margin-bottom:0; width: 700px;">
+                                                    <p:column headerText="BANCO"><h:outputText value="#{ch.banco.descripcion}" /></p:column>
+                                                    <p:column headerText="# Cheque"><h:outputText value="#{ch.numCheque}" /></p:column>
+                                                    <p:column headerText="# Cuenta"><h:outputText value="#{ch.numCuenta}" /></p:column>
+                                                    <p:column headerText="# Valor"><h:outputText value="#{ch.valor}" /></p:column>
+                                                    <p:column headerText="Accion"><p:commandButton value="Eliminar" actionListener="#{facturacionElectronica.modelPago.eliminarPagoCh(ch)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="3. TARJETA">
+                                                <p:panelGrid>
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel value="Tipo"/><br/>
+                                                            <p:selectOneMenu value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.tipoTarjeta}">
+                                                                <f:selectItem itemLabel="Debito" itemValue="#{1}"/>
+                                                                <f:selectItem itemLabel="Corriente" itemValue="#{2}"/>
+                                                                <f:selectItem itemLabel="Diferido" itemValue="#{3}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Banco"/><br/>
+                                                            <p:selectOneMenu value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.banco}" converter="entityConverter">
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                                                <f:selectItems value="#{facturacionElectronica.tarjetas}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Tarjeta"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.numTarjeta}" size="14"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha Caduca"/><br/>
+                                                            <p:calendar value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.fechaCaducidad}" pattern="dd/MM/yyyy" size="10"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Autorizacion"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.autorizacion}" size="14"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="REF"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.baucher}" size="14"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Titular"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.nombreTitular}" size="14"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{facturacionElectronica.modelPago.pagoTarjetaCredito.valor}" style="width: 90px;"/>
+                                                        </p:column>
+                                                        <p:column><br/><p:commandButton value="Agregar" actionListener="#{facturacionElectronica.modelPago.agregarPago(2)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtTC" var="tc" value="#{facturacionElectronica.modelPago.listPagoTarjetaCredito}" style="margin-bottom:0; width: 700px;">
+                                                    <p:column headerText="BANCO"><h:outputText value="#{tc.banco.descripcion}" /></p:column>
+                                                    <p:column headerText="# Tarjeta"><h:outputText value="#{tc.numTarjeta}" /></p:column>
+                                                    <p:column headerText="Fecha Caducidad"><h:outputText value="#{tc.fechaCaducidad}"><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>
+                                                    <p:column headerText="# Autorizacion"><h:outputText value="#{tc.autorizacion}" /></p:column>
+                                                    <p:column headerText="REF"><h:outputText value="#{tc.baucher}" /></p:column>
+                                                    <p:column headerText="Titular"><h:outputText value="#{tc.nombreTitular}" /></p:column>
+                                                    <p:column headerText="Valor"><h:outputText value="#{tc.valor}" /></p:column>
+                                                    <p:column headerText="Accion"><p:commandButton value="Eliminar" actionListener="#{facturacionElectronica.modelPago.eliminarPagoTC(tc)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="4. TRANSFERENCIA">
+                                                <p:panelGrid>
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel value="Banco"/><br/>
+                                                            <p:selectOneMenu value="#{facturacionElectronica.modelPago.pagoTransferencia.banco}" converter="entityConverter">
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                                                <f:selectItems value="#{facturacionElectronica.bancos}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Transferencia"/><br/>
+                                                            <p:inputText value="#{facturacionElectronica.modelPago.pagoTransferencia.numTransferencia}" maxlength="45"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha"/><br/>
+                                                            <p:calendar value="#{facturacionElectronica.modelPago.pagoTransferencia.fecha}" pattern="dd/MM/yyyy"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{facturacionElectronica.modelPago.pagoTransferencia.valor}"/>
+                                                        </p:column>
+                                                        <p:column><p:commandButton value="Agregar" actionListener="#{facturacionElectronica.modelPago.agregarPago(5)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtT" var="t" value="#{facturacionElectronica.modelPago.listPagoTransferencia}" style="margin-bottom:0; width: 700px;">
+                                                    <p:column headerText="Banco"><h:outputText value="#{t.banco.descripcion}" /></p:column>
+                                                    <p:column headerText="# Transferencia"><h:outputText value="#{t.numTransferencia}" /></p:column>
+                                                    <p:column headerText="Fecha"><h:outputText value="#{t.fecha}"><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>
+                                                    <p:column headerText="Valor"><h:outputText value="#{t.valor}" /></p:column>
+                                                    <p:column headerText="Accion"><p:commandButton value="Eliminar" actionListener="#{facturacionElectronica.modelPago.eliminarPagoTransferencia(t)}" update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="5. OTROS VALORES">
+                                                <p:panelGrid columns="2">
+                                                    <p:outputLabel value="Valor: "/>
+                                                    <p:inputText value="#{facturacionElectronica.modelPago.valorTotalOtros}" style="font-weight: bolder; font-size: 12px;">
+                                                        <p:ajax event="blur" listener="#{facturacionElectronica.modelPago.calcularOtrosValores()}" update="formProcesar:tabDetalle:detCobro" process="@all"/>
+                                                    </p:inputText>
+                                                </p:panelGrid>
+                                            </p:tab>
+                                        </p:tabView>
+                                    </p:column>
+                                </p:row>
+                                <p:row rendered="false">
+                                    <p:column><p:outputLabel value="Notas Credito" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{facturacionElectronica.modelPago.valorTotalNotasCredito}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Cheque" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{facturacionElectronica.modelPago.valorTotalCheques}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Tarjeta" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{facturacionElectronica.modelPago.valorTotalTarjetas}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Transferencia" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{facturacionElectronica.modelPago.valorTotalTransferencias}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Otros" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{facturacionElectronica.modelPago.valorTotalOtros}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="TOTAL" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{facturacionElectronica.modelPago.valorTotal}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px; color: red;"/></p:column>
+                                </p:row>
+                            </p:panelGrid>           
+                        </p:fieldset>
+                        <p:panel id="botones">
+                            <center>
+                                <p:commandButton value="Procesar" styleClass="btnStyle" actionListener="#{facturacionElectronica.cancelarLiquidacion()}" update="formProcesar,mainForm" icon="ui-icon-print" style="font-size: 14px;">
+                                </p:commandButton><p:spacer width="25"/>                        
+                                <p:commandButton value="Cancelar" styleClass="btnStyle" oncomplete="PF('dlgProcesar').hide();" icon="ui-icon-cancel" style="font-size: 14px;"/>
+                            </center>
+                        </p:panel>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+
+
+    </ui:define>
+</ui:composition>

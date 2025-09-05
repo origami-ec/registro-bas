@@ -1,0 +1,18 @@
+FROM tomee:8.0.16-jre11-ubuntu-plus
+
+#COPY docs/server.xml /usr/local/tomee/conf/server.xml
+
+RUN chmod -R 777 /usr/local/tomee/webapps
+RUN rm -rf /usr/local/tomee/webapps/*
+RUN apt-get update \ 
+    && apt-get -y install tesseract-ocr
+RUN apt-get -y install net-tools
+RUN apt-get -y install tzdata
+ENV TZ=America/Guayaquil
+#RUN cp /usr/share/zoneinfo/America/Guayaquil /etc/localtime
+
+ADD target/sgr-daule-1.1.war /usr/local/tomee/webapps/ROOT.war
+
+CMD chmod +x /usr/local/tomee/bin/catalina.sh
+EXPOSE 8080
+CMD ["catalina.sh", "run"]

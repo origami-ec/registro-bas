@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Configuraciones</ui:define>
+    <ui:define name="content">
+        <center><h1>CONFIGURACIONES DEL SISTEMA</h1></center>
+        <h:form>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            <center>
+                <p:panelGrid columns="7" styleClass="ui-panelgrid-blank">
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Modificar Menú" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Realizar cambios en el menú del sistema." action="menuRol.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/modificar_menu.png" height="140" />
+                        </p:commandLink>
+                    </p:panelGrid>
+
+                    <p:spacer width="80" height="1"/>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Nombrar Registrador" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Cambio de Nombre del Registrador" action="nombreRegistrador.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/persona.png" height="150" />
+                        </p:commandLink>
+                    </p:panelGrid>
+
+                    <p:spacer width="80" height="1"/>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Ingresar Feriados" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Registro de Dias NO Laborables" action="feriadosManaged.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/feriados.png" height="150" />
+                        </p:commandLink>
+                    </p:panelGrid>
+                    
+                    <p:spacer width="80" height="1"/>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Registrar Descuentos" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Descuentos por 3ra edad y discapacidad." action="exoneraciones.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/descuento.png" height="130" />
+                        </p:commandLink>
+                    </p:panelGrid>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Usuarios de Sistema" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Mantenimiento de Usuarios, Roles y Depts." action="/admin/manage/usersList.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/personas.png" height="130" />
+                        </p:commandLink>
+                    </p:panelGrid>
+
+                    <p:spacer width="80" height="1"/>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Registrar Cajeros" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Mantenimiento de Cajeros para el cobro de tramites" action="cajeros.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/cajero.png" height="130"/>
+                        </p:commandLink>
+                    </p:panelGrid>
+                    
+                    <p:spacer width="80" height="1"/>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Asignación Automática" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Registro de usuarios para la asignación de tareas." action="/admin/config/tareasUsuarios.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/automatico.png" height="150" />
+                        </p:commandLink>
+                    </p:panelGrid>
+
+                    <p:spacer width="80" height="1"/>
+                    
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Variables de Sistema" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Configuración de las Variables del Sistema." action="/admin/config/variablesSistema.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/book.png" height="150" />
+                        </p:commandLink>
+                    </p:panelGrid>
+                    
+                    <p:spacer width="80" height="1"/>
+
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Catálogos de Sistema" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Configuración de los Catálogos del Sistema." action="/admin/config/catalogoItem.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/indexacion.png" height="130"/>
+                        </p:commandLink>
+                    </p:panelGrid>
+                    
+                    <p:spacer width="80" height="1"/>
+                    
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Registrar BANCOS" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Registro de Bancos y Tarjetas del Sistema." action="/admin/config/registroBancoTarjeta.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/bank.png" height="130"/>
+                        </p:commandLink>
+                    </p:panelGrid>
+                    
+                    <p:spacer width="80" height="1"/>
+                    
+                    <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Configurar Correos" style="font-size: 20px; font-weight: bolder;"/>
+                        <p:commandLink title="Configuración de correos electrónicos." action="/admin/config/configurarCorreos.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/gmail.png" height="130"/>
+                        </p:commandLink>
+                    </p:panelGrid>
+
+                    <p:spacer width="80" height="1"/>
+
+                </p:panelGrid>
+            </center>
+        </h:form>
+    </ui:define>
+</ui:composition>

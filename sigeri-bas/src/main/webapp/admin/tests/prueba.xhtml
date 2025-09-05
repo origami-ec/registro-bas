@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{prueba.doPreRenderView()}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="title">Pantalla de Pruebas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h:panelGrid style="margin: 0 auto;text-align: center;" columns="1">
+                <pe:ckEditor value="#{prueba.contenido}" width="800" skin="office2013" disableNativeSpellChecker="true"
+                             customConfig="#{appConfig.urlbase}resources/js/ckeditor.js" />
+                <p:commandButton value="Guardar Datos" icon="pi pi-save" />
+            </h:panelGrid>
+            <!--<p:commandButton value="Prueba SAM" actionListener="# {prueba.buscarDetalles('28-06-2022')}"/>-->
+            <!--<p:commandButton value="PDF to TIFF" actionListener="# {prueba.convertirPDF('RESOLUCION')}"/>-->
+            <!--<p:commandButton value="Enviar Correo" actionListener="# {prueba.testsendmail('nestor.maisincho@latacunga.gob.ec', 2)}"/>-->
+            <!--<p:commandButton value="Metodo de Prueba" actionListener="# {prueba.probarEnum(2000)}"/>-->
+            <!--<h:panelGroup>
+                <iframe id="visor" style="" width="100%" height="700" allowfullscreen="" webkitallowfullscreen="" 
+                        src="# {prueba.visorUrl}"></iframe>
+            </h:panelGroup>
+            <p:panelGrid id="panelgrid" styleClass="noBorder" style="font-weight: bolder;" columns="4">
+                Tipo:
+                <p:selectOneMenu value="# {prueba.persona}">
+                    <f:selectItem itemLabel="seleccionar" itemValue="# {null}"/>
+                    <f:selectItem itemLabel="Natural" itemValue="# {true}"/>
+                    <f:selectItem itemLabel="Juridica" itemValue="# {false}"/>
+                    <p:ajax event="change" update="panelgrid"/>
+                </p:selectOneMenu>
+                CI/RUC:
+                <p:inputText value="# {prueba.cedula}"/>
+                <p:outputLabel value="Nombres:"/>
+                <p:inputText value="# { prueba.nombre}"/>
+                <p:outputLabel value="Apellidos:"/>
+                <p:inputText value="# {prueba.razonsocial}" />
+                <p:commandButton value="Guardar" actionListener="# {prueba.probando()}"/>
+                <p:commandButton value="Actualizar" update="panelgrid"/>
+            </p:panelGrid>-->
+        </h:form>
+    </ui:define>
+</ui:composition>

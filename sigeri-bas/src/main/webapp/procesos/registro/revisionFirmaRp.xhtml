@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"> 
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;text-transform: uppercase;">#{revisionFirmaRp.taskDataByTaskID.name}</h3></center>
+            <h:panelGrid style="font-size: 20px;font-weight: bolder;">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Nombre Tarea:" style="font-weight: bolder;color: #005f9c;font-size: 20px;"/>
+                        #{revisionFirmaRp.taskDataByTaskID.name}
+                        <p:spacer height="1" width="50"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c;font-size: 20px;"/>
+                        #{revisionFirmaRp.ht.numTramite}
+                        <p:spacer height="1" width="50"/>
+                    </p:column>
+                </p:row>
+            </h:panelGrid>
+            <br></br>
+            <p:panelGrid styleClass="noBorder" columns="1" rendered="#{revisionFirmaRp.liquidacion.estadoPago.id eq 7}" style="margin: 0 auto;text-align: center;">
+                <p:outputLabel value="TRÁMITE INICIADO EN LÍNEA" style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+            </p:panelGrid>
+            <p:tabView id="mainTab">
+                <p:tab title="Informacion de Tramite">
+                    <p:dataTable id="dtTareas" value="#{revisionFirmaRp.tareas}" emptyMessage="Sin elementos..." scrollHeight="250" rowIndexVar="indexInsc"
+                                 var="det" style="text-align: center; width: 85%;margin: 0 auto;" scrollable="true" resizableColumns="true">
+                        <p:column headerText="Nº" width="30">#{indexInsc+1}</p:column>
+                        <p:column headerText="Documento/Contrato">
+                            <p:outputLabel value="#{det.detalle.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80" rendered="#{revisionFirmaRp.liquidacion.inscripcion}" >
+                            <p:outputLabel value="#{det.detalle.liquidacion.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="80" rendered="#{revisionFirmaRp.liquidacion.inscripcion}">
+                            <p:outputLabel value="#{det.detalle.inscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Nº Documento" width="80" rendered="#{revisionFirmaRp.liquidacion.certificado}">
+                            <p:outputLabel value="#{det.detalle.inscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Ingreso" width="120">
+                            <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Firmado" width="50">
+                            <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{det.revisado}" title="Firmado"/>
+                            <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!det.revisado}" title="NO Firmado"/> 
+                        </p:column>
+                        <p:column headerText="Revisar" width="50">
+                            <p:commandLink actionListener="#{revisionFirmaRp.showDlgDocumentos(det)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="20" title="Pre-visualizar documento"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Firmar Doc." width="50">
+                            <p:commandLink actionListener="#{revisionFirmaRp.firmarDocumento(det)}" update="dtTareas" disabled="#{det.revisado}" >
+                                <p:graphicImage value="/resources/icons/edicion.png" height="20" title="Firma electronica"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Observaciones" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{revisionFirmaRp.observacionesTramites}" var="obs" >
+                            <p:column headerText="Fecha de Ingreso" >
+                                #{obs.fecCre}
+                            </p:column>
+                            <p:column headerText="Usuario" >
+                                #{obs.userCre}
+                            </p:column>
+                            <p:column headerText="Tarea" >
+                                #{obs.tarea}
+                            </p:column>
+                            <p:column headerText="Observación" >
+                                #{obs.observacion}
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+                </p:tab>
+                <p:tab title="Documentos del Trámite">
+                    <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Solicitud Electronica"/>
+                        <p:commandLink actionListener="#{revisionFirmaRp.showProforma(revisionFirmaRp.liquidacion)}">
+                            <p:graphicImage value="/resources/icons/pdf.png" height="60"/>
+                        </p:commandLink>
+                    </h:panelGrid><br/>
+                    <p:dataTable value="#{revisionFirmaRp.archivos}" style="text-align: center;" scrollable="true"  
+                                 emptyMessage="Sin documentos digitalizados..." scrollHeight="300" var="doc1" paginator="true" reflow="true" 
+                                 rows="5" paginatorAlwaysVisible="false" rowIndexVar="posicion" >
+                        <f:facet name="header">DOCUMENTOS HABILITANTES DIGITALIZADOS</f:facet>
+                        <p:column headerText="Transaccion">
+                            <p:outputLabel value="#{doc1.id}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="100">
+                            <p:outputLabel value="#{doc1.fecha}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Paginas">
+                            <p:outputLabel value="#{doc1.numeroPaginas}"/>
+                        </p:column>
+                        <p:column headerText="Peso" >
+                            <p:outputLabel value="#{doc1.peso}"/>
+                        </p:column>
+                        <p:column headerText="View" width="80">
+                            <p:commandLink actionListener="#{revisionFirmaRp.visualizarDocsTramite(revisionFirmaRp.ht.numTramite, posicion)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="20" width="20"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+            <br></br>
+            <center>
+                <p:commandButton value="Regresar Trámite" icon="pi pi-undo" style="background-color: orange;"
+                                 actionListener="#{revisionFirmaRp.regresarTramite()}">
+                    <p:confirm header="Confirmación" message="Seguro de Regresar la Tarea?" icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+                <p:spacer width="60" height="1" />
+                <p:commandButton value="Finalizar Trámite" icon="pi pi-thumbs-up" actionListener="#{revisionFirmaRp.completarTarea()}">
+                    <p:confirm header="Confirmación" message="Seguro de Completar Tarea?" icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+                <p:confirmDialog global="true">
+                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-ban" />
+                </p:confirmDialog>    
+            </center>
+        </h:form>
+
+        <p:dialog widgetVar="dlgDocumentos" header="Documentos" modal="true">
+            <h:form id="frmDocuments">
+                <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;"
+                             rendered="#{revisionFirmaRp.rtt.detalle.acto.solvencia}">
+                    <p:outputLabel value="Certificado"/>
+                    <p:commandLink actionListener="#{revisionFirmaRp.generarCertificado()}">
+                        <p:graphicImage value="/resources/icons/reporte.png"/>
+                    </p:commandLink>
+                </h:panelGrid>
+                <h:panelGrid columns="3" style="font-weight: bolder;text-align: center;"
+                             rendered="#{!revisionFirmaRp.rtt.detalle.acto.solvencia}">
+                    <p:outputLabel value="Acta de Inscripcion"/>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="Razon de Inscripcion"/>
+                    <p:commandLink actionListener="#{revisionFirmaRp.actaInscripcion()}">
+                        <p:graphicImage value="/resources/icons/reporte.png"/>
+                    </p:commandLink>
+                    <p:spacer width="10"/>
+                    <p:commandLink actionListener="#{revisionFirmaRp.razonInscripcion()}">
+                        <p:graphicImage value="/resources/icons/reporte.png"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

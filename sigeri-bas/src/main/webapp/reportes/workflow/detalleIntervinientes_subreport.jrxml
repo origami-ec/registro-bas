@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleIntervinientes_subreport" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="af36929c-8375-427f-b12e-a31d604d37cb">
+	<property name="ireport.zoom" value="5.696247503748645"/>
+	<property name="ireport.x" value="1987"/>
+	<property name="ireport.y" value="24"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select distinct(sol.ci_ruc),li.num_tramite_rp, li.fecha_creacion ,
+case sol.es_persona when true then
+coalesce(sol.nombres,'')||' '||coalesce(sol.apellidos,'')
+else sol.razon_social end AS interviniente,
+case fn.es_persona when true then
+coalesce(fn.nombres,'')||' '||coalesce(fn.apellidos,'')
+else fn.razon_social end AS funcionario,pa.papel
+from flow.regp_intervinientes it
+left join flow.regp_liquidacion_detalles ld on (ld.id = it.liquidacion)
+left join flow.regp_liquidacion li on (li.id = ld.liquidacion)
+left join app.cat_ente sol on (sol.id = it.ente)
+left join app.acl_user u on (u.id = li.user_creacion)
+left join app.cat_ente fn on (fn.id = u.ente)
+left join app.reg_papel pa on (pa.id = it.papel)
+where ld.liquidacion = $P{LIQUIDACION}
+group by 1,2,3,4,5,6
+order by li.fecha_creacion]]>
+	</queryString>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="num_tramite_rp" class="java.lang.Long"/>
+	<field name="fecha_creacion" class="java.sql.Timestamp"/>
+	<field name="interviniente" class="java.lang.String"/>
+	<field name="funcionario" class="java.lang.String"/>
+	<field name="papel" class="java.lang.String"/>
+	<title>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="c800b928-f916-4b48-af06-2bac663bd09a" x="0" y="1" width="61" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° Tramite:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="a7990d82-9c92-4730-bcea-8737799ffe68" x="61" y="1" width="204" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_tramite_rp}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e7323cec-2e36-4454-9bb9-a2cd2d73a02a" x="265" y="1" width="131" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Creacion:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="3c5e0715-39b8-433a-9c48-fb61c27c52e8" x="396" y="1" width="159" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_creacion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8b4820c9-0187-4428-9fa1-8c97bf08f626" x="0" y="11" width="61" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funcionario:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="aad22034-63be-4c2b-88ab-75407ec9410d" x="61" y="11" width="494" height="10" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="4687c1f0-9d3a-4ba2-af70-332bf44474f7" x="0" y="21" width="555" height="10"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTA DE INTERVINIENTES]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="5b3250c7-0302-4693-b000-ad42bb7fdc2c" x="0" y="1" width="265" height="10"/>
+				<box leftPadding="3" rightPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Interviniente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="50512926-f288-47eb-8aef-ae7fb26f7952" x="265" y="1" width="131" height="10"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CI / RUC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eda4b1f8-b266-4393-91c5-fcfa5aea3579" x="396" y="1" width="159" height="10"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Papel]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="9" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="2b784dfe-a5e1-49d0-b4b7-ea2b79a3938b" x="0" y="-1" width="265" height="10" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{interviniente}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="6e31527d-bb93-42f5-8fe2-e1908f8e0b2e" x="265" y="-1" width="131" height="10" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="abd3dc6f-31dc-4dae-9d6e-46e946be9ccc" x="396" y="0" width="159" height="9" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{papel}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

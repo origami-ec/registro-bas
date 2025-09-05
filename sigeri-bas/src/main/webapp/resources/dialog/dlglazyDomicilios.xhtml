@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Domicilios</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="dtuser" reflow="true" paginator="true" lazy="true" rows="10" filterEvent="enter" paginatorPosition="top"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{dlgLazyDomicilios.lazy}" var="obj1" emptyMessage="No se encontró ningún Item." style="text-align: center;">
+                <p:column headerText="Nombre" filterBy="#{obj1.nombre}" sortBy="#{obj1.nombre}" filterStyle="width: 75%">
+                    <h:outputText value="#{obj1.nombre}"/>
+                </p:column>
+                <p:column headerText="Sel." width="10%">
+                    <p:commandLink actionListener="#{dlgLazyDomicilios.selectObject(obj1)}">
+                        <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

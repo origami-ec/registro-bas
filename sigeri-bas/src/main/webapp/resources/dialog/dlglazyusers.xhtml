@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Usuarios</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="dtuser" reflow="true" paginator="true" lazy="true" rows="7" filterEvent="enter" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         value="#{usuarios.allUsers}" var="user" emptyMessage="No se encontró ningún Item." style="text-align: center;">
+                <p:column headerText="Usuario" filterBy="#{user.usuario}" sortBy="#{user.usuario}" filterStyle="width: 75%">
+                    <h:outputText value="#{user.usuario}"/>
+                </p:column>
+                <p:column headerText="Apellidos" filterBy="#{user.ente.apellidos}" filterStyle="width: 80%">
+                    <h:outputText value="#{user.ente.apellidos}"/>
+                </p:column>
+                <p:column headerText="Nombres" filterBy="#{user.ente.nombres}" filterStyle="width: 80%">
+                    <h:outputText value="#{user.ente.nombres}"/>
+                </p:column>
+                <p:column headerText="Sel." width="40">
+                    <p:commandButton icon="pi pi-fast-forward" actionListener="#{usuarios.selectUsuario(user)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

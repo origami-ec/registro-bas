@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ae73173e-4db2-49e5-a35f-6b6ab1149ec4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="88"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\LOJA\\registropropiedad\\src\\main\\webapp\\reportes\\formularios\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="sol_tipo_persona" class="java.lang.String"/>
+	<field name="tipo_formulario" class="java.lang.String"/>
+	<field name="sol_tipo_doc" class="java.lang.String"/>
+	<field name="sol_apellidos" class="java.lang.String"/>
+	<field name="sol_nombres" class="java.lang.String"/>
+	<field name="sol_cedula" class="java.lang.String"/>
+	<field name="sol_provincia" class="java.lang.String"/>
+	<field name="sol_ciudad" class="java.lang.String"/>
+	<field name="sol_parroquia" class="java.lang.String"/>
+	<field name="sol_calles" class="java.lang.String"/>
+	<field name="sol_numero_casa" class="java.lang.String"/>
+	<field name="sol_celular" class="java.lang.String"/>
+	<field name="sol_convencional" class="java.lang.String"/>
+	<field name="sol_correo" class="java.lang.String"/>
+	<field name="otro_motivo" class="java.lang.String"/>
+	<field name="clave_catastral" class="java.lang.String"/>
+	<field name="prop_estado_civil" class="java.lang.String"/>
+	<field name="prop_tipo_persona" class="java.lang.String"/>
+	<field name="prop_tipo_doc" class="java.lang.String"/>
+	<field name="prop_cedula" class="java.lang.String"/>
+	<field name="prop_nombres" class="java.lang.String"/>
+	<field name="prop_apellido_paterno" class="java.lang.String"/>
+	<field name="prop_apellido_materno" class="java.lang.String"/>
+	<field name="prop_conyugue_cedula" class="java.lang.String"/>
+	<field name="prop_conyugue_nombres" class="java.lang.String"/>
+	<field name="prop_conyugue_apellidos" class="java.lang.String"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="ben_tipo_persona" class="java.lang.String"/>
+	<field name="ben_tipo_doc" class="java.lang.String"/>
+	<field name="ben_documento" class="java.lang.String"/>
+	<field name="ben_nombres" class="java.lang.String"/>
+	<field name="ben_apellidos" class="java.lang.String"/>
+	<field name="ben_direccion" class="java.lang.String"/>
+	<field name="ben_telefono" class="java.lang.String"/>
+	<field name="ben_correo" class="java.lang.String"/>
+	<field name="fecha_solicitud" class="java.util.Date"/>
+	<field name="fechaInscripcion" class="java.util.Date"/>
+	<field name="tipo_solicitud" class="java.lang.Integer"/>
+	<field name="motivo_solicitud" class="java.lang.Integer"/>
+	<field name="numero_ficha" class="java.lang.Integer"/>
+	<field name="tipo_inmueble" class="java.lang.Integer"/>
+	<field name="tipoBien" class="java.lang.Object"/>
+	<field name="tipoCertificado" class="java.lang.Object"/>
+	<field name="tipoCertificadoPara" class="java.lang.Object"/>
+	<field name="copiaEscrituraPublica" class="java.lang.Boolean"/>
+	<field name="docAvaluoCatastro" class="java.lang.Boolean"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="106" splitType="Immediate">
+			<subreport>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="106" uuid="50965639-f572-4139-a92e-2b73b5ea322a"/>
+				<subreportParameter name="TITLE">
+					<subreportParameterExpression><![CDATA["DECLARACIÓN DE LICITUD DE FONDOS"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "title.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="70" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="34" y="50" width="157" height="20" uuid="ee29f851-0757-437a-b04d-b7b48a61f59e"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="50" width="34" height="20" uuid="efecb727-374b-4105-9935-46a81a013a94"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Loja, ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="463" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="90" uuid="b45b3f3e-1a51-4e0f-be1f-729fb71b4579"/>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="29" backcolor="#CCCCCC" uuid="a74ea00b-a692-4a1d-bde4-1c4ebd2aaed0"/>
+					<textElement>
+						<font size="14" isBold="true"/>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<text><![CDATA[I. IDENTIDAD DEL BENEFICIARIO DE LA TRANSACCIÓN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="29" width="292" height="23" uuid="d86724f8-efe7-4036-a064-77e1b82b05ba"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<text><![CDATA[Nombres y Apellidos]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="52" width="292" height="38" uuid="c2432d98-9471-47c2-ae83-14a3225ea0bb"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sol_nombres}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="292" y="29" width="127" height="23" uuid="d556e1b1-da01-4438-b176-190a0a458604"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<text><![CDATA[TIPO ID]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="292" y="52" width="127" height="38" uuid="5db672a4-241a-4394-879a-ad14471a9b31"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sol_tipo_doc}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="419" y="29" width="136" height="23" uuid="d70921c0-7da3-4b3f-bb03-f1a7e0f821ea"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="12" isBold="true"/>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<text><![CDATA[NO. Identificación]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="419" y="52" width="136" height="38" uuid="efd9ba15-aaf9-4400-b259-481642695570"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sol_cedula}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement x="0" y="90" width="555" height="291" uuid="bab0e01d-0976-49d7-9856-34ea7273ec75"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="29" backcolor="#CCCCCC" uuid="7870bd5d-e87e-401e-913d-4b7bbd792feb"/>
+					<textElement>
+						<font size="14" isBold="true"/>
+						<paragraph leftIndent="2"/>
+					</textElement>
+					<text><![CDATA[II. DECLARACIÓN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="29" width="555" height="38" uuid="34641e52-37ba-4c3c-a35c-733d4253d615"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Justified">
+						<font size="12" isBold="false"/>
+						<paragraph leftIndent="2" rightIndent="5"/>
+					</textElement>
+					<text><![CDATA[Con la gravedad del juramento, por mis propios derechos: efecúo las siguientes declaraciones y comprisos:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="79" width="555" height="85" uuid="e0cad67c-fb49-431e-af03-69993dd25903"/>
+					<box>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Justified">
+						<font size="12" isBold="false"/>
+						<paragraph leftIndent="2" rightIndent="5"/>
+					</textElement>
+					<text><![CDATA[Declaro que los fondos objeto de esta transacción son lícitos, no provienen de ninguna actividad ilegal, ni utilizare a terceros para que efectúen inscripciones o Actos jurídicos en el registro de la Propiedad del cantón Loja, provenientes de estas actividades ilícitas y delitos tipificados en el art. 14 de la ley de Prevención, Detección y Erradicación del Delito de Lavado de Activos y del Financiamiento de Delitos, ni efectuaré transacciones destinadas a tales actividades.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="180" width="555" height="110" uuid="6d483a6d-64b7-47af-b0f8-b4b32bca9813"/>
+					<box>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Justified">
+						<font size="12" isBold="false"/>
+						<paragraph leftIndent="2" rightIndent="5"/>
+					</textElement>
+					<text><![CDATA[Autorizo al Registro de la Propiedad y Mercantil del Cantón Jipijapa realizar las verificaciones y debida diligencia correspondientes e informar de manera inmediata y documentada a la Autoridad competente en casos de investigación o cuando se detectare transacciones inusuales e injustificadas, por los que no ejercerá ningún reclamo o acción judicial, al mismo tiempo el Registro de la Propiedad y Mercantil del Cantón Jipijapa procederá a bloquear en el Sistema Informático y no se despachará solicitudes de certificados e inscripciones, de la Propiedad en investigación.]]></text>
+				</staticText>
+			</frame>
+			<staticText>
+				<reportElement x="145" y="443" width="257" height="20" uuid="a26a31d6-6115-43a8-a3c1-81f1fe42a5d6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Firma]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

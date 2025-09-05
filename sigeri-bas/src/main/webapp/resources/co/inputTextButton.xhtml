@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <cc:interface displayName="inputTextDec" shortDescription="Componente personalizado para texto, puede usar ajax de primefaces el nombre del evento es 'ajax'. Este componente tiene integrado un button con evento returnDialog " >
+        <cc:attribute name="id" shortDescription="Id del componente" default="#{cc.clientId}"/>
+        <cc:attribute name="label" required="true" shortDescription="Etiqueta a mostrar"/>
+        <cc:attribute name="required" required="false" default="false" shortDescription="true requerido, false no requerido"/>
+        <cc:attribute name="pattern" required="false" default="#" shortDescription="formato para mostrar el numero ##############.####"/>
+        <cc:attribute name="value" required="true" shortDescription="Valor del campo# {bean.entity.property}"/>
+        <cc:attribute name="type" required="false" default="currency"/>
+        <cc:attribute name="typeInput" required="false" default="text" shortDescription="text, number, decimal"/>
+        <cc:attribute name="styleClass" required="false" />
+        <cc:attribute name="titleButton" required="false" />
+        <cc:attribute name="iconButton" required="false" default="fa fa-search" />
+        <cc:attribute name="actionListenerButton" required="true" />
+        <cc:attribute name="isAjaxButton" required="false" default="false" type="java.lang.Boolean" />
+        <cc:attribute name="listenerAjaxButton" required="#{cc.attrs.isAjaxButton}" method-signature="void listener(org.primefaces.event.SelectEvent)"/>
+        <cc:attribute name="updateButton" required="false" default="#{null}"/>
+        <cc:attribute name="placeholder" required="false" />
+        <cc:attribute name="oncomplete" required="false" default="" />
+
+        <cc:clientBehavior name="ajax" targets="#{cc.clientId}-form"  />
+    </cc:interface>
+    <cc:implementation id="#{cc.attrs.id}" class="#{cc.attrs.styleClass}">
+        <h:panelGroup layout="block" class="Responsive100 Responsive ">
+            <p:outputLabel for="#{cc.attrs.id}-form" value="#{cc.attrs.label}" class="DispBlock Wid100"
+                           style="font-weight: bolder !important; margin-bottom: 3px;" />
+            <div class="ui-inputgroup inputWidth190">
+                <p:inputText id="#{cc.attrs.id}-form" value="#{cc.attrs.value}" styleClass="Wid100"
+                             required="#{cc.attrs.required}" type="#{cc.attrs.typeInput}" readonly="true"
+                             title="#{not empty cc.attrs.value? cc.attrs.value : cc.attrs.label}" placeholder="#{cc.attrs.placeholder}" >
+                    <c:if test="#{cc.attrs.typeInput == 'number'}" >
+                        <f:attribute name="style" value="text-align: right;" />
+                    </c:if>
+                    <c:if test="#{not empty cc.attrs.pattern and cc.attrs.pattern !='#'}" >
+                        <f:convertNumber pattern="#{cc.attrs.pattern}" locale="us"/>
+                        <f:attribute name="style" value="text-align: right;" />
+                    </c:if>
+                    <c:if test="#{not empty cc.attrs.pattern and cc.attrs.pattern eq '$'}" >
+                        <f:convertNumber type="currency" currencySymbol="" locale="en_US"/>
+                        <f:attribute name="style" value="text-align: right;" />
+                    </c:if>
+                </p:inputText>
+                <p:commandButton title="#{cc.attrs.titleButton}" icon="#{cc.attrs.iconButton}" actionListener="#{cc.attrs.actionListenerButton}"
+                                 oncomplete="#{cc.attrs.oncomplete}" renderDisabledClick="true" rendered="#{cc.attrs.isAjaxButton}" >
+                    <p:ajax event="dialogReturn" listener="#{cc.attrs.listenerAjaxButton}" update="#{cc.attrs.id}-form #{appConfig.update(cc.attrs.updateButton)}" rendered="#{cc.attrs.isAjaxButton}"/>
+                </p:commandButton>
+            </div>
+        </h:panelGroup>
+    </cc:implementation>
+</html>

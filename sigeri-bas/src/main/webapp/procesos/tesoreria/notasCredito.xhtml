@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                >  
+    <ui:define name="title">Emisión de Notas de Crédito</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Emisión de Notas de Crédito</h2></center>
+            <p:tabView id="accNc" >
+                <p:tab title="Nota de Crédito" >
+                    <center>
+                        <h:panelGrid  columns="4" style="font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel value="# Trámite:" /><br></br>
+                                <p:inputText value="#{notasCredito.tramite}"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="" /><br></br>
+                                <p:commandButton value="Buscar" actionListener="#{notasCredito.buscarTramite()}"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </center>
+                    <br></br>
+                    <p:fieldset  legend="Datos de Factura" style="width: 49%; float: left;" >
+                        <h:panelGrid style="font-weight: bolder;" columns="2">
+                            <h:panelGroup>
+                                <p:outputLabel value="Identificación" /><br></br>
+                                <p:inputText value="#{notasCredito.nc.beneficiario.ciRuc}"  readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Cliente" /><br></br>
+                                <p:inputText value="#{notasCredito.nc.beneficiario.nombreCompleto}" size="45" readonly="true"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <h:panelGrid style="font-weight: bolder;" columns="3">
+                            <h:panelGroup>
+                                <p:outputLabel value="No de Trámite:" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.numTramiteRp}" readonly="true"/>        
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Fecha Emisión:" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.fechaIngreso}" readonly="true">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </p:inputText>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Estado:" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.estadoWs}" readonly="true"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                        <h:panelGrid  columns="3" style="font-weight: bolder;">
+                            <h:panelGroup>
+                                <p:outputLabel value="# Factura" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.codigoComprobante}"   readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Descuento Factura" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.descuentoValor}"   readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Total Factura" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.totalPagar}"   readonly="true"/>
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+                        <h:panelGrid  columns="1" style="font-weight: bolder;">
+                            <h:panelGroup>
+                                <p:outputLabel value="# Autorización" /><br></br>
+                                <p:inputText value="#{notasCredito.proforma.numeroAutorizacion}" size="69"  readonly="true"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <p:dataTable value="#{notasCredito.proforma.regpLiquidacionDetallesCollection}" var="det"  style="text-align: center;"
+                                     emptyMessage="No existen registros">
+                            <p:column headerText="Contrato" width="20">#{det.acto.nombre}</p:column>
+                            <p:column headerText="Avaluo" width="20">#{det.avaluo}</p:column>
+                            <p:column headerText="Cuantia" width="20">#{det.cuantia}</p:column>
+                            <p:column headerText="Valor Uni." width="20">#{det.valorUnitario}</p:column>
+                            <p:column headerText="Exo." width="20">#{det.exoneracion.porcentaje}</p:column>
+                            <p:column headerText="Valor Total" width="20">#{det.valorTotal}</p:column>
+                        </p:dataTable>
+                        <br></br>
+                    </p:fieldset>
+                    <p:fieldset  legend="Información Nota de Crédito" style="width: 49%; float: right;" >
+                        <h:panelGrid columns="2" style="font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel value="Valor de la N/C:" /> <br></br>
+                                <p:inputNumber value="#{notasCredito.valor}" decimalPlaces="2"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="" /> <br></br>
+                                <p:commandButton value="Emitir Nota de Credito" 
+                                                  icon="ui-icon-document" 
+                                                 actionListener="#{notasCredito.emitirNotaCredito()}"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <h:panelGrid styleClass="noBorder" columns="1" style="font-weight: bolder; width: 99%;">
+                            <h:panelGroup>
+                                <p:outputLabel value="Motivo de Emisión de Nota de Crédito" /> <br></br>
+                                <p:inputTextarea value="#{notasCredito.motivo}" rows="10" style="width: 90%;"/>    
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br><br></br><br></br><br></br>
+                    </p:fieldset>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

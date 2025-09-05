@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proforma_detalles" language="groovy" pageWidth="391" pageHeight="595" columnWidth="391" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fb9e8db-f0d9-4e7e-9221-eae9023560ba">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ac.nombre as acto, de.cuantia, de.avaluo, de.valor_unitario, de.num_predio,
+de.valor_total, de.recargo, de.cantidad, de.base_imponible, ac.nrpm_transaccion,
+de.descuento, de.reingreso, ac.solvencia, ex.concepto, ex.id as exoneracion,
+de.aplica_descuento, de.cantidad_intervinientes, de.id as id_detalle
+from flow.regp_liquidacion_detalles de
+left join app.reg_acto ac on (ac.id = de.acto)
+left join flow.regp_exoneracion ex on ex.id = de.exoneracion
+where de.liquidacion = $P{LIQUIDACION} order by de.fecha_ingreso]]>
+	</queryString>
+	<field name="acto" class="java.lang.String"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="num_predio" class="java.lang.Integer"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="recargo" class="java.math.BigDecimal"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="base_imponible" class="java.math.BigDecimal"/>
+	<field name="nrpm_transaccion" class="java.lang.String"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="reingreso" class="java.lang.Boolean"/>
+	<field name="solvencia" class="java.lang.Boolean"/>
+	<field name="concepto" class="java.lang.String"/>
+	<field name="exoneracion" class="java.lang.Long"/>
+	<field name="aplica_descuento" class="java.lang.Boolean"/>
+	<field name="cantidad_intervinientes" class="java.lang.Integer"/>
+	<field name="id_detalle" class="java.lang.Long"/>
+	<variable name="TOTAL" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_total}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="391" height="14" backcolor="#CCCCCC" uuid="10e09d27-22a6-43e4-b141-b6fad5567a13"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[PROPIETARIOS / INTERVINIENTES POR DOCUMENTO]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="negrita" x="0" y="0" width="391" height="10" uuid="8ed552db-dd6f-4ef6-b40e-0e7ceab82c58"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto} + ($F{aplica_descuento} ? " (AMPLIACION)" : "")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="10" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="391" height="10" uuid="cb444732-f6c9-4a04-a50f-2327f5ac9400"/>
+				<subreportParameter name="ID_LIQ_DETALLE">
+					<subreportParameterExpression><![CDATA[$F{id_detalle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "proforma_detalles_interv.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

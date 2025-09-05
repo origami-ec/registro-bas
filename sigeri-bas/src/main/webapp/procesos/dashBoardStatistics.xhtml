@@ -1,0 +1,391 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="title">Estadísticas</ui:define>
+    <ui:define name="content">
+        <style>
+            .ui-panel-titlebar{
+                background-color: aliceblue !important;
+                color: black !important;
+            }
+
+            .ui-datatable-footer {
+                background-color: aliceblue !important;
+                color: black !important;
+            }
+            .card {
+                /* Add shadows to create the "card" effect */
+                box-shadow: 0 4px 12px 0 rgba(179,220,237,1);
+                transition: 0.3s;
+                width: 8vw;
+            }
+
+            /* On mouse-over, add a deeper shadow */
+            .card:hover {
+                box-shadow: 0 15px 20px 0 rgba(179,220,237,1);
+            }
+
+            /* Add some padding inside the card container */
+            .containerCard {
+                padding: 2px;
+            }
+
+        </style>
+        <h:outputScript name="Chart.bundle.js" library="js" />
+        <h:outputScript name="chartjs-plugin-datalabels.js" library="js" />
+        <h:outputScript name="tramitesEstadisiticaJS.js" library="js" />
+
+
+        <center>
+            <h:form id="formMain" prependId="false">
+                <h1>Resumen de Trámites</h1>
+                <h:panelGrid styleClass="noBorder" columns="2" style="margin: 0 auto; font-weight: bolder">
+                    <h:panelGroup>
+                        <p:outputLabel value="Desde:"/><br></br>
+                        <p:calendar value="#{dashBoardStatistics.desde}" pattern="yyyy/MM/dd"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Hasta:"/><br></br>
+                        <p:calendar value="#{dashBoardStatistics.hasta}" pattern="yyyy/MM/dd"/>
+                    </h:panelGroup>   
+                    <br></br>
+                    <f:facet name="footer">
+                        <center>
+                            <p:commandButton value="Regresar" 
+                                             icon="fa fa-undo"
+                                             update="formMain" 
+                                             actionListener="#{dashBoardStatistics.returnInit()}"
+                                             rendered="#{dashBoardStatistics.activarInscripcion or dashBoardStatistics.activarInscripcionUsuarios  or dashBoardStatistics.activarCertificado}"/>
+                            <p:spacer width="10" rendered="#{dashBoardStatistics.activarInscripcion or dashBoardStatistics.activarInscripcionUsuarios or dashBoardStatistics.activarCertificado}"/>
+                            <p:commandButton value="Consultar" 
+                                             icon="pi pi-search"
+                                             actionListener="#{dashBoardStatistics.loadTramites()}"
+                                             update="formMain" />
+                            <p:spacer width="10" rendered="#{dashBoardStatistics.activarInscripcion  or dashBoardStatistics.activarCertificado}"/>
+
+                            <p:commandButton value="Ver Tiempos" 
+                                             icon="fa fa-paper-plane"
+                                             update="formMain" 
+                                             actionListener="#{dashBoardStatistics.inscripcionesXusuarios()}"
+                                             rendered="#{dashBoardStatistics.activarInscripcion}"/>
+
+                            <p:commandButton value="Ver Tiempos" 
+                                             icon="fa fa-paper-plane"
+                                             update="formMain" 
+                                             actionListener="#{dashBoardStatistics.certificadosXusuarios()}"
+                                             rendered="#{dashBoardStatistics.activarCertificado}"/>
+                        </center>
+                    </f:facet>
+                </h:panelGrid>  
+                <br></br>
+                <p:remoteCommand name="totalesCertificaciones" 
+                                 actionListener="#{dashBoardStatistics.totalesCertificaciones()}"
+                                 update="formMain"  />
+
+
+                <p:remoteCommand name="totalesInscripciones" 
+                                 actionListener="#{dashBoardStatistics.totalesInscripciones()}"
+                                 update="formMain"  />
+
+
+                <p:remoteCommand name="tramitesAsociados" 
+                                 actionListener="#{dashBoardStatistics.tramitesAsociados()}" />
+
+                <p:remoteCommand name="tramitesAsociadosUsuario" 
+                                 actionListener="#{dashBoardStatistics.tramitesAsociadosUsuario()}" />
+
+                <h:panelGrid id="polar" columns="4" 
+                             style="margin: 0 auto; font-weight: bolder" 
+                             rendered="#{dashBoardStatistics.activarTotales}">
+                    <f:facet name="header">
+                        <p:outputLabel value="Trámites: ##{dashBoardStatistics.tTotal}" style="font-size: 15px"/>
+                        <br></br>
+                        <br></br>
+                    </f:facet>
+                    <h:panelGroup>
+                        <canvas id="polar-chart-inscripciones" width="500" height="450"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <canvas id="polar-chart-certificaciones" width="500" height="450"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <p:panelGrid id="dashBoardTramitesTotales" styleClass="noBorder" style="width:100%"  
+                             rendered="#{dashBoardStatistics.activarInscripcion or dashBoardStatistics.activarCertificado}" >
+                    <p:row>
+                        <p:column style="width:40%">
+                            <center>
+                                <p:outputLabel value="#{dashBoardStatistics.activarCertificado ? 'Cerficados ' : 'Inscripciones'}  #{dashBoardStatistics.estado}" 
+                                               rendered="#{dashBoardStatistics.activarInscripcion or dashBoardStatistics.activarCertificado}"
+                                               style="font-weight: bolder; font-size: 15px"/>
+                            </center>
+                            <br></br>
+                            <p:dataTable var="lib" value="#{dashBoardStatistics.libros}"
+                                         scrollable="true" scrollHeight="310"
+                                         rowKey="#{lib.id}"
+                                         selection="#{dashBoardStatistics.libroSeleccionado}"
+                                         style="border : 2px !important">
+                                <p:ajax event="rowSelectRadio"
+                                        update="dtDetalleActos"
+                                        listener="#{dashBoardStatistics.loadActos()}"/>
+                                <p:column headerText="***" selectionMode="single" width="12" rendered="#{!dashBoardStatistics.activarCertificado}"/>
+                                <p:column headerText="#{dashBoardStatistics.activarCertificado ? 'Certificados' : 'Libro'}">
+                                    <p:outputLabel value="#{lib.nombre}" style=" font-weight: normal"/>
+                                </p:column>
+                                <p:column headerText="#{dashBoardStatistics.activarCertificado ? 'Certificados Ingresados' : 'Actos Ingresados'}"
+                                          width="70" style="text-align:center;">
+                                    <p:outputLabel value="#{lib.cantidad}" style=" font-weight: normal"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <h:outputText value="Total de Actos: #{dashBoardStatistics.tTotalLibro}"/>
+                                </f:facet>
+                            </p:dataTable>
+                            <p:spacer height="20" />
+                        </p:column>
+                        <p:column>
+                            <canvas id="bar-chart" width="80" height="50"></canvas>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid >
+                <p:spacer height="40" rendered="#{dashBoardStatistics.activarInscripcion or dashBoardStatistics.activarCertificado}"/>
+                <p:outputLabel value="Detalle de Actos #{dashBoardStatistics.estado}" 
+                               rendered="#{dashBoardStatistics.activarInscripcion}"
+                               style="font-weight: bolder; font-size: 15px"/>
+                <p:spacer height="40" rendered="#{dashBoardStatistics.activarInscripcion or dashBoardStatistics.activarCertificado}"/>
+                <p:panel   id="dtDetalleActos"
+                           header="#{dashBoardStatistics.libroSeleccionado.nombre} : #{dashBoardStatistics.libroSeleccionado.cantidad}"  
+                           rendered="#{dashBoardStatistics.activarInscripcion and !dashBoardStatistics.activarCertificado}"
+                           style="text-align: center !important;"  >
+                    <center>
+                        <canvas id="line-chart-#{dashBoardStatistics.libroSeleccionado.id}" style="width: 95vw; height: 95vh" ></canvas>
+                    </center>
+                </p:panel>
+
+                <p:panel   id="dtDetalleCertficados"
+                           header="Certificados"  
+                           rendered="#{dashBoardStatistics.activarCertificado}"
+                           style="text-align: center !important;"  >
+                    <center>
+                        <canvas id="line-chart-certificado" style="width: 95vw; height: 95vh" ></canvas>
+                    </center>
+                </p:panel>
+
+
+                <center>
+                    <p:outputLabel value="Escoja un Usuario" 
+                                   rendered="#{dashBoardStatistics.activarInscripcionUsuarios 
+                                               or dashBoardStatistics.activarCertificadoUsuario}" 
+                                   style="font-weight: bolder; font-size: 16px"/>
+                    <br></br>
+                    ó
+                    <br></br>
+                    <p:outputLabel value="Compare Todos " rendered="#{dashBoardStatistics.activarInscripcionUsuarios 
+                                                                      or dashBoardStatistics.activarCertificadoUsuario}" 
+                                   style="font-weight: bolder; font-size: 16px"/>
+                    <br></br>
+                    <p:inputSwitch id="activarVerTodos" value="#{dashBoardStatistics.activarVerTodos}"
+                                   rendered="#{dashBoardStatistics.activarInscripcionUsuarios 
+                                               or dashBoardStatistics.activarCertificadoUsuario}" >
+                        <p:ajax listener="#{dashBoardStatistics.loadDetalleTramiteXTodosUsuario()}"
+                                update="usuariosGrafico, cantidadesXUsuario, activarVerTodos"/>
+                    </p:inputSwitch>
+                </center>
+                <p:ring id="usuarios" value="#{dashBoardStatistics.usuariosTareas}" 
+                        styleClass="image-ring" 
+                        rendered="#{dashBoardStatistics.activarInscripcionUsuarios  or dashBoardStatistics.activarCertificadoUsuario}" 
+                        var="ut">
+
+                    <div class="card" >
+                        <p:graphicImage name="icons/administrator.png" height="50"/>
+                        <div class="containerCard">
+                            <h5><b>#{dashBoardStatistics.nombresUsuario(ut.usuario.ente.nombres)}</b></h5>
+                        </div>
+                        <p:commandButton value="Ver" 
+                                         icon="fa fa-search"
+                                         actionListener="#{dashBoardStatistics.loadDetalleTramiteXusuario(ut)}"
+                                         update="usuariosGrafico, activarVerTodos"/>
+                    </div>
+
+                </p:ring>
+                <p:spacer height="140" rendered="#{dashBoardStatistics.activarInscripcionUsuarios or dashBoardStatistics.activarCertificadoUsuario}" />
+                <p:panel id="usuariosGrafico" styleClass="noBorder" 
+                         rendered="#{dashBoardStatistics.detalleUsuario}">
+                    <f:facet name="header" 
+                             rendered="#{dashBoardStatistics.detalleUsuario and !dashBoardStatistics.activarVerTodos}">
+                        <p:outputLabel 
+                            value="#{dashBoardStatistics.usuarioTarea.usuario.ente.nombreCompleto}" 
+                            rendered="#{dashBoardStatistics.detalleUsuario}" style="text-transform: capitalize;"/>
+                        <p:outputLabel 
+                            value="Comparativa de Trámites Finalizados " 
+                            rendered="#{dashBoardStatistics.activarVerTodos}" style="text-transform: capitalize;"/>
+                    </f:facet>
+                    <h:panelGrid id="cantidadesXUsuario" columns="3" rendered="#{!dashBoardStatistics.activarVerTodos}"> 
+                        <h:panelGroup >
+                            <canvas id="line-chart-#{dashBoardStatistics.usuarioTarea.usuario.usuario}" 
+                                    style="width: 45vw; height: 55vh"></canvas>        
+                        </h:panelGroup>
+
+                        <p:spacer width="40" />
+                        <h:panelGroup>
+                            <p:panelGrid  columns="2" rendered="#{!dashBoardStatistics.activarVerTodos}">
+                                <h:panelGroup>
+                                    <h:outputText value="Pendientes" style="font-weight: bolder"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.totalTramitesPendientes}" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="Eliminados" style="font-weight: bolder"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.totalTramitesEliminados}" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="Finalizados" style="font-weight: bolder"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.totalTramitesFinalizados}" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="Totales de Trámites" style="font-weight: bolder"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.totalTramites}" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="Pendientes a la Fecha" style="font-weight: bolder"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.pendienteFecha}" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="Tiempo Estimado" style="font-weight: bolder" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.tiempoEstimado}" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="Tiempo Promedio"  style="font-weight: bolder"/>
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:outputText value="#{dashBoardStatistics.tiempoPromedio}" />
+                                </h:panelGroup>
+                            </p:panelGrid>
+                            <p:spacer height="200" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="3" rendered="#{dashBoardStatistics.activarVerTodos}"> 
+                        <h:panelGroup >
+                            <canvas id="line-chart-todos-usuario" 
+                                    style="width: 45vw; height: 55vh"></canvas>        
+                        </h:panelGroup>
+                        <p:spacer width="40" />
+                        <h:panelGroup>
+                            <p:dataTable value="#{dashBoardStatistics.usuariosDetalles}" var="us">
+                                <p:column headerText="Usuario">
+                                    <p:outputLabel value="#{us.nombre}" />
+                                </p:column>
+                                <p:column headerText="Trámites Finalizados">
+                                    <center>
+                                        <p:outputLabel value="#{us.cantidad}" />
+                                    </center>
+                                </p:column>
+                                <p:column headerText="Tiempo Estimado">
+                                    <center>
+                                        <p:outputLabel value="#{us.tiempoEstimado}" />
+                                    </center>
+                                </p:column>
+                                <p:column headerText="Tiempo Promedio">
+                                    <center>
+                                        <p:outputLabel value="#{us.tiempoPromedioReal}" />
+                                    </center>
+                                </p:column>
+                            </p:dataTable>
+                            <p:spacer height="200" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+            <p:dialog widgetVar="dlgTramiteAsociados" showEffect="explode" modal="true" 
+                      showHeader="false" position="center"
+                      height="400" width="550"
+                      closeOnEscape="true" closable="true">
+                <h:form id="frmTramites">
+                    <br/>
+                    <center>
+                        <h:panelGroup>
+                            <p:outputLabel value="#{dashBoardStatistics.actoJS}" style="font-weight: bolder; font-size: 15px" /><br></br>
+                            <p:outputLabel value="Trámites: #{dashBoardStatistics.fechaJSProcess}" style="font-weight: bolder; font-size: 15px"  /><br></br>
+                        </h:panelGroup>
+                    </center>
+                    <br></br>
+
+                    <p:dataTable id="tramites" var="liq" 
+                                 value="#{dashBoardStatistics.liquidaciones}"
+                                 rowIndexVar="i"
+                                 scrollable="true" scrollHeight="250">
+                        <p:column headerText="**" width="10">
+                            <center>
+                                <p:outputLabel value="#{i + 1}" />
+                            </center>
+                        </p:column>
+                        <p:column headerText="Trámites" width="50">
+                            <center>
+                                <p:outputLabel value="#{liq.numTramiteRp}" />
+                            </center>
+                        </p:column>
+                        <p:column headerText="Solicitante" width="100">
+                            <p:outputLabel value="#{liq.solicitante.nombreCompleto}" />
+                        </p:column>
+                        <p:column headerText="Información " width="20">
+                            <center>
+                                <p:commandLink actionListener="#{dashBoardStatistics.informacionTramite(liq)}">
+                                    <p:graphicImage value="/resources/icons/abrir.png" height="16"/>   
+                                </p:commandLink>
+                                <p:spacer width="10" />
+                                <p:commandLink actionListener="#{dashBoardStatistics.showProforma(liq)}" title="#{liq.numTramiteRp}">
+                                    <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                    <center>
+                        <p:commandButton value="Cerrar" onclick="PF('dlgTramiteAsociados').hide();"  type="button"/>       
+                    </center>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="dlgVerInfo"  widgetVar="dlgVerInfoRp" resizable="false" 
+                      showHeader="false"
+                      closeOnEscape="true" modal="true" width="700" height="400">
+                <h:form id="formInformLiq">
+                    <h:panelGrid columns="2">
+                        <h:panelGroup>
+                            <center>
+                                <p:outputLabel value="No de Tramite:" style="font-weight: bold; font-size: 18px;color: #d2322d"/><br></br>
+                                <p:outputLabel value="#{dashBoardStatistics.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/>    
+                            </center>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <br></br>
+                    <h:panelGrid columns="1" rendered="#{dashBoardStatistics.liquidacion.estadoPago.id eq 7}">
+                        <p:outputLabel value="TRÁMITE INGRESADO EN LÍNEA" style="font-weight: bold; font-size: 18px; color: #0033FF;"/>
+                    </h:panelGrid>
+                    
+                    <br></br>
+                    <center>
+                        <p:commandButton value="Cerrar" onclick="PF('dlgVerInfoRp').hide();"  type="button"/>       
+                    </center>
+                </h:form>
+            </p:dialog>
+
+        </center>
+    </ui:define>
+</ui:composition>

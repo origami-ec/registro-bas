@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>TRAMITES INGRESADOS</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="dtHTramites" paginator="true" lazy="true" scrollable="true" rows="10" filterEvent="enter" resizableColumns="true"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         value="#{dlgLazyTramites.lazy}" var="ht" emptyMessage="No se encontro Movimientos" style="text-align: center;">
+                <p:column headerText="No Tramite" filterBy="#{ht.numTramite}" filterStyle="width: 95%" width="60">
+                    <p:outputLabel value="#{ht.numTramite}"/>
+                </p:column>
+                <p:column headerText="Tipo de Tramite" width="150">
+                    <p:outputLabel value="#{ht.tipoTramite.descripcion}"/>
+                </p:column>
+                <p:column headerText="Solicitante" filterBy="#{ht.nombrePropietario}" filterStyle="width: 95%" width="150">
+                    <p:outputLabel value="#{ht.nombrePropietario}"/>
+                </p:column>
+                <p:column headerText="Fec. Ingreso" width="70">
+                    <p:outputLabel value="#{ht.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Fec. Entrega" width="70">
+                    <p:outputLabel value="#{ht.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Sel." width="15">
+                    <p:commandLink actionListener="#{dlgLazyTramites.selectTramite(ht)}">
+                        <p:graphicImage value="/resources/icons/ir.png" height="16"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

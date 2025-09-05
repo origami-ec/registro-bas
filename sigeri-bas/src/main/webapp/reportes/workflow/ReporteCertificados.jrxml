@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteCertificados" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="0" bottomMargin="0" uuid="cef78e97-9fe7-4739-818b-ebae4d50d9b4">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="FECHA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT row_number() over(ORDER BY c.id) numero, c.num_certificado AS numero_secuencia, ra.nombre, c.num_tramite, u.usuario, ht.fecha_entrega, ht.fecha_ingreso, us.usuario as certificador,
+replace(ra.nombre, 'CERTIFICADO ', '') as tipo_certificado,
+CASE WHEN l.reingreso THEN l.numero_comprobante::TEXT ELSE l.codigo_comprobante END numero_factura,
+TRIM(CASE WHEN sl.es_persona THEN COALESCE(sl.nombres, '') || ' ' || COALESCE(sl.apellidos, '') ELSE COALESCE(sl.razon_social, '') END) peticionario,
+(SELECT string_agg(TRIM(CASE WHEN e.es_persona THEN COALESCE(e.nombres, '') || ' ' || COALESCE(e.apellidos, '') ELSE COALESCE(e.razon_social, '') END), ', ')
+FROM flow.regp_intervinientes re INNER JOIN app.cat_ente e ON e.id = re.ente WHERE re.liquidacion = ld.id) propietario, c.fecha_emision,
+TRIM(COALESCE(ue.nombres, '') || ' ' || COALESCE(ue.apellidos, '')) nombre_funcionario
+FROM app.reg_certificado c INNER JOIN flow.regp_tareas_tramite tt ON tt.id = c.tarea_tramite
+INNER JOIN flow.regp_liquidacion_detalles ld ON ld.id = tt.detalle INNER JOIN app.reg_acto ra ON ra.id = ld.acto
+INNER JOIN flow.regp_liquidacion l ON l.id = ld.liquidacion LEFT JOIN app.cat_ente sl ON sl.id = l.solicitante
+INNER JOIN flow.historico_tramites ht ON ht.id = tt.tramite INNER JOIN app.acl_user u ON u.id = c.user_creador
+INNER JOIN app.cat_ente ue ON ue.id = u.ente
+left join app.acl_user us on us.id = c.user_creador
+WHERE tt.realizado = true AND tt.estado = true
+AND (c.fecha_emision between to_timestamp($P{FECHA}, 'DD/MM/YYYY')::timestamp without  time zone AND
+to_timestamp($P{HASTA}, 'DD/MM/YYYY')::timestamp without time zone)
+AND CASE WHEN $P{USUARIO} IS NULL THEN true ELSE u.id = $P{USUARIO} END
+ORDER BY c.num_certificado ASC]]>
+	</queryString>
+	<field name="numero" class="java.lang.Long"/>
+	<field name="numero_secuencia" class="java.lang.Long"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="fecha_entrega" class="java.sql.Timestamp"/>
+	<field name="fecha_ingreso" class="java.sql.Timestamp"/>
+	<field name="certificador" class="java.lang.String"/>
+	<field name="tipo_certificado" class="java.lang.String"/>
+	<field name="numero_factura" class="java.lang.String"/>
+	<field name="peticionario" class="java.lang.String"/>
+	<field name="propietario" class="java.lang.String"/>
+	<field name="fecha_emision" class="java.sql.Timestamp"/>
+	<field name="nombre_funcionario" class="java.lang.String"/>
+	<background>
+		<band height="842" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="-40" y="0" width="594" height="842" uuid="2b7df0a5-bb24-4696-96e2-5679cd127575"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="118" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="80" width="515" height="18" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="73e4f807-d784-42a4-8143-268dd8eb937a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE ENTREGA DE CERTIFICACIONES DIARIAS]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="0" y="98" width="515" height="18" uuid="d27445bf-23ae-416e-a62f-aea394f4315e"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FUNCIONARIO: " + ($P{USUARIO} == null? "TODOS" : ($F{nombre_funcionario} == null? "" : $F{nombre_funcionario}))]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="18" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="30" height="18" backcolor="#CCCCCC" uuid="6ef76c8d-4773-44b3-ac7f-09a551e398c3"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="31" y="0" width="60" height="18" backcolor="#CCCCCC" uuid="0ca778b8-bfc3-4e36-9101-c81769bba6a7"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro. de Certificado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="435" y="0" width="80" height="18" backcolor="#CCCCCC" uuid="8853ec56-11e5-4a73-b375-4fc9600d6b32"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Certificador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="152" y="0" width="55" height="18" backcolor="#CCCCCC" uuid="1fdf1021-4f24-4cb4-bfee-11bd1815b0f3"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro. de Trámite]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="208" y="0" width="69" height="18" backcolor="#CCCCCC" uuid="206c18bd-7d34-486a-a7f9-66fc8e2a6577"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="278" y="0" width="157" height="18" backcolor="#CCCCCC" uuid="3bce103b-b5c7-421b-a794-e1dfca3116cc"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tipo de Certificado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="92" y="0" width="60" height="18" backcolor="#CCCCCC" uuid="63598ae6-5584-46db-8e28-aaab38b84f6b"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Emisión]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="30" height="14" uuid="0d5468ca-3d76-4394-b404-202de492a697"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="30" y="0" width="61" height="14" uuid="de5ba82f-2c02-474a-bfce-cc2106d1b09b"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero_secuencia}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="435" y="0" width="80" height="14" uuid="92052bf3-df95-4d4d-9653-d993ce3f3660"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{certificador}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="152" y="0" width="55" height="14" uuid="a7acc8ea-6958-45cc-aac5-e4e54f552335"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_tramite}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="207" y="0" width="70" height="14" uuid="4a9161c3-9400-4913-8713-bf180811979d"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_ingreso}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToBandHeight" x="277" y="0" width="158" height="14" isPrintWhenDetailOverflows="true" uuid="cc84b547-4054-4763-a5ea-29c0f5dfefa4"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_certificado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="91" y="0" width="61" height="14" uuid="fbe11b70-34fa-4cd1-9fa5-d9eca8e9dfe1"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="60" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="211" y="20" width="151" height="14" uuid="c7e7cdea-7ab6-4c45-b6db-ccd86cb2de56"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="100" y="20" width="111" height="14" uuid="c3466e7a-12bf-44e1-a67c-56bb29fac0c0"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="395" y="20" width="80" height="14" uuid="486602d5-3e6b-4548-8604-244a266714fe"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="475" y="20" width="40" height="14" uuid="05e53463-203f-4847-9799-fe03c6d74fce"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

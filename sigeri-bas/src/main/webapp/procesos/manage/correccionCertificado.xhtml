@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                 >
+    <ui:define name="top"><h3><p:outputLabel value="Editar Certificado"/></h3></ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <!-- CERTIFICADOS TIPO HISTORIA DE DOMINIO -->
+            <p:panel id="pnlHistoria" header="#{editarCertificadoRp.tareasTramite.detalle.acto.nombre}" rendered="#{editarCertificadoRp.render eq 1}">
+                <p:panelGrid styleClass="noBorder" columns="6" style="font-weight: bolder;font-size: 12px;">
+                    No Certificado:
+                    <p:inputText value="#{editarCertificadoRp.certificado.numCertificado}" readonly="true"/>
+                    No Tramite:
+                    <p:inputText value="#{editarCertificadoRp.certificado.numTramite}" readonly="true"/>
+                    Fecha de Emision:
+                    <p:calendar value="#{editarCertificadoRp.certificado.fechaEmision}" pattern="dd/MM/yyyy HH:mm"/>
+                    No DE FICHA:
+                    <p:inputNumber value="#{editarCertificadoRp.numFicha}" decimalPlaces="0"/>
+                    <p:commandButton value="BUSCAR" icon="ui-icon-search" styleClass="btnStyle" update="mainForm" actionListener="#{editarCertificadoRp.buscarFicha()}"/>
+                </p:panelGrid>
+                
+                <p:panelGrid id="pnlMain" styleClass="noBorder" columns="1" >
+                    LINDEROS REGISTRALES:
+                    <p:inputTextarea value="#{editarCertificadoRp.certificado.linderosRegistrales}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                    SOLVENCIA:
+                    <p:inputTextarea value="#{editarCertificadoRp.certificado.observacion}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                    <p:panelGrid styleClass="noBorder" columns="2">
+                        <p:commandButton value="Nuevo Propietario" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{editarCertificadoRp.showDlgNewInterv()}"/>
+                        <p:commandButton value="Buscar Propietario" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{editarCertificadoRp.showDlg('/resources/dialog/dlglazyinterv')}">
+                            <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObject}" update="dtPropHd"/>
+                        </p:commandButton>
+                    </p:panelGrid>
+                    <p:dataTable id="dtPropHd" value="#{editarCertificadoRp.propietarios}" var="pro" style="text-align: center; width: 95%;" 
+                                 scrollable="true" scrollHeight="150" rowIndexVar="rowIndexProp" resizableColumns="true">
+                        <f:facet name="header">PROPIETARIOS DEL BIEN INMUEBLE</f:facet>
+                        <p:column headerText="No" width="40">
+                            #{rowIndexProp+1}
+                        </p:column>
+                        <p:column headerText="CI/RUC" width="200">
+                            <p:outputLabel value="#{pro.documento}"/>
+                        </p:column>
+                        <p:column headerText="Nombre" >
+                            <p:outputLabel value="#{pro.nombres}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandLink update="dtPropHd" actionListener="#{editarCertificadoRp.deletePropietario(rowIndexProp)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton value="Buscar Movimiento" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{editarCertificadoRp.showDlgWith('/resources/dialog/dlglazymov')}">
+                        <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectMov}" update="dtMovsHd"/>
+                    </p:commandButton>
+                    <p:dataTable id="dtMovsHd" value="#{editarCertificadoRp.movimientos}" var="mf" style="width: 95%;text-align: center;" 
+                                 scrollable="true" scrollHeight="200" rowIndexVar="rowIndex" resizableColumns="true">
+                        <f:facet name="header">MOVIMIENTOS DE LA FICHA EN EL CERTIFICADO</f:facet>
+                        <p:column headerText="No" width="20">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="Acto" width="200">
+                            <p:outputLabel value="#{mf.acto}"/>
+                        </p:column>
+                        <p:column headerText="Libro" width="100">
+                            <p:outputLabel value="#{mf.libro}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Insc." width="75">
+                            <p:outputLabel value="#{mf.fechaInscripcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Inscripc." width="60">
+                            <p:outputLabel value="#{mf.inscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="60">
+                            <p:outputLabel value="#{mf.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="30">
+                            <p:commandLink update="dtMovsHd" actionListener="#{editarCertificadoRp.deleteMovimiento(rowIndex)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:panelGrid>
+            </p:panel>
+            
+            <!-- CERTIFICADOS TIPO BIENES RAICES -->
+            <p:panel id="pnlBienes" header="#{editarCertificadoRp.tareasTramite.detalle.acto.nombre}" rendered="#{editarCertificadoRp.render eq 2}">
+                <p:panelGrid styleClass="noBorder" columns="6" style="font-weight: bolder;font-size: 12px;">
+                    No Certificado:
+                    <p:inputText value="#{editarCertificadoRp.certificado.numCertificado}" readonly="true"/>
+                    No Tramite:
+                    <p:inputText value="#{editarCertificadoRp.certificado.numTramite}" readonly="true"/>
+                    Fecha de Emision:
+                    <p:calendar value="#{editarCertificadoRp.fecha}" maxdate="sysdate" pattern="dd/MM/yyyy"/>
+                </p:panelGrid>   
+                <br/>
+                <div align="center">
+                    <p:commandButton value="Nuevo Propietario" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{editarCertificadoRp.showDlgNewInterviente()}"/>
+                    <p:spacer width="30" height="1"/>
+                    <p:commandButton value="Buscar Propietario" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{editarCertificadoRp.showDlg('/resources/dialog/dlglazyinterv')}">
+                        <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectPropietario}" update="pnlBienes"/>
+                    </p:commandButton>
+                </div>
+                <p:panelGrid styleClass="noBorder" columns="1" style="font-weight: bolder;font-size: 14px; width: 100%;">
+                    C.I.:
+                    <p:outputLabel value="#{editarCertificadoRp.propietario.cedRuc}"/>
+                    Nombre:
+                    <p:outputLabel value="#{editarCertificadoRp.propietario.nombre}"/>
+                    Con Bienes:
+                    <p:selectBooleanCheckbox value="#{editarCertificadoRp.certificado.conBienes}"/>
+                    CONTENIDO DE DOCUMENTO:
+                    <p:inputTextarea value="#{editarCertificadoRp.solvencia}" rows="6" style="width: 100%;" scrollHeight="250" autoResize="false"/>
+                </p:panelGrid>
+            </p:panel>
+
+            <!-- CERTIFICADOS DE TIPO CERTIFICACION GENERAL -->
+            <p:panel header="#{editarCertificadoRp.tareasTramite.detalle.acto.nombre}" rendered="#{editarCertificadoRp.render eq 3}">
+                <p:panelGrid styleClass="noBorder" columns="6" style="font-weight: bolder;font-size: 12px;">
+                    No Certificado:
+                    <p:inputText value="#{editarCertificadoRp.certificado.numCertificado}" readonly="true"/>
+                    No Tramite:
+                    <p:inputText value="#{editarCertificadoRp.certificado.numTramite}" readonly="true"/>
+                    Fecha de Emision:
+                    <p:calendar value="#{editarCertificadoRp.fecha}" maxdate="sysdate" pattern="dd/MM/yyyy"/>
+                </p:panelGrid>                 
+                <p:panelGrid styleClass="noBorder" columns="1">
+                    CONTENIDO DE DOCUMENTO:
+                    <p:inputTextarea value="#{editarCertificadoRp.solvencia}" rows="14" cols="130" scrollHeight="250" autoResize="false"/>
+                </p:panelGrid>
+            </p:panel>
+            
+            <!-- COPIA DE RAZON DE INSCRIPCION -->
+            <p:panel id="pnlRazon" header="#{editarCertificadoRp.tareasTramite.detalle.acto.nombre}" rendered="#{editarCertificadoRp.render eq 4}">
+                <div align="center">
+                    <p:commandButton value="Seleccionar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{editarCertificadoRp.showDlgWith('/resources/dialog/dlglazymov')}">
+                        <p:ajax event="dialogReturn" listener="#{editarCertificadoRp.selectObjectRazon}" update="pnlRazon"/>
+                    </p:commandButton>
+                </div>
+                <p:tabView id="tVdetalle">
+                    <p:tab title="Inscripcion">
+                        <p:panelGrid columns="6" styleClass="noBorder" style="font-weight: bolder;">
+                            No Repertorio:
+                            <p:inputText value="#{editarCertificadoRp.movimiento.numRepertorio}" readonly="true"/>
+                            No Inscripcion:
+                            <p:inputText value="#{editarCertificadoRp.movimiento.numInscripcion}" readonly="true"/>
+                            Fech. Inscripcion:
+                            <p:calendar value="#{editarCertificadoRp.movimiento.fechaInscripcion}" pattern="dd/MM/yyyy" readonly="true"/>
+                            Fojas:
+                            <p:inputText value="#{editarCertificadoRp.movimiento.numPaginasContabilizada}" readonly="true"/>
+                            Tomo:
+                            <p:inputText value="#{editarCertificadoRp.movimiento.numTomo}" readonly="true"/>
+                        </p:panelGrid>
+                        <p:panelGrid columns="4" styleClass="noBorder" style="font-weight: bolder;">
+                            Acto:
+                            <p:inputText value="#{editarCertificadoRp.movimiento.acto.nombre}" readonly="true" size="40"/>
+                            Libro:
+                            <p:inputText value="#{editarCertificadoRp.movimiento.libro.nombre}" readonly="true" size="40"/>
+                        </p:panelGrid>
+                    </p:tab>
+                </p:tabView>
+                <center>
+                    <p:commandButton value="Generar Copia de Razon" actionListener="#{editarCertificadoRp.imprimirCopiaRazon()}" styleClass="btnStyle"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:commandButton value="Realizar Tarea" actionListener="#{editarCertificadoRp.completarSubTarea()}" styleClass="btnStyle"/>
+                </center>
+            </p:panel>
+                        
+            <div align="center"><p:commandButton value="GUARDAR" styleClass="btnStyle" icon="ui-icon-disk" actionListener="#{editarCertificadoRp.corregirCertificado(1)}" rendered="#{editarCertificadoRp.render eq 1}"/></div>
+            <div align="center"><p:commandButton value="GUARDAR" styleClass="btnStyle" icon="ui-icon-disk" actionListener="#{editarCertificadoRp.corregirCertificado(2)}" rendered="#{editarCertificadoRp.render eq 2}"/></div>
+            <div align="center"><p:commandButton value="GUARDAR" styleClass="btnStyle" icon="ui-icon-disk" actionListener="#{editarCertificadoRp.corregirCertificado(3)}" rendered="#{editarCertificadoRp.render eq 3}"/></div>
+        </h:form>
+
+        <p:dialog id="dlgCreateInterviniente" header="Ingreso de Interviniente" widgetVar="dlgCreateInterviniente" resizable="false" modal="true" width="500">
+            <h:form id="formCreateInterv">
+                <p:panelGrid columns="2" styleClass="noBorder" style="width: 100%;font-weight: bolder; font-size: 12px;">
+                    Tipo Persona:
+                    <p:selectOneMenu value="#{editarCertificadoRp.propietario.tipoInterv}">
+                        <f:selectItem itemLabel="Natural" itemValue="N" />
+                        <f:selectItem itemLabel="Juridica" itemValue="J" />
+                    </p:selectOneMenu>
+                    CI/RUC/DOC:
+                    <p:inputText value="#{editarCertificadoRp.propietario.cedRuc}"/>
+                    NOMBRES:
+                    <p:inputText value="#{editarCertificadoRp.propietario.nombre}" size="45"/>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" actionListener="#{editarCertificadoRp.guardarInterviniente()}" icon="ui-icon-disk"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog id="dlgCrearInterv" header="Ingreso de Propietario" widgetVar="dlgCrearInterviniente" resizable="false" modal="true" width="500">
+            <h:form id="formCreaInterv">
+                <p:panelGrid columns="2" styleClass="noBorder" style="width: 100%;font-weight: bolder; font-size: 12px;">
+                    CI/RUC/DOC:
+                    <p:inputText value="#{editarCertificadoRp.re.cedRuc}"/>
+                    NOMBRES:
+                    <p:inputText value="#{editarCertificadoRp.re.nombre}" size="45"/>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" actionListener="#{editarCertificadoRp.savePropietario()}" icon="ui-icon-disk"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportePersonaldeRecaudacion" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryNewPage="true" uuid="adbde4ff-dc04-4467-8553-1b33f360b4fb">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Joao Sanga\\Documents\\NetBeansProjects\\registro_portoviejo\\src\\main\\webapp\\reportes\\diarios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HASTA_STRING" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select us.usuario, us.id, SUM(liq.total_pagar)
+from flow.regp_liquidacion liq
+left join app.cat_ente sol on (sol.id = liq.solicitante)
+left join app.acl_user us on (us.id = liq.user_ingreso)
+where liq.estado_liquidacion = 2 and
+(CASE WHEN $P{USUARIO}>0 THEN liq.user_ingreso=$P{USUARIO} ELSE liq.user_ingreso>0 END)
+and liq.fecha_ingreso between to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone
+group by 1, 2 order by us.usuario]]>
+	</queryString>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="id" class="java.lang.Long"/>
+	<field name="sum" class="java.math.BigDecimal"/>
+	<title>
+		<band height="113" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="a7d3f65e-6354-49a8-923f-557a757ac0c7" x="5" y="93" width="33" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement uuid="d85f482a-16bd-4ff4-8278-f6ed494af687" x="44" y="93" width="100" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="726ae876-f648-45b9-a9ce-7367bb3eefc6" x="0" y="69" width="555" height="22"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Reporte Personal de Recaudaciones Diarias]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement uuid="2588a371-fcc1-4650-9c22-c62234b7f8f9" x="426" y="95" width="100" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{HASTA_STRING}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" vAlign="Middle">
+				<reportElement uuid="0e526e97-d047-4803-8fd7-967ebc72b5a3" x="3" y="3" width="552" height="65"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="99a0f862-52ab-42ce-805b-94879a179cab" x="391" y="95" width="33" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="168" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="6bb6731a-fb93-4902-8565-4b8ab74e33f1" x="38" y="0" width="517" height="168"/>
+				<subreportParameter name="Usuario">
+					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="FECHA">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="totalRecaudados">
+					<subreportParameterExpression><![CDATA[$F{sum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "subPersonalRecaudaciones.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

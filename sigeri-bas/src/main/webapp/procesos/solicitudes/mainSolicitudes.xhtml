@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        Solicitudes Disponibles
+        #{userSession.setTopPage('Solicitudes disponibles')}
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-toggleswitch {
+                vertical-align: bottom;
+            }
+        </style>
+        <h:form id="frmMainSol">
+            <center>
+                <h:panelGroup layout="block"  >
+                    <p:outputLabel value="Seleccione Formulario" class="FontBold FontLarger" /> <br/>
+                    <p:selectOneMenu value="#{mainSolicitudes.url}" style="width: 200px !important;" >
+                        <f:selectItem itemLabel="Seleccione..." itemValue="" />
+                        <f:selectItem itemLabel="Declaración de Licitud de fondos" itemValue="/procesos/solicitudes/solicitudesFondosLicitos.xhtml" />
+                        <f:selectItem itemLabel="Formulario único para solicitud de certificados" itemValue="/procesos/solicitudes/solicitudesInscripcion.xhtml" />
+                        <f:selectItem itemLabel="Formulario único de inscripción y cancelación de hipoteca" itemValue="/procesos/solicitudes/solicitudesInscripcionCancelacion.xhtml" />
+                        <f:selectItem itemLabel="Formulario único para solicitud de certificados de no poseer bienes" itemValue="/procesos/solicitudes/solicitudesNoPoseeBienes.xhtml" />
+                    </p:selectOneMenu>
+                </h:panelGroup>
+            </center>
+            <br/><br/>
+            <center>
+                <p:commandButton value="Abir formulario" icon="fa fa-external-link" actionListener="#{mainSolicitudes.sendPage()}" />
+            </center>
+            <br/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

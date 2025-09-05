@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Indexar DSM</ui:define>
+    <ui:define name="content">
+        <h:form  id="formFolios">
+            <center><h1>REVISAR INDEXACION DSM</h1></center>
+            <h:panelGrid columns="10" style="font-weight: bolder;font-size: 16px;">
+                <p:outputLabel value="Libro:" />
+                <p:selectOneMenu value="#{revisarFolios.libro}" converter="entityConverter" filter="true">
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                    <f:selectItems value="#{revisarFolios.regLibroList}" var="libro" itemLabel="#{libro.nombre}" itemValue="#{libro}"/>  
+                </p:selectOneMenu>
+                <p:spacer width="20" height="1"/>
+                <p:outputLabel value="Fecha Inscripción Desde:" />
+                <p:calendar value="#{revisarFolios.inscripcionDesde}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                <p:spacer width="20" height="1"/>
+                <p:outputLabel value="Fecha Inscripción Hasta:" />
+                <p:calendar value="#{revisarFolios.inscripcionHasta}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                <p:spacer width="20" height="1"/>
+                <p:commandButton value="Consultar" actionListener="#{revisarFolios.consultarFolios()}" icon="ui-icon-search" 
+                                 styleClass="btnStyle" update="formFolios" style="font-size: 16px;"/>
+            </h:panelGrid>
+            <p:dataTable id="dtFolios" reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" rowIndexVar="index"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{revisarFolios.foliosLazy}" var="folio" emptyMessage="No se encontró ningún Item."
+                         style="text-align: center;" filterEvent="enter" >
+                <p:column headerText="No" width="25">
+                    #{index+1}
+                </p:column>
+                <p:column headerText="Contrato" >
+                    <h:outputText  value="#{folio.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Nro de Repertorio" width="60">
+                    <h:outputText value="#{folio.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Fecha de Repertorio" width="80">
+                    <h:outputText value="#{folio.fechaRepertorio}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Nro de Inscripcion" width="60">
+                    <h:outputText value="#{folio.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Fecha de Inscripcion" width="80">
+                    <h:outputText value="#{folio.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Folio Inicial" width="50">
+                    <h:outputText value="#{folio.folioInicio}"/>
+                </p:column>
+                <p:column headerText="Folio Final" width="50">
+                    <h:outputText value="#{folio.folioFin}"/>
+                </p:column>
+                <p:column headerText="Nro de Tomo" width="50">
+                    <h:outputText value="#{folio.numTomo}"/>
+                </p:column>
+                <p:column headerText="Indexado" width="60">
+                    <h:outputText value="NO" rendered="#{folio.folioAnterior eq null}" 
+                                  style="background-color: orange;font-weight: bolder;font-size: 16px;"/>
+                    <h:outputText value="SI" rendered="#{folio.folioAnterior ne null}"/>
+                </p:column>
+                <p:column headerText="Nro de Transaccion" width="70">
+                    <h:outputText value="#{folio.folioAnterior}"/>
+                </p:column>
+                <p:column headerText="***" width="20">
+                    <p:commandLink actionListener="#{revisarFolios.documentalDSM(folio)}" title="Indexar en DSM" update="dtFolios">
+                        <p:graphicImage value="/resources/icons/fusionar.png" height="20"/>   
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Movimiento Registral Seleccionado" widgetVar="dlgMovRegSelec" resizable="false" modal="true" width="800">
+            <h:form id="formMovRegSelec">
+                <p:fieldset legend="Datos de Inscripcion">
+                    <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;">
+                        <h:panelGroup>
+                            Libro: 
+                            <p:inputText value="#{revisarFolios.movimiento.libro.nombre}" readonly="true" style="width: 95%;"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Contrato: 
+                            <p:inputText value="#{revisarFolios.movimiento.acto.nombre}" readonly="true" style="width: 95%;"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <h:panelGrid columns="4" style="font-weight: bolder;width: 100%;">
+                        <h:panelGroup>
+                            Repertorio: 
+                            <p:inputText value="#{revisarFolios.movimiento.numRepertorio}" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Fecha Repertorio: 
+                            <p:inputText value="#{revisarFolios.movimiento.fechaRepertorio}" readonly="true" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:inputText>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Inscripción: 
+                            <p:inputText value="#{revisarFolios.movimiento.numInscripcion}" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Fecha Inscripción:
+                            <p:inputText value="#{revisarFolios.movimiento.fechaInscripcion}" readonly="true" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:inputText>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </p:fieldset>
+                <p:fieldset legend="Foliación">
+                    <h:panelGrid columns="3" style="font-weight: bolder;width: 100%;">
+                        <h:panelGroup>
+                            *Folio Desde: 
+                            <p:inputNumber value="#{revisarFolios.movimiento.folioInicio}" decimalPlaces="0"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            *Folio Hasta:
+                            <p:inputNumber value="#{revisarFolios.movimiento.folioFin}" decimalPlaces="0"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            *Nº de Tomo: 
+                            <p:inputText value="#{revisarFolios.movimiento.numTomo}"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </p:fieldset>
+                <center>
+                    <p:commandButton value="Guardar" icon="ui-icon-home" actionListener="#{revisarFolios.updateMovimiento()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Cambio de Clave</ui:define>
+    <ui:define name="content">
+        <center><h1>CAMBIO DE CLAVE DE USUARIO</h1></center>
+        <h:form id="mainForm">
+            <style>
+                .ui-widget-header{
+                    background: white !important;
+                    color: black  !important;
+                }
+                .ui-paginator .ui-paginator-pages .ui-paginator-page{
+                    color: black  !important;
+                }
+            </style>
+            <p:tabView id="mainTab" style="width: 100%;height: 350px">
+                <p:tab title="Cambio de Clave">
+                    <h:panelGrid style="margin: 0 auto;" columns="5">
+                        <p:outputLabel value="Nombre de Usuario: " style="font-weight: bolder;font-size: 16px"/>
+                        <p:spacer width="20" height="1"/>
+                        <p:outputLabel value="#{datosUsuario.username}" style="font-size: 20px;font-weight: bolder;color: #004a94;text-transform: uppercase;"/>
+                        <p:spacer width="100" height="1"/>
+                        <p:commandButton value="Cambiar Clave" icon="pi pi-refresh" styleClass="btnStyle" actionListener="#{datosUsuario.showDlgClave()}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Firma electrónica" rendered="false">
+                    <p:panel id="mainPanel" >
+                        <h:panelGrid columns="1"   style="width: 50%">
+                            <h:panelGroup>  
+                                <p:fileUpload id="firma"  rendered="false"
+                                              label="Firma Electrónica" update="mainPanel"
+                                              style="background: white !important; width: 80%"
+                                              listener="#{datosUsuario.upload}"
+                                              uploadLabel="Subir" cancelLabel="Cancelar"  
+                                              auto="true" skinSimple="true" fileLimit="1" dragDropSupport="false"  
+                                              sizeLimit="10000000000" allowTypes="/(\.|\/)(p12)$/" />
+                            </h:panelGroup>  
+                            <h:panelGroup   rendered="false">
+                                <p:outputLabel value="Contraseña*" for="clave" style="font-weight: bolder;" /><br></br>
+                                <p:password id="clave" value="#{datosUsuario.claveFE}"  class="panelInput" />
+                            </h:panelGroup>
+                            <h:panelGroup   rendered="false">
+                                <p:outputLabel value=""  style="font-weight: bolder;"/><br></br>
+                                <p:commandButton value="Validar firma electrónica" icon="fa fa-check" update="mainForm:mainTab:datosFirma" 
+                                                 styleClass="success-button rounded-button p-mr-2 p-mb-2"
+                                                 actionListener="#{datosUsuario.validarFirmaElectronica()}"  />
+                            </h:panelGroup>
+                        </h:panelGrid><br></br>
+                        <h:panelGrid columns="1" id="datosFirma"   style="width: 50%">
+
+                            <h:panelGroup   rendered="false">
+                                <p:outputLabel value="Estado Firma"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.estadoFirma}" style="width: 90% !important"/>
+                            </h:panelGroup> 
+
+                            <h:panelGroup>
+                                <p:outputLabel value="Entidad emisora"  style="font-weight: bolder;"/><br></br> 
+                                <p:selectOneMenu value="#{datosUsuario.firmaElectronica.isuser}" style="width: 90% !important">
+                                    <f:selectItem itemLabel="Banco Central del Ecuador" itemValue="Banco Central del Ecuador"/>
+                                    <f:selectItem itemLabel="Consejo de la Judicatura" itemValue="Consejo de la Judicatura"/>
+                                    <f:selectItem itemLabel="Registro Civil" itemValue="Registro Civil"/>
+                                    <f:selectItem itemLabel="Security Data" itemValue="Security Data"/>
+
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGrid columns="2">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Emisión*"  style="font-weight: bolder;"/><br></br>
+                                    <p:calendar    value="#{datosUsuario.firmaElectronica.fechaEmision}"  pattern="yyyy-MM-dd" style="width: 90% !important"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Expiración*"  style="font-weight: bolder;"/><br></br> 
+                                    <p:calendar value="#{datosUsuario.firmaElectronica.fechaExpiracion}"  pattern="yyyy-MM-dd" style="width: 90% !important"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                            <h:panelGroup >
+                                <center>
+                                    <p:commandButton value="Grabar" styleClass="info-button rounded-button p-mr-2 p-mb-2" icon="fa fa-save" update="mainForm"
+                                                     actionListener="#{datosUsuario.guardarFirmaElectronica()}"  /> 
+                                </center>
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                        <br></br>  
+                    </p:panel>     
+                </p:tab>
+            </p:tabView>
+        </h:form>
+        <p:dialog id="changePass" widgetVar="dlgChangePass" header="Cambio de Clave" resizable="false" modal="true">
+            <h:form id="formChangePass">
+                <h:panelGrid columns="1" style="text-align: center;font-size: 14px;font-weight: bolder" styleClass="noBorder">
+                    <p:outputLabel value="Ingrese clave actual:"/>
+                    <p:password value="#{datosUsuario.pass}"/>
+                    <p:outputLabel value="Ingrese nueva clave: (Minimo 8 caracteres)"/>
+                    <p:password value="#{datosUsuario.passOne}"/>
+                    <p:outputLabel value="Repita nueva clave:"/>
+                    <p:password value="#{datosUsuario.passTwo}"/>
+                    <p:spacer width="1" height="1"/>
+                    <p:spacer width="1" height="1"/>
+                    <p:commandButton value="Guardar" icon="pi pi-save" styleClass="btnStyle" actionListener="#{datosUsuario.cambioClave()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TareasPorTramite" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fea33a2b-c096-4b72-b7bf-7e91b46fe2f7">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USER" class="java.lang.String"/>
+	<field name="numtramite" class="java.lang.Long"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="assigne" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="idprocess" class="java.lang.String"/>
+	<field name="revisor" class="java.lang.String"/>
+	<field name="inscriptor" class="java.lang.String"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="fechainicio" class="java.util.Date"/>
+	<field name="fechafin" class="java.util.Date"/>
+	<variable name="count_tramite" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[$F{numtramite}]]></variableExpression>
+	</variable>
+	<group name="group_tramite">
+		<groupExpression><![CDATA[$F{numtramite}]]></groupExpression>
+		<groupHeader>
+			<band height="28" splitType="Stretch">
+				<staticText>
+					<reportElement uuid="68a3474a-547b-49e9-a35c-676c53fecf19" x="0" y="0" width="75" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[No de Trámite:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="59a59068-e09c-48e5-bb7a-518770211bf4" x="75" y="0" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{numtramite}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="79da3d07-08a7-4210-a0bd-755c198a4e56" x="175" y="0" width="60" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cliente:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="af7c619c-73f9-48f5-9adf-b6779099ad74" x="235" y="0" width="319" height="14" isPrintWhenDetailOverflows="true"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="10cbccc4-fdd3-4a74-8023-d6d5f532a9b8" x="0" y="14" width="144" height="14"/>
+					<box>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tarea]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c98afd35-9ea2-4ebc-95a3-e51e1a7a33b2" x="144" y="14" width="210" height="14"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionario]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="e1c29d2a-4fad-4704-9618-782355276f9d" x="354" y="14" width="100" height="14"/>
+					<box>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha Inicio]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="0c453539-7405-47cc-9671-1759bf578f8e" x="454" y="14" width="100" height="14"/>
+					<box>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha Fin]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20" splitType="Stretch"/>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="50" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="cfa28a88-b93f-4c03-a652-a2fedbb80120" x="0" y="1" width="555" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMPRESA PÚBLICA MUNICIPAL DEL REGISTRO DE LA PROPIEDAD DEL CANTÓN PORTOVIEJO EP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6e17240a-9b31-4a20-b9e9-3ef02e40c55e" x="0" y="15" width="555" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE TAREAS REALIZADAS POR TRÁMITE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d8c7acb1-be17-4fc2-91a5-81733fed6feb" x="0" y="29" width="122" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Ingreso, Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e7d0a129-7bc4-4b1c-a37c-abcbe22892f5" x="222" y="29" width="43" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="40034a26-1b43-4e8d-8ee6-c3b98e565c26" x="122" y="29" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="052a89d9-8ac4-4781-b134-0438cfae89b5" x="265" y="29" width="100" height="14" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{HASTA}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="07cdb31a-63e7-46e1-aea2-2778fc491c9e" x="0" y="48" width="554" height="1"/>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="26431fbe-8751-420f-8178-b29674cdc062" x="0" y="0" width="144" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="01821c07-4dfb-4df1-8181-8da7f44951c3" x="144" y="0" width="210" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="34343bd0-e5c4-4afa-9d3f-db96f6115e20" x="354" y="0" width="100" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechainicio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="1bdd70aa-33bc-4be0-8001-58b85bc23696" x="454" y="0" width="101" height="12" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechafin}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="938c29ab-69ae-4999-8b08-cf2bfb581a54" x="0" y="12" width="554" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement uuid="5ee00c17-ba1f-4c26-a833-9299670e4a1d" x="434" y="3" width="80" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág."+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="b420cd17-2a3f-4a8c-a1ba-5ec17e87af8e" x="514" y="3" width="40" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="8ff06056-3bfa-40c9-8828-c669a54caf2d" positionType="Float" x="0" y="3" width="130" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso por: " + $P{USER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy h.mm a" isBlankWhenNull="true">
+				<reportElement uuid="c7f6be1b-e05f-45e3-900c-139e53bed744" x="258" y="3" width="138" height="12"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="03ec756a-0ffb-4de1-842a-6040c987f430" x="0" y="2" width="554" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="89b869db-0a86-478f-bae0-0906ee634d41" x="156" y="3" width="100" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="af3a4882-8bf0-4ac7-bc77-a327c0c7efe8" x="454" y="0" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{count_tramite}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="f0d6998e-dde3-4b43-8494-062362c88aeb" x="207" y="0" width="247" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL DE TRAMITES INGRESADOS:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

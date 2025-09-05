@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="title" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7afb34c4-5b96-4360-b773-29afb47c278c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TITLE" class="java.lang.String"/>
+	<parameter name="LOGO" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\LOJA\\registropropiedad\\src\\main\\webapp\\resources\\image\\LogoRegistroLoja.jpg"]]></defaultValueExpression>
+	</parameter>
+	<title>
+		<band height="105" splitType="Stretch">
+			<image scaleImage="FillFrame" onErrorType="Blank">
+				<reportElement x="127" y="0" width="272" height="75" uuid="9f89a97a-3914-4938-8e27-f03ec62e5134"/>
+				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\LOJA\\registropropiedad\\src\\main\\webapp\\resources\\image\\LogoRegistroLoja.jpg"]]></imageExpression>
+			</image>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="80" width="555" height="25" uuid="aa108272-20aa-4a0f-964b-9f3f0e53bde3"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

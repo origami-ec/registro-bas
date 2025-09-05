@@ -1,0 +1,19 @@
+version: '3'
+services:
+  sigeri-web:
+    container_name: sigeri-web
+    image: sigeri-web:latest 
+    privileged: true 
+    
+    environment: 
+      - rutaFirmasElectronicas=/origamigt_archivo/firmasElectronicas/
+      - rutaRepositorioArchivo=/origamigt_archivo/archivos/
+      - rutaRepositorioDocumental=/origamigt_archivo/documentos/
+      - rutaRepositorioFirmado=/origamigt_archivo/firmados/
+      - rutaRepositorioNotas=/origamigt_archivo/notas/ 
+      - servicios=http://192.168.10.97:8713
+      
+    ports:
+      - 8090:8080
+    volumes:
+      - /origamigt_archivo/:/origamigt_archivo/

@@ -1,0 +1,572 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Reporte de Usuario</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>REPORTES DE USUARIOS</h2></center>
+            <p:tabView id="mainTab">
+                <p:tab title="Reportes por Usuario">
+                    <h:panelGrid id="pnlReport" columns="2" style="font-weight: bolder; margin: 0 auto; ">
+                        Tipo de Reporte:
+                        <p:selectOneMenu value="#{reportesDiarios.reporte1}" style="width: 250px;">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{0}"/>
+                            <f:selectItem itemLabel="Certificados Emitidos" itemValue="#{1}"/>
+                            <f:selectItem itemLabel="Inscripciones Realizadas" itemValue="#{2}"/>
+                            <f:selectItem itemLabel="Inscripciones del Dia" itemValue="#{3}"/>
+                            <f:selectItem itemLabel="Trámites en Bandeja" itemValue="#{4}"/>
+                            <f:selectItem itemLabel="Tareas Realizadas por Usuario" itemValue="#{5}"/>
+                            <f:selectItem itemLabel="Informe de Notas Devolutivas" itemValue="#{6}"/>
+                            <p:ajax event="change" update="pnlReport"/>
+                        </p:selectOneMenu>
+                        Fecha Desde:
+                        <p:calendar value="#{reportesDiarios.desde6}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy"
+                                    disabled="#{reportesDiarios.reporte1 eq 4}"/>
+                        Fecha Hasta:
+                        <p:calendar value="#{reportesDiarios.hasta6}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy"
+                                    disabled="#{reportesDiarios.reporte1 eq 3 or reportesDiarios.reporte1 eq 4}"/>
+                        <p:outputLabel value="Usuario:"/>
+                        <p:selectOneMenu value="#{reportesDiarios.usuario}" converter="entityConverter" style="width: 250px;"
+                                         filter="true" filterMatchMode="startsWith" 
+                                         disabled="#{reportesDiarios.reporte1 eq 3 or reportesDiarios.reporte1 eq 6}">
+                            <f:selectItem itemLabel="TODOS" itemValue="#{null}"/>
+                            <f:selectItems value="#{reportesDiarios.funcionarios}" var="usr1" itemValue="#{usr1}" 
+                                           itemLabel="#{usr1.ente.nombres} - #{usr1.usuario}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="Generar Reporte PDF" icon="pi pi-file-pdf" actionListener="#{reportesDiarios.imprimirReportes()}"/>
+                        <p:commandButton value="Generar Reporte XLS" icon="pi pi-file-excel" action="#{reportesDiarios.imprimirReportes()}" 
+                                         actionListener="#{reportesDiarios.setExcel(true)}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Reportes Agrupados" rendered="false">
+                    <h:panelGrid id="pnlReport1" columns="2" style="font-weight: bolder; margin: 0 auto; ">
+                        Tipo de Reporte:
+                        <p:selectOneMenu value="#{reportesDiarios.reporte2}" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 200px !important" >
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{0}"/>
+                            <f:selectItem itemLabel="Bandeja de Tareas Agrup. x Usuario" itemValue="#{1}"/>
+                            <f:selectItem itemLabel="Bandeja de Tareas Agrup. x Fec.Ing" itemValue="#{2}"/>
+                            <f:selectItem itemLabel="Bandeja de Tareas Agrup. x Fec.Ent" itemValue="#{3}"/>
+                            <p:ajax event="change" update="pnlReport1"/>
+                        </p:selectOneMenu>
+                        Fecha Desde:
+                        <p:calendar value="#{reportesDiarios.desde8}" placeholder="dd/MM/yyyy" pattern="dd/MM/yyyy" 
+                                    disabled="#{reportesDiarios.reporte2 lt 2}"/>
+                        Fecha Hastasss:
+                        <p:calendar value="#{reportesDiarios.hasta8}" placeholder="dd/MM/yyyy" pattern="dd/MM/yyyy" 
+                                    disabled="#{reportesDiarios.reporte2 lt 2}"/>
+                        Usuario:
+                        <p:selectOneMenu value="#{reportesDiarios.usuario1}" converter="entityConverter" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 200px !important" 
+                                         filter="true" filterMatchMode="startsWith">                            
+                            <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                            <f:selectItems value="#{reportesDiarios.funcionarios}" var="usr1" itemValue="#{usr1}" 
+                                           itemLabel="#{usr1.ente.nombres} - #{usr1.usuario}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="Generar Reporte PDF" icon="fa fa-file-pdf-o" styleClass="btnStyle" 
+                                         actionListener="#{reportesDiarios.imprimirReportes3()}"/>
+                        <p:commandButton value="Generar Reporte XLS" icon="fa fa-file-excel-o" styleClass="btnStyle" 
+                                         action="#{reportesDiarios.imprimirReportes3()}" actionListener="#{reportesDiarios.setExcel(true)}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Reportes Transferencias" rendered="false">
+                    <h:panelGrid id="pnlReport2" columns="1" style="font-weight: bolder; margin: 0 auto;text-align: center;">
+                        Tipo de Reporte:
+                        <p:selectOneMenu value="#{reportesDiarios.reporte3}">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{0}"/>
+                            <f:selectItem itemLabel="Reporte de Inscripciones" itemValue="#{1}"/>
+                            <f:selectItem itemLabel="Reporte de Inscripciones Excel" itemValue="#{2}"/>
+                            <f:selectItem itemLabel="Reporte de Hipotecas" itemValue="#{7}"/>
+                            <f:selectItem itemLabel="Reporte de Hipotecas Excel" itemValue="#{8}"/>
+                            <f:selectItem itemLabel="Informe de Bienes (Compras)" itemValue="#{3}"/>
+                            <f:selectItem itemLabel="Informe de Bienes (Ventas)" itemValue="#{4}"/>
+                            <f:selectItem itemLabel="Informe de Notas Devolutivas" itemValue="#{5}"/>
+                            <f:selectItem itemLabel="Informe de Trámites en Linea" itemValue="#{6}"/>
+                            <p:ajax event="change" update="pnlReport2"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Criterio de Búsqueda:" rendered="#{reportesDiarios.reporte3 eq 4 or reportesDiarios.reporte3 eq 3 }"/>
+                        <p:inputText value="#{reportesDiarios.busqueda}" rendered="#{reportesDiarios.reporte3 eq 4  or reportesDiarios.reporte3 eq 3 }" size="40"/>
+                        <p:outputLabel value="Nombre en Reporte:" rendered="#{reportesDiarios.reporte3 eq 4 or reportesDiarios.reporte3 eq 3 }"/>
+                        <p:inputText value="#{reportesDiarios.nombre}" rendered="#{reportesDiarios.reporte3 eq 4  or reportesDiarios.reporte3 eq 3 }" size="40"/>
+                        <p:outputLabel value="Fecha Desde:" rendered="#{reportesDiarios.reporte3 lt 3 or reportesDiarios.reporte3 gt 4}"/>
+                        <p:calendar value="#{reportesDiarios.desde7}" placeholder="dd/MM/yyyy" pattern="dd/MM/yyyy" 
+                                    rendered="#{reportesDiarios.reporte3 lt 3 or reportesDiarios.reporte3 gt 4}"/>
+                        <p:outputLabel value="Fecha Hasta:" rendered="#{reportesDiarios.reporte3 lt 3 or reportesDiarios.reporte3 gt 4}"/>
+                        <p:calendar value="#{reportesDiarios.hasta7}" placeholder="dd/MM/yyyy" pattern="dd/MM/yyyy" 
+                                    rendered="#{reportesDiarios.reporte3 lt 3 or reportesDiarios.reporte3 gt 4}"/>
+                        <p:commandButton value="Generar Reporte" icon="ui-icon-print" styleClass="btnStyle" 
+                                         actionListener="#{reportesDiarios.imprimirReportes2()}"/>
+                        <p:commandButton value="Generar Reporte XLS" icon="fa fa-file-excel-o" styleClass="btnStyle" 
+                                         action="#{reportesDiarios.imprimirReportes2()}" actionListener="#{reportesDiarios.setExcel(true)}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Consultas Tramites" rendered="false">
+                    <p:panel id="mainPanel">
+                        <h:panelGrid styleClass="noBorder" columns="2" style="margin: 0 auto;">
+                            Tipo de Reporte:
+                            <p:selectOneMenu value="#{reportesDiarios.reporte}" autoWidth="false">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                                <f:selectItem itemLabel="Cantidades de Tramites por Fechas" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Detalle de Tramites (Agrupado por Fecha Entrega)" itemValue="#{2}"/>
+                                <f:selectItem itemLabel="Tramites para el Registrador" itemValue="#{3}"/>
+                                <f:selectItem itemLabel="Cantidades de Tramites por Usuario" itemValue="#{4}"/>
+                                <f:selectItem itemLabel="Tareas sin realizar(Rol Inscriptor/Certificador)" itemValue="#{5}"/>
+                                <p:ajax update="mainPanel"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <br></br>
+                        <h:panelGrid style="margin: 0 auto;width: 350px;" columns="4" rendered="#{reportesDiarios.reporte eq 1}">
+                            Mes:
+                            <p:selectOneMenu value="#{reportesDiarios.mes}" autoWidth="false" 
+                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 100px !important;">
+                                <f:selectItem itemLabel="Enero"      itemValue="#{0}"/>
+                                <f:selectItem itemLabel="Febrero"    itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Marzo"      itemValue="#{2}"/>
+                                <f:selectItem itemLabel="Abril"      itemValue="#{3}"/>
+                                <f:selectItem itemLabel="Mayo"       itemValue="#{4}"/>
+                                <f:selectItem itemLabel="Junio"      itemValue="#{5}"/>
+                                <f:selectItem itemLabel="Julio"      itemValue="#{6}"/>
+                                <f:selectItem itemLabel="Agosto"     itemValue="#{7}"/>
+                                <f:selectItem itemLabel="Septiembre" itemValue="#{8}"/>
+                                <f:selectItem itemLabel="Octubre"    itemValue="#{9}"/>
+                                <f:selectItem itemLabel="Noviembre" itemValue="#{10}"/>
+                                <f:selectItem itemLabel="Diciembre" itemValue="#{11}"/>
+                            </p:selectOneMenu>
+                            Anio:
+                            <p:selectOneMenu value="#{reportesDiarios.anio}" autoWidth="false" 
+                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 100px !important;">
+                                <f:selectItem itemLabel="2019" itemValue="#{2019}"/>
+                                <f:selectItem itemLabel="2020" itemValue="#{2020}"/>
+                                <f:selectItem itemLabel="2021" itemValue="#{2021}"/>
+                                <f:selectItem itemLabel="2022" itemValue="#{2022}"/>
+                                <f:selectItem itemLabel="2023" itemValue="#{2023}"/>
+                                <f:selectItem itemLabel="2024" itemValue="#{2024}"/>
+                                <f:selectItem itemLabel="2025" itemValue="#{2025}"/>
+                                <f:selectItem itemLabel="2026" itemValue="#{2026}"/>
+                                <f:selectItem itemLabel="2027" itemValue="#{2027}"/>
+                                <f:selectItem itemLabel="2028" itemValue="#{2028}"/>
+                                <f:selectItem itemLabel="2029" itemValue="#{2029}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid style="margin: 0 auto;" styleClass="noBorder" columns="6" rendered="#{reportesDiarios.reporte eq 2}">
+                            Consultar por:
+                            <p:selectOneMenu value="#{reportesDiarios.tipofecha}">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                                <f:selectItem itemLabel="Fecha de Ingreso" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Fecha de Entrega" itemValue="#{2}"/>
+                            </p:selectOneMenu>
+                            Desde:
+                            <p:calendar value="#{reportesDiarios.desde2}" pattern="dd/MM/yyyy HH:mm"/>
+                            Hasta:
+                            <p:calendar value="#{reportesDiarios.hasta2}" pattern="dd/MM/yyyy HH:mm"/>
+                        </h:panelGrid>
+                        <h:panelGrid style="margin: 0 auto;" styleClass="noBorder" columns="4" rendered="#{reportesDiarios.reporte eq 3}">
+                            Inicio de Tarea, Desde:
+                            <p:calendar value="#{reportesDiarios.desde3}" pattern="dd/MM/yyyy"/>
+                            Hasta:
+                            <p:calendar value="#{reportesDiarios.hasta3}" pattern="dd/MM/yyyy"/>
+                        </h:panelGrid>  
+                        <h:panelGrid style="margin: 0 auto;" styleClass="noBorder" columns="6" rendered="#{reportesDiarios.reporte eq 4}">
+                            Funcionario:
+                            <p:selectOneMenu value="#{reportesDiarios.user}" converter="entityConverter">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                                <f:selectItems value="#{reportesDiarios.funcionarios}" var="f" itemLabel="#{f.usuario}" itemValue="#{f}"/>
+                            </p:selectOneMenu>               
+                            Mes:
+                            <p:selectOneMenu value="#{reportesDiarios.mes}">
+                                <f:selectItem itemLabel="Enero"      itemValue="#{0}"/>
+                                <f:selectItem itemLabel="Febrero"    itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Marzo"      itemValue="#{2}"/>
+                                <f:selectItem itemLabel="Abril"      itemValue="#{3}"/>
+                                <f:selectItem itemLabel="Mayo"       itemValue="#{4}"/>
+                                <f:selectItem itemLabel="Junio"      itemValue="#{5}"/>
+                                <f:selectItem itemLabel="Julio"      itemValue="#{6}"/>
+                                <f:selectItem itemLabel="Agosto"     itemValue="#{7}"/>
+                                <f:selectItem itemLabel="Septiembre" itemValue="#{8}"/>
+                                <f:selectItem itemLabel="Octubre"    itemValue="#{9}"/>
+                                <f:selectItem itemLabel="Noviembre" itemValue="#{10}"/>
+                                <f:selectItem itemLabel="Diciembre" itemValue="#{11}"/>
+                            </p:selectOneMenu>
+                            Anio:
+                            <p:selectOneMenu value="#{reportesDiarios.anio}">
+                                <f:selectItem itemLabel="2017" itemValue="#{2017}"/>
+                                <f:selectItem itemLabel="2018" itemValue="#{2018}"/>
+                                <f:selectItem itemLabel="2019" itemValue="#{2019}"/>
+                                <f:selectItem itemLabel="2020" itemValue="#{2020}"/>
+                                <f:selectItem itemLabel="2021" itemValue="#{2021}"/>
+                                <f:selectItem itemLabel="2022" itemValue="#{2022}"/>
+                                <f:selectItem itemLabel="2023" itemValue="#{2023}"/>
+                                <f:selectItem itemLabel="2024" itemValue="#{2024}"/>
+                                <f:selectItem itemLabel="2025" itemValue="#{2025}"/>
+                                <f:selectItem itemLabel="2026" itemValue="#{2026}"/>
+                                <f:selectItem itemLabel="2027" itemValue="#{2027}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid> 
+                        <br/>
+                        <h:panelGrid styleClass="noBorder" style="margin: 0 auto;" columns="3">
+                            <p:commandButton value="Consultar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{reportesDiarios.consultarReporte()}"/>
+                            <p:commandButton value="Reporte Pdf" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesDiarios.generarReporte(false)}"/>
+                            <p:commandButton value="Reporte Excel" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesDiarios.generarReporte(true)}"/>
+                        </h:panelGrid>
+                    </p:panel>
+                    <br/>
+                    <p:dataTable value="#{reportesDiarios.cantidades}" var="can" style="text-align: center;" rendered="#{reportesDiarios.reporte eq 1}">
+                        <f:facet name="header">RESULTADO DE CONSULTA</f:facet>
+                        <p:column headerText="Calendario" footerText="TOTALES:">
+                            <h:outputText value="#{can.fecha}">
+                                <f:convertDateTime pattern="EEEEEEEEE dd"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tramites Ingresados" footerText="#{reportesDiarios.ct.recibidos}">
+                            #{can.recibidos}
+                        </p:column>
+                        <p:column headerText="Ingresados (Certificados)" footerText="#{reportesDiarios.ct.incertificado}"
+                                  style="background-color: #D7D7D7;">
+                            #{can.incertificado}
+                        </p:column>
+                        <p:column headerText="Ingresados (Inscripciones)" footerText="#{reportesDiarios.ct.ininscripcion}"
+                                  style="background-color: #D7D7D7;">
+                            #{can.ininscripcion}
+                        </p:column>
+                        <p:column headerText="Tramites Entregados" footerText="#{reportesDiarios.ct.entregados}">
+                            #{can.entregados}
+                        </p:column>
+                        <p:column headerText="Tramites Pendientes" footerText="#{reportesDiarios.ct.pendientes}">
+                            #{can.pendientes}
+                        </p:column>
+                        <p:column headerText="Tramites Vencidos" footerText="#{reportesDiarios.ct.vencidos}">
+                            #{can.vencidos}
+                        </p:column>
+                        <p:column headerText="Proyeccion (Certificados)" footerText="#{reportesDiarios.ct.outcertificado}"
+                                  style="background-color: #ebcccc;">
+                            #{can.outcertificado}
+                        </p:column>
+                        <p:column headerText="Proyeccion (Inscripciones)" footerText="#{reportesDiarios.ct.outinscripcion}"
+                                  style="background-color: #ebcccc;">
+                            #{can.outinscripcion}
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" scrollable="true" scrollWidth="97%"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{reportesDiarios.tareas}" var="tar" emptyMessage="No se encontro ningun Item" rendered="#{reportesDiarios.reporte eq 2}" resizableColumns="true" 
+                                 rowKey="#{tar.factura}" selectionMode="single">                        
+                        <f:facet name="header">RESULTADO DE CONSULTA</f:facet>
+                        <p:column headerText="*" style="width: 40px;">
+                            <p:graphicImage value="/resources/image/circleGreen.png" height="15" rendered="#{tar.indicadorled == 1}" title="Elaborado"/>
+                            <p:graphicImage value="/resources/image/circleBlue2.png" height="15" rendered="#{tar.indicadorled == 2}" title="Tiempo de ejecucion"/>
+                            <p:graphicImage value="/resources/image/circleBlue.png" height="15" rendered="#{tar.indicadorled == 3}" title="Tiempo de ejecucion - Por vencer"/>
+                            <p:graphicImage value="/resources/image/circleOrange.png" height="15" rendered="#{tar.indicadorled == 4}" title="Vencido-Elaborado"/>
+                            <p:graphicImage value="/resources/image/circleRed.png" height="15" rendered="#{tar.indicadorled == 5}" title="Vencido-Pendiente"/>
+                            <p:graphicImage value="/resources/image/circleBrown.png" height="15" rendered="#{tar.indicadorled == 6}" title="Interrumpido"/>
+                        </p:column>    
+                        <p:column headerText="Factura" width="120">
+                            #{tar.factura}
+                        </p:column>
+                        <p:column headerText="Tramite" width="75">
+                            #{tar.tramite}
+                        </p:column>
+                        <p:column headerText="Cedula" width="120">
+                            #{tar.ced_fact}
+                        </p:column>
+                        <p:column headerText="Tarea Actual" width="140">
+                            #{tar.tarea_act}
+                        </p:column>
+                        <p:column headerText="Fecha Ingreso" width="130">
+                            <h:outputText value="#{tar.fechaingreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Entrega" width="130">
+                            <h:outputText value="#{tar.fechaentrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Inicio Tarea" width="130">
+                            <h:outputText value="#{tar.fechainicio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Fin Tarea" width="130">
+                            <h:outputText value="#{tar.fechafin}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>                        
+                        <p:column headerText="Dias" width="60">
+                            #{tar.diaspendiente}
+                        </p:column>
+                        <p:column headerText="Funcionario" width="100">
+                            #{tar.funcionario}
+                        </p:column>
+                        <p:column headerText="Despachado" width="85">
+                            #{tar.entregado}
+                        </p:column>
+                        <p:column headerText="Indicadores" width="200">
+                            #{tar.indicador}
+                        </p:column>
+                        <p:column headerText="Observacion" width="500">
+                            #{tar.observacion}
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" scrollable="true" scrollWidth="97%"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{reportesDiarios.lregistrador}" var="lr" emptyMessage="No se encontro ningun Item" rendered="#{reportesDiarios.reporte eq 3}" resizableColumns="true" 
+                                 rowKey="#{lr.tramite}" selectionMode="single">                        
+                        <f:facet name="header">TAREA REVISION Y FIRMA</f:facet>
+                        <p:column headerText="*" style="width: 40px;">
+                            <p:graphicImage value="/resources/image/circleGreen.png" height="15" rendered="#{lr.led == 1}" title="Tarea finalizada antes de la fecha de entrega"/>
+                            <p:graphicImage value="/resources/image/circleOrange2.png" height="15" rendered="#{lr.led == 2}" title="Tarea finalizada despues de la fecha de entrega por retraso en bandeja de entrada"/>
+                            <p:graphicImage value="/resources/image/circleRed2.png" height="15" rendered="#{lr.led == 3}" title="Tarea finalizada despues de la fecha de entrega"/>
+                            <p:graphicImage value="/resources/image/circleBlue2.png" height="15" rendered="#{lr.led == 4}" title="Tarea en proceso de Ejecucion"/>
+                            <p:graphicImage value="/resources/image/circleOrange.png" height="15" rendered="#{lr.led == 5}" title="Tarea no finalizada por retraso en bandeja de entrada"/>
+                            <p:graphicImage value="/resources/image/circleRed.png" height="15" rendered="#{lr.led == 6}" title="Tarea no finalizada - vencida"/>
+                        </p:column>                                                
+                        <p:column headerText="Tramite" width="65">
+                            #{lr.tramite}
+                        </p:column>
+                        <p:column headerText="Fecha Ingreso" width="130">
+                            <h:outputText value="#{lr.fechaingreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Entrega" width="130">
+                            <h:outputText value="#{lr.fechaentrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Inicio Tarea" width="130">
+                            <h:outputText value="#{lr.fechainicio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Fin Tarea" width="130">
+                            <h:outputText value="#{lr.fechafin}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>                         
+                        <p:column headerText="Num. Repertorio" width="115">
+                            #{lr.repertorio}
+                        </p:column>
+                        <p:column headerText="Num. Inscripcion" width="115">
+                            #{lr.inscripcion}
+                        </p:column> 
+                        <p:column headerText="Inscriptor" width="95">
+                            #{lr.asignado}
+                        </p:column>
+                        <p:column headerText="Nombres de Actos Registrales" width="400">
+                            #{lr.nombreActo}
+                        </p:column>                         
+                        <p:column headerText="Observacion Registral" width="400">
+                            #{lr.observacion}
+                        </p:column>
+                        <p:column headerText="Estado" width="580">
+                            #{lr.estado}
+                        </p:column>                        
+                    </p:dataTable>
+                    <p:dataTable value="#{reportesDiarios.tramitesUser}" var="tu" style="text-align: center;" rendered="#{reportesDiarios.reporte eq 4}">
+                        <f:facet name="header">TAREA INSCRIBIR-CERTIFICAR</f:facet>
+                        <p:column headerText="Fecha Fin de Tarea" width="130">
+                            <h:outputText value="#{tu.fecha}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Vencidos Elaborados" style="background-color: #EBCCCC;" width="130">
+                            #{tu.vencidoElab}
+                        </p:column>
+                        <p:column headerText="Elaborados" style="background-color: #CCFFCC;" width="130">
+                            #{tu.elaborados}
+                        </p:column>
+                        <p:column headerText="Cantidad" width="130">
+                            #{tu.cantidad}
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" scrollable="true" scrollWidth="97%"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{reportesDiarios.tramitesGer}" var="ger" emptyMessage="No se encontro ningun Item" rendered="#{reportesDiarios.reporte eq 5}" resizableColumns="true" 
+                                 >                        
+                        <f:facet name="header">RESULTADO DE CONSULTA</f:facet>
+                        <p:column headerText="Tramite" width="75">
+                            #{ger.numtramite}
+                        </p:column>
+                        <p:column headerText="Tarea" width="140">
+                            #{ger.nombreTarea}
+                        </p:column>
+                        <p:column headerText="Fecha Ingreso" width="130">
+                            <h:outputText value="#{ger.fechaingreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Entrega" width="130">
+                            <h:outputText value="#{ger.fechaentrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Fecha Inicio Tarea" width="130">
+                            <h:outputText value="#{ger.fechainicio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Inscriptor/Certificador" width="100">
+                            #{ger.assigne}
+                        </p:column>                                                
+                    </p:dataTable>                                        
+                </p:tab>
+                <p:tab title="Reportes" rendered="false">
+                    <p:panel id="panelRp">
+                        <p:panelGrid id="reportes" styleClass="noBorder" style="margin: 0 auto;">
+                            <p:row>
+                                <p:column>Tipo Reporte:</p:column>
+                                <p:column colspan="3">
+                                    <p:selectOneMenu value="#{reportesDiarios.tipo}">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                                        <f:selectItem itemLabel="Tareas por Tramites Ingresados" itemValue="#{1}"/>
+                                        <f:selectItem itemLabel="Tareas Realizadas por Usuarios" itemValue="#{2}"/>
+                                        <f:selectItem itemLabel="Totales por Usuarios" itemValue="#{3}"/>
+                                        <f:selectItem itemLabel="Cantidades por Contratos Ingresados" itemValue="#{4}"/>
+                                        <f:selectItem itemLabel="Cantidades por Contratos Entregados" itemValue="#{5}"/>
+                                        <f:selectItem itemLabel="Tramites Pendientes (No estan en entrega)" itemValue="#{6}"/>
+                                        <f:selectItem itemLabel="Detalle de Tramites (Agrupado por Fecha Entrega)" itemValue="#{7}"/>
+                                        <f:selectItem itemLabel="Reporte de Tramites para el registrador" itemValue="#{8}"/>
+                                        <f:selectItem itemLabel="Cantidades de Tramites por Usuario" itemValue="#{9}"/>
+                                        <f:selectItem itemLabel="Tramites por fecha de ingreso (Agrupado por Funcionario/Rol)" itemValue="#{10}"/>
+                                        <f:selectItem itemLabel="Tramites Autorizados (Adelantados)" itemValue="#{11}"/>
+                                        <f:selectItem itemLabel="Tramites Aceptados (Revision)" itemValue="#{12}"/>
+                                        <f:selectItem itemLabel="Reporte de Tareas sin realizar" itemValue="#{13}"/>
+                                        <f:selectItem itemLabel="TAREA MARGINACION (ARCHIVO)" itemValue="#{14}"/>
+                                        <p:ajax update="reportes"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{reportesDiarios.tipo eq 7}">
+                                <p:column>Tipo Fecha:</p:column>
+                                <p:column colspan="3">
+                                    <p:selectOneMenu value="#{reportesDiarios.tipofecha}">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                                        <f:selectItem itemLabel="Fecha de Ingreso" itemValue="#{1}"/>
+                                        <f:selectItem itemLabel="Fecha de Entrega" itemValue="#{2}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row> 
+                            <p:row rendered="#{reportesDiarios.tipo ne 7 and reportesDiarios.tipo ne 10 and reportesDiarios.tipo ne 12 and reportesDiarios.tipo ne 13}">
+                                <p:column>Desde:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesDiarios.desde}" pattern="dd/MM/yyyy"/>
+                                </p:column>
+                                <p:column>Hasta:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesDiarios.hasta}" pattern="dd/MM/yyyy"/>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{reportesDiarios.tipo eq 7 or reportesDiarios.tipo eq 10 or reportesDiarios.tipo eq 12}">
+                                <p:column>Desde:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesDiarios.desde}" pattern="dd/MM/yyyy HH:mm"/>
+                                </p:column>
+                                <p:column>Hasta:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesDiarios.hasta}" pattern="dd/MM/yyyy HH:mm"/>
+                                </p:column>
+                            </p:row>                        
+                            <p:row>
+                                <p:column colspan="2">
+                                    <p:commandButton value="Reporte Pdf" icon="ui-icon-document" styleClass="btnStyle" 
+                                                     actionListener="#{reportesDiarios.selectTipoReporte(false)}"/>
+                                </p:column>
+                                <p:column colspan="2">
+                                    <p:commandButton value="Reporte Excel" icon="ui-icon-document" styleClass="btnStyle" 
+                                                     actionListener="#{reportesDiarios.selectTipoReporte(true)}"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="Reportes Nuevos" rendered="false">
+                    <p:panel id="panelNw">
+                        <p:panelGrid id="reportesnew" styleClass="noBorder" style="margin: 0 auto;">
+                            <p:row>
+                                <p:column>Tipo Reporte:</p:column>
+                                <p:column colspan="3">
+                                    <p:selectOneMenu value="#{reportesDiarios.tipotarea}">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                                        <f:selectItem itemLabel="ENTREGA DE DOCUMENTOS" itemValue="#{1}"/>
+                                        <f:selectItem itemLabel="TRAMITES VENCIDOS ELABORADOS" itemValue="#{2}"/>
+                                        <f:selectItem itemLabel="TRAMITES VENCIDOS PENDIENTES" itemValue="#{3}"/>
+                                        <f:selectItem itemLabel="TRAMITES CORREGIDOS" itemValue="#{4}"/>
+                                        <f:selectItem itemLabel="TRAMITES REASIGNADOS" itemValue="#{5}"/>
+                                        <f:selectItem itemLabel="MOVIMIENTOS MODIFICADOS E INGRESADOS" itemValue="#{6}"/>
+                                        <f:selectItem itemLabel="REPORTE DE EVALUACION" itemValue="#{7}"/>
+                                        <f:selectItem itemLabel="INGRESO DE OBSERVACIONES (REVISION)" itemValue="#{8}"/>
+                                        <p:ajax update="reportesnew"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{reportesDiarios.tipotarea eq 7}">
+                                <p:column>Funcionario:</p:column>
+                                <p:column>
+                                    <p:selectOneMenu value="#{reportesDiarios.user}" converter="entityConverter">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                                        <f:selectItems value="#{reportesDiarios.funcionarios}" var="f" itemLabel="#{f.usuario}" itemValue="#{f}"/>
+                                    </p:selectOneMenu>  
+                                </p:column>
+                                <p:column>Mes:</p:column>
+                                <p:column>
+                                    <p:selectOneMenu value="#{reportesDiarios.mes}">
+                                        <f:selectItem itemLabel="Enero"      itemValue="#{0}"/>
+                                        <f:selectItem itemLabel="Febrero"    itemValue="#{1}"/>
+                                        <f:selectItem itemLabel="Marzo"      itemValue="#{2}"/>
+                                        <f:selectItem itemLabel="Abril"      itemValue="#{3}"/>
+                                        <f:selectItem itemLabel="Mayo"       itemValue="#{4}"/>
+                                        <f:selectItem itemLabel="Junio"      itemValue="#{5}"/>
+                                        <f:selectItem itemLabel="Julio"      itemValue="#{6}"/>
+                                        <f:selectItem itemLabel="Agosto"     itemValue="#{7}"/>
+                                        <f:selectItem itemLabel="Septiembre" itemValue="#{8}"/>
+                                        <f:selectItem itemLabel="Octubre"    itemValue="#{9}"/>
+                                        <f:selectItem itemLabel="Noviembre" itemValue="#{10}"/>
+                                        <f:selectItem itemLabel="Diciembre" itemValue="#{11}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>Anio:</p:column>
+                                <p:column>
+                                    <p:selectOneMenu value="#{reportesDiarios.anio}">
+                                        <f:selectItem itemLabel="2017" itemValue="#{2017}"/>
+                                        <f:selectItem itemLabel="2018" itemValue="#{2018}"/>
+                                        <f:selectItem itemLabel="2019" itemValue="#{2019}"/>
+                                        <f:selectItem itemLabel="2020" itemValue="#{2020}"/>
+                                        <f:selectItem itemLabel="2021" itemValue="#{2021}"/>
+                                        <f:selectItem itemLabel="2022" itemValue="#{2022}"/>
+                                        <f:selectItem itemLabel="2023" itemValue="#{2023}"/>
+                                        <f:selectItem itemLabel="2024" itemValue="#{2024}"/>
+                                        <f:selectItem itemLabel="2025" itemValue="#{2025}"/>
+                                        <f:selectItem itemLabel="2026" itemValue="#{2026}"/>
+                                        <f:selectItem itemLabel="2027" itemValue="#{2027}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{reportesDiarios.tipotarea eq 8}">
+                                <p:column colspan="4">
+                                    <p:panelGrid columns="6" styleClass="noBorder">
+                                        Usuario:
+                                        <p:selectOneMenu value="#{reportesDiarios.revisor}" converter="entityConverter">
+                                            <f:selectItem itemLabel="TODOS" itemValue="#{null}" />
+                                            <f:selectItems value="#{reportesDiarios.revisores}" var="rev" itemLabel="#{rev.usuario}" itemValue="#{rev}"/>
+                                        </p:selectOneMenu>
+                                        Desde:
+                                        <p:calendar value="#{reportesDiarios.desde5}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                                        Hasta:
+                                        <p:calendar value="#{reportesDiarios.hasta5}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                                    </p:panelGrid>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{reportesDiarios.tipotarea ne 7 and reportesDiarios.tipotarea ne 8}">
+                                <p:column rendered="#{reportesDiarios.tipotarea ne 1 and reportesDiarios.tipotarea ne 2 and reportesDiarios.tipotarea ne 3}">Fecha de ingreso, Desde:</p:column>
+                                <p:column rendered="#{reportesDiarios.tipotarea eq 1}">Fecha de entrega al usuario, Desde:</p:column>
+                                <p:column rendered="#{reportesDiarios.tipotarea eq 2 or reportesDiarios.tipotarea eq 3}">Fecha de entrega, Desde:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesDiarios.desde4}" pattern="dd/MM/yyyy HH:mm"/>
+                                </p:column>
+                                <p:column>Hasta:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesDiarios.hasta4}" pattern="dd/MM/yyyy HH:mm"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column colspan="2">
+                                    <p:commandButton value="Reporte Pdf" icon="ui-icon-document" styleClass="btnStyle" 
+                                                     actionListener="#{reportesDiarios.selectTipoReporteTarea(false)}"/>
+                                </p:column>
+                                <p:column colspan="2">
+                                    <p:commandButton value="Reporte Excel" icon="ui-icon-document" styleClass="btnStyle" 
+                                                     actionListener="#{reportesDiarios.selectTipoReporteTarea(true)}"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </p:panel>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

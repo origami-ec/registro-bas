@@ -1,0 +1,84 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.origami.sgr.bpm.models;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ *
+ * @author asilva
+ */
+
+public class TareaEntregaDocumento implements Serializable{
+
+    public static final Long serialVersionUID = 1L;
+
+    protected Long   tramite;
+    protected Date   fechaingreso;
+    protected Date   fechaEntrega;
+    protected String asignado   = "";
+    protected String despachado = "";
+    protected Date   fechaInicioTarea;
+    protected Date   fechaFinTarea;
+
+    public Long getTramite() {
+        return tramite;
+    }
+
+    public void setTramite(Long tramite) {
+        this.tramite = tramite;
+    }
+
+    public Date getFechaingreso() {
+        return fechaingreso;
+    }
+
+    public void setFechaingreso(Date fechaingreso) {
+        this.fechaingreso = fechaingreso;
+    }
+
+    public Date getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(Date fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
+    public String getAsignado() {
+        return asignado;
+    }
+
+    public void setAsignado(String asignado) {
+        this.asignado = asignado;
+    }
+
+    public String getDespachado() {
+        return despachado;
+    }
+
+    public void setDespachado(String despachado) {
+        this.despachado = despachado;
+    }
+
+    public Date getFechaInicioTarea() {
+        return fechaInicioTarea;
+    }
+
+    public void setFechaInicioTarea(Date fechaInicioTarea) {
+        this.fechaInicioTarea = fechaInicioTarea;
+    }
+
+    public Date getFechaFinTarea() {
+        return fechaFinTarea;
+    }
+
+    public void setFechaFinTarea(Date fechaFinTarea) {
+        this.fechaFinTarea = fechaFinTarea;
+    }
+    
+}

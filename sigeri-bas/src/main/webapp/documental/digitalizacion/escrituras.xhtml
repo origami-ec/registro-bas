@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Digitalización de Libros</ui:define>
+    <ui:define name="content">
+        <h:form id="formMain">
+            <center><h3 style="font-weight: bolder;">DIGITALIZACIÓN DE LIBROS</h3></center>
+            <h:panelGrid columns="4" style="font-weight: bolder;font-size: 16px;margin: 0 auto;width: 800px;">
+                <h:panelGroup>
+                    <p:outputLabel value="Libro/Naturaleza:" /><br/>
+                    <p:selectOneMenu value="#{escriturasMB.libro}" converter="entityConverter" filter="true" style="width: 165px;">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                        <f:selectItems value="#{escriturasMB.regLibroList}" var="libro" itemLabel="#{libro.nombre}" 
+                                       itemValue="#{libro}"/>  
+                    </p:selectOneMenu>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Fecha Inscripción Desde:" /><br/>
+                    <p:calendar value="#{escriturasMB.inscripcionDesde}" pattern="dd-MM-yyyy" placeholder="dd-MM-yyyy" mask="dd-MM-yyyy" 
+                                onkeyup="if (event.keyCode == 13) {
+                                            consultarFolios();
+                                            return false;
+                                        }"
+                                onkeypress="if (event.keyCode == 13) {
+                                            return false;
+                                        }"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Fecha Inscripción Hasta:" /><br/>
+                    <p:calendar value="#{escriturasMB.inscripcionHasta}" pattern="dd-MM-yyyy" placeholder="dd-MM-yyyy" mask="dd-MM-yyyy" 
+                                onkeyup="if (event.keyCode == 13) {
+                                            consultarFolios();
+                                            return false;
+                                        }"
+                                onkeypress="if (event.keyCode == 13) {
+                                            return false;
+                                        }"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Acto/Contrato:" /><br/>
+                    <p:inputText value="#{escriturasMB.contrato}"
+                                 onkeyup="if (event.keyCode == 13) {
+                                             consultarFolios();
+                                             return false;
+                                         }"
+                                 onkeypress="if (event.keyCode == 13) {
+                                             return false;
+                                         }"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Nro Repertorio:" /><br/>
+                    <p:inputNumber value="#{escriturasMB.repertorio}" decimalPlaces="0" thousandSeparator=""
+                                   onkeyup="if (event.keyCode == 13) {
+                                               consultarFolios();
+                                               return false;
+                                           }"
+                                   onkeypress="if (event.keyCode == 13) {
+                                               return false;
+                                           }"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Nro Inscripción:" /><br/>
+                    <p:inputNumber value="#{escriturasMB.inscripcion}" decimalPlaces="0" thousandSeparator=""  
+                                   onkeyup="if (event.keyCode == 13) {
+                                               consultarFolios();
+                                               return false;
+                                           }"
+                                   onkeypress="if (event.keyCode == 13) {
+                                               return false;
+                                           }"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Año Desde:" /><br/>
+                    <p:inputNumber value="#{escriturasMB.anioDesde}" decimalPlaces="0" thousandSeparator=""
+                                   onkeyup="if (event.keyCode == 13) {
+                                               consultarFolios();
+                                               return false;
+                                           }"
+                                   onkeypress="if (event.keyCode == 13) {
+                                               return false;
+                                           }"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Año Hasta:" /><br/>
+                    <p:inputNumber value="#{escriturasMB.anioHasta}" decimalPlaces="0" thousandSeparator=""
+                                   onkeyup="if (event.keyCode == 13) {
+                                               consultarFolios();
+                                               return false;
+                                           }"
+                                   onkeypress="if (event.keyCode == 13) {
+                                               return false;
+                                           }"/>
+                </h:panelGroup>
+            </h:panelGrid>
+            <center>
+                <p:commandButton value="Consultar Inscripciones" actionListener="#{escriturasMB.consultarFolios()}" icon="pi pi-search" 
+                                 update="formMain" style="background-color: darkred;" rendered="false"/>
+                <p:remoteCommand name="consultarFolios" actionListener="#{escriturasMB.consultarFolios()}"/>
+            </center>
+            <p:dataTable id="dtFolios" reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" rowIndexVar="index"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{escriturasMB.foliosLazy}" var="folio" emptyMessage="No se encontró ningún Item."
+                         style="text-align: center;" filterEvent="enter" >
+                <p:column headerText="No" width="25">
+                    #{index+1}
+                </p:column>
+                <p:column headerText="Contrato" >
+                    <h:outputText  value="#{folio.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Nro de Repertorio" width="60">
+                    <h:outputText value="#{folio.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Fecha de Repertorio" width="80">
+                    <h:outputText value="#{folio.fechaRepertorio}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Nro de Inscripcion" width="60">
+                    <h:outputText value="#{folio.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Fecha de Inscripcion" width="80">
+                    <h:outputText value="#{folio.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Folio Inicial" width="50">
+                    <h:outputText value="#{folio.folioInicio}"/>
+                </p:column>
+                <p:column headerText="Folio Final" width="50">
+                    <h:outputText value="#{folio.folioFin}"/>
+                </p:column>
+                <p:column headerText="Nro de Tomo" width="50">
+                    <h:outputText value="#{folio.numTomo}"/>
+                </p:column>
+                <p:column headerText="Digitalizado" width="60">
+                    <h:outputText value="NO" rendered="#{folio.app eq null}" 
+                                  style="background-color: orange;font-weight: bolder;font-size: 16px;"/>
+                    <h:outputText value="SI" rendered="#{folio.app ne null}" 
+                                  style="background-color: turquoise;font-weight: bolder;font-size: 16px;"/>
+                </p:column>
+                <p:column headerText="Acciones" width="120">
+                    <p:panelGrid columns="3" styleClass="ui-noborder">
+                        <p:commandLink actionListener="#{escriturasMB.visualizarDocumento(folio.app)}" 
+                                       process="@this" style="margin-right: 10px" title="Visualizar">
+                            <i class="pi pi-eye" style="font-size: 1.5em; margin-right: 5px;color: darkgreen;"></i>
+                        </p:commandLink> 
+                        <p:commandLink process="@this" style="margin-right: 10px" title="Cargar" 
+                                       actionListener="#{escriturasMB.showDlgFolioSelect(folio)}">
+                            <i class="pi pi-upload" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                        </p:commandLink> 
+                        <p:commandLink process="@this" style="margin-right: 10px" title="Historial" 
+                                       actionListener="#{escriturasMB.verHistorial(folio)}">
+                            <i class="pi pi-history" style="font-size: 1.5em; margin-right: 5px;color: sienna;"></i>
+                        </p:commandLink>
+                        <p:commandLink actionListener="#{escriturasMB.eliminarArchivo(folio.app)}" update="dtFolios" 
+                                       process="@this" style="margin-right: 10px" title="Eliminar" disabled="#{folio.app eq null}">
+                            <i class="pi pi-trash" style="font-size: 1.5em; margin-right: 5px;color: red;"></i>
+                            <p:confirm header="Confirmación" message="Seguro de Eliminar este documento?" icon="pi pi-exclamation-triangle" />
+                        </p:commandLink> 
+                        <p:commandLink process="@this" style="margin-right: 10px" title="Indexación" 
+                                       actionListener="#{escriturasMB.indexarMovimiento(folio.id)}">
+                            <i class="pi pi-link" style="font-size: 1.5em; margin-right: 5px;color: darkseagreen;"></i>
+                        </p:commandLink>
+                    </p:panelGrid>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog> 
+
+        </h:form>
+
+        <p:dialog header="Indexión de Escrituras" widgetVar="dlgMovRegSelec" resizable="false" modal="true" position="top"
+                  width="800" height="500">
+            <h:form id="formMovRegSelec">
+                <p:fieldset legend="Datos de Inscripcion">
+                    <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;">
+                        <h:panelGroup>
+                            Libro: 
+                            <p:inputText value="#{escriturasMB.movimiento.libro.nombre}" readonly="true" style="width: 95%;"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Contrato: 
+                            <p:inputText value="#{escriturasMB.movimiento.acto.nombre}" readonly="true" style="width: 95%;"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <h:panelGrid columns="4" style="font-weight: bolder;width: 100%;">
+                        <h:panelGroup>
+                            Repertorio: 
+                            <p:inputText value="#{escriturasMB.movimiento.numRepertorio}" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Fecha Repertorio: 
+                            <p:inputText value="#{escriturasMB.movimiento.fechaRepertorio}" readonly="true" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:inputText>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Inscripción: 
+                            <p:inputText value="#{escriturasMB.movimiento.numInscripcion}" readonly="true" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Fecha Inscripción:
+                            <p:inputText value="#{escriturasMB.movimiento.fechaInscripcion}" readonly="true" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:inputText>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </p:fieldset>
+                <p:tabView>
+                    <p:tab title="Carga de Documentos">
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="margin: 0 auto;" >
+                            <!--<p:outputLabel value="El nombre del documento puede contener: espacios, números, guion bajo o guion medio."
+                                           style="font-weight: bold;color: navy;"/>--> 
+                            <h:panelGroup rendered="false">
+                                <p:outputLabel value="UUID: " style="font-weight: bold;font-size: 16px;"/>
+                                <p:inputText readonly="true" value="#{escriturasMB.movimiento.valorUuid}" style="width: 100%;"/>
+                            </h:panelGroup>
+                            <p:outputLabel value="El nombre del documento NO debe contener: * - + { } ' = ¡ ! ` ´ , ; @ $ [ ] % ^ # / | \\ ( ) ." 
+                                           style="font-weight: bold;color: navy;"/>
+                            <p:fileUpload listener="#{escriturasMB.cargarArchivo}" style="width: 100%" multiple="false" 
+                                          fileLimit="1" skinSimple="true" allowTypes="/(\.|\/)(pdf|tif|tiff)$/" update="labelFile" 
+                                          mode="advanced" dragDropSupport="true" label="Buscar" uploadLabel="Subir" 
+                                          cancelLabel="Cancelar" previewWidth="60" />
+                            <h:panelGroup>
+                                <p:outputLabel value="Archivo: " style="font-weight: bold;font-size: 16px;"/>
+                                <p:inputText id="labelFile" readonly="true" value="#{escriturasMB.file.fileName}" style="width: 100%;"/>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:commandButton value="Grabar archivo" icon="pi pi-save" style="background-color: darkred"
+                                             styleClass="info-button rounded-button"
+                                             actionListener="#{escriturasMB.grabarArchivo()}" update="formMain" /> 
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Actualización de Folios">
+                        <h:panelGrid columns="3" style="font-weight: bolder;width: 100%;color: red;">
+                            <h:panelGroup>
+                                *Folio Desde: 
+                                <p:inputNumber value="#{escriturasMB.movimiento.folioInicio}" decimalPlaces="0" 
+                                               thousandSeparator="" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                *Folio Hasta:
+                                <p:inputNumber value="#{escriturasMB.movimiento.folioFin}" decimalPlaces="0" 
+                                               thousandSeparator="" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                *Nº de Tomo: 
+                                <p:inputText value="#{escriturasMB.movimiento.numTomo}"/>
+                            </h:panelGroup>
+                        </h:panelGrid><br/>
+                        <center>
+                            <p:commandButton value="Actualizar Folios" icon="pi pi-save" 
+                                             actionListener="#{escriturasMB.updateMovimiento()}"/>
+                        </center>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

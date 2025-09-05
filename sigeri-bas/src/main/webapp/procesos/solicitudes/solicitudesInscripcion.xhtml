@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        Solicitudes de Inscripción
+        #{userSession.setTopPage('Formulario único para solicitud de certificados')}
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-toggleswitch {
+                vertical-align: bottom;
+            }
+        </style>
+        <h:form id="frmMainSol">
+            <h:panelGrid columns="2" width="100%" >
+                <p:panel id="datSol" header="Datos del Solicitante">
+                    <p:panelGrid layout="grid" columns="2">
+                        <co:inputTextButton label="Nro. de Identificación" value="#{solicitudesInscripcion.solicitud.sol_cedula}"
+                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 1)}"
+                                            isAjaxButton="true" updateButton="frmMainSol:datSol" listenerAjaxButton="#{solicitudesInscripcion.selectObject}" />
+                        <co:inputText label="Nombres" value="#{solicitudesInscripcion.solicitud.sol_nombres}" />
+                        <co:inputText label="Dirección" value="#{solicitudesInscripcion.solicitud.sol_calles}" />
+                        <co:inputText label="Teléfono" value="#{solicitudesInscripcion.solicitud.sol_convencional}" typeInput="number" />
+                        <co:inputText label="Celular" value="#{solicitudesInscripcion.solicitud.sol_celular}" typeInput="number" />
+                        <co:inputText label="Correo" value="#{solicitudesInscripcion.solicitud.sol_correo}" />
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel id="datFact" header="Datos de Factura">
+                    <p:panelGrid layout="grid" columns="2">
+                        <co:inputTextButton label="CI/RUC/PASAPORTE Nro." value="#{solicitudesInscripcion.solicitud.ben_documento}"
+                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 2)}"
+                                            isAjaxButton="true" updateButton="frmMainSol:datFact" listenerAjaxButton="#{solicitudesInscripcion.selectObject}"/>
+                        <co:inputText label="Apellidos y Nombres" value="#{solicitudesInscripcion.solicitud.ben_nombres}" />
+                        <co:inputText label="Dirección" value="#{solicitudesInscripcion.solicitud.ben_direccion}" />
+                        <co:inputText label="Teléfono/Celular" value="#{solicitudesInscripcion.solicitud.ben_telefono}" typeInput="number" />
+                        <co:inputText label="Correo" value="#{solicitudesInscripcion.solicitud.ben_correo}" />
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel id="datPropiedad" header="Datos de la Propiedad">
+                    <p:panelGrid layout="grid" columns="2">
+                        <co:inputText label="Lote Nro." value="#{solicitudesInscripcion.solicitud.ben_nombres}" />
+                        <co:inputText label="Manzana" value="#{solicitudesInscripcion.solicitud.ben_apellidos}" />
+                        <co:inputText label="Sector" value="#{solicitudesInscripcion.solicitud.ben_telefono}" />
+                        <co:inputText label="Parroquia" value="#{solicitudesInscripcion.solicitud.sol_parroquia}" />
+                        <co:inputText label="Número Predio" value="#{solicitudesInscripcion.solicitud.numero_ficha}" typeInput="number" />
+                        <co:inputText label="Clave Catastral" value="#{solicitudesInscripcion.solicitud.clave_catastral}" />
+                        <co:inputDate label="Fecha Inscripción" value="#{solicitudesInscripcion.solicitud.fechaInscripcion}" maxdate="sysdate" />
+                        <co:inputNumber label="Número Inscripción" value="#{solicitudesInscripcion.solicitud.sol_numero_casa}" />
+                    </p:panelGrid>
+                </p:panel>
+                <p:panel id="datProHor" header="Identificación del inmueble" >
+                    <p:panelGrid id="pngDatproHor" layout="grid" columns="2">
+                        <co:inputSelect catalogo="#{solicitudesInscripcion.catalogoPropiedadHorizontal.ctlgItemCollection}" var="cph1"
+                                        itemLabel="#{cph1.valor}" itemValue="#{cph1}" value="#{solicitudesInscripcion.tipoInmueble}"
+                                        label="Tipo bien" />
+                        <co:inputText label="Número" value="#{solicitudesInscripcion.solicitud.tipo_inmueble}" />
+                        <h:panelGroup>
+                            <p:outputLabel value="Agrego copia de escritura pública" class="FontBold Wid100"  />
+                            <p:selectOneRadio value="#{solicitudesInscripcion.solicitud.copiaEscrituraPublica}" unselectable="true">
+                                <f:selectItem itemLabel="Si" itemValue="#{true}" />
+                                <f:selectItem itemLabel="No" itemValue="#{false}" />
+                            </p:selectOneRadio>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Documento de avalúos y catastro" class="FontBold Wid100"  />
+                            <p:selectOneRadio value="#{solicitudesInscripcion.solicitud.docAvaluoCatastro}" unselectable="true">
+                                <f:selectItem itemLabel="Si" itemValue="#{true}" />
+                                <f:selectItem itemLabel="No" itemValue="#{false}" />
+                            </p:selectOneRadio>
+                        </h:panelGroup>
+                    </p:panelGrid>
+                </p:panel>
+            </h:panelGrid>
+            <p:panel header="Nombres Completos del Propietario">
+                <p:panelGrid id="propietario" layout="grid" columns="3">
+                    <co:inputTextButton label="Nombre Completos" value="#{solicitudesInscripcion.solicitud.prop_nombres}"
+                                        actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 3)}"
+                                        isAjaxButton="true" updateButton="frmMainSol:propietario" listenerAjaxButton="#{solicitudesInscripcion.selectObject}"/>
+                    <co:inputText label="Apellidos paterno" value="#{solicitudesInscripcion.solicitud.prop_apellido_paterno}" />
+                    <co:inputText label="Apellidos materno" value="#{solicitudesInscripcion.solicitud.prop_apellido_materno}" />
+                    <co:inputSelect catalogo="#{solicitudesInscripcion.estadosCivil.ctlgItemCollection}" var="cph6"
+                                        itemLabel="#{cph6.valor}" itemValue="#{cph6}" value="#{solicitudesInscripcion.estadoCivil}"
+                                        label="Estado civil" />
+                    <co:inputText label="C.I./RUC" value="#{solicitudesInscripcion.solicitud.prop_cedula}" />
+                </p:panelGrid>
+            </p:panel>
+            <p:panel header="Conyugue">
+                <p:panelGrid id="conyugue" layout="grid" columns="2">
+                    <co:inputTextButton label="Nombre y apellidos del/la conyuge" value="#{solicitudesInscripcion.solicitud.prop_conyugue_nombres}"
+                                        actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 4)}"
+                                        isAjaxButton="true" updateButton="frmMainSol:conyugue" listenerAjaxButton="#{solicitudesInscripcion.selectObject}"/>
+                    <co:inputText label="C.I./RUC" value="#{solicitudesInscripcion.solicitud.prop_conyugue_cedula}" />
+                </p:panelGrid>
+            </p:panel>
+            <br/><br/>
+            <p:panelGrid columns="2" class="Wid100">
+                <co:inputSelectMany catalogo="#{solicitudesInscripcion.tiposCertificado.ctlgItemCollection}" var="ctlg2"
+                                    itemLabel="#{ctlg2.valor}" itemValue="#{ctlg2}" value="#{solicitudesInscripcion.tipoCertificado}"
+                                    label="Tipo de certificado" />
+                <h:panelGroup id="listCertfPara">
+                    <co:inputSelectMany catalogo="#{solicitudesInscripcion.tiposCertificadoPara.ctlgItemCollection}" var="ctlg3"
+                                        itemLabel="#{ctlg3.valor}" itemValue="#{ctlg3}" value="#{solicitudesInscripcion.tipoCertificadoPara}"
+                                        label="Usted necesita el certificado para" >
+                        <p:ajax event="ajax" update="frmMainSol:listCertfPara" process="frmMainSol:listCertfPara" />
+                    </co:inputSelectMany>
+                    <p:outputLabel value="Indique" rendered="#{solicitudesInscripcion.otros}" class="FontBold" />
+                    <p:inputText value="" class="Wid90 InputBorderBottom" rendered="#{solicitudesInscripcion.otros}" />
+                </h:panelGroup>
+            </p:panelGrid>
+            <br/><br/>
+            <center>
+                <p:outputLabel value="Imprimir Documento" />
+                <p:selectOneRadio value="#{solicitudesInscripcion.imprimirDocumento}" unselectable="true">
+                    <f:selectItem itemLabel="Si" itemValue="#{true}" />
+                    <f:selectItem itemLabel="No" itemValue="#{false}" />
+                </p:selectOneRadio>
+                <br/>
+                <p:commandButton value="Guardar" icon="fa fa-save" actionListener="#{solicitudesInscripcion.save()}" />
+            </center>
+            <br/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

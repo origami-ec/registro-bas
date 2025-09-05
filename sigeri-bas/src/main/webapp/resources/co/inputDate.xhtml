@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+    <cc:interface name="customInputDate" displayName="customInputDate">
+        <cc:attribute name="label" required="false"/>
+        <cc:attribute name="onkeypress" required="false"/>
+        <cc:attribute name="disabled" required="false" default="false"/>
+        <cc:attribute name="readonly" required="false" default="false"/>
+        <cc:attribute name="value" required="true" default=""/>
+        <cc:attribute name="tooltip" required="false" default="#{cc.attrs.label}"/>
+        <cc:attribute name="maxdate" required="false" />
+        <cc:attribute name="mindate" required="false" />
+        <cc:attribute name="pattern" required="false" default="dd/MM/yyyy" />
+        <!--clientBehavior Permite escuchar el ajax en el componente-->
+        <cc:clientBehavior name="blur" event="blur" targets="inputDate"  />
+    </cc:interface>
+    <cc:implementation>
+        <h:panelGroup layout="block" class="Container Wid100" id="#{cc.attrs.id}-container" rendered="#{cc.attrs.rendered}"  >
+            <!--# {cc.attrs.id} # {cc.clientId}-->
+            <p:outputLabel for="inputDate" id="#{cc.attrs.id}-label" value="#{cc.attrs.label}" class="DispBlock Wid100 FontBold"
+                           style="margin-bottom: 3px;"/>
+            <p:calendar id="inputDate" value="#{cc.attrs.value}" readonly="#{cc.attrs.readonly}" class="Wid70Cal"
+                        title="#{cc.attrs.tooltip}" maxdate="#{cc.attrs.maxdate}" mindate="#{cc.attrs.mindate}"
+                        pattern="#{cc.attrs.pattern}" navigator="true" mask="true" placeholder="#{cc.attrs.pattern}"
+                        showOn="#{cc.attrs.readonly? '' : 'button'}" pages="1" timeInput="true"
+                        inputStyleClass="#{cc.attrs.readonly? 'Wid95' : 'Wid93'}" style="display: flex;"
+                        readonlyInput="#{cc.attrs.readonly}" onkeypress="#{cc.attrs.onkeypress}"  yearRange="c-20:c+20"
+                        >
+<!--                <c:if test="# {maxdateSystem}" >
+                    <f:attribute name="maxdate" value="sysdate" />
+                </c:if>
+                <c:if test="# {not empty cc.attrs.maxdate and cc.attrs.maxdate ne ''}" >
+                    <f:attribute name="maxdate" value="# {cc.attrs.maxdate}" />
+                </c:if>-->
+            </p:calendar>
+        </h:panelGroup>
+    </cc:implementation>
+</html>

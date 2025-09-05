@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Reportes de Ficha Registrales</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Reportes de Ficha Registrales</h2></center>
+
+            <p:tabView id="mainTab">
+
+                <p:tab title="Reportes" id="tabInfoReporte">
+                    <p:panel id="panelReportes">
+                        <h:panelGrid id="reportes" styleClass="noBorder" columns="2" style="margin: 0 auto; font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel value="Tipo Reporte:" /><br></br>
+                                <p:selectOneMenu value="#{reporteFichaRegistralRp.tipoReporte}"
+                                                 style="width: 84% !important">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                                    <f:selectItem itemLabel="REPORTE DE FICHAS INGRESADAS" itemValue="#{1}" />
+                                    <p:ajax update="panelReportes"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel value="Usuarios:" /><br></br>
+                                <p:selectOneMenu value="#{reporteFichaRegistralRp.user}" converter="entityConverter"
+                                                 style="width: 83% !important">
+                                    <f:selectItem itemLabel="TODOS" itemValue="#{null}"/>
+                                    <f:selectItems value="#{reporteFichaRegistralRp.digitadores}" var="dig"
+                                                   itemLabel="#{dig.usuario}" itemValue="#{dig}"/>
+                                </p:selectOneMenu> 
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Desde:" /><br></br>
+                                <p:calendar value="#{reporteFichaRegistralRp.desde}" pattern="dd/MM/yyyy HH:mm"/><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup  >
+                                <p:outputLabel value="Hasta:" /><br></br>
+                                <p:calendar value="#{reporteFichaRegistralRp.hasta}" pattern="dd/MM/yyyy HH:mm"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandButton value="Reporte PDF" icon="ui-icon-document" 
+                                             styleClass="btnStyle" 
+                                             actionListener="#{reporteFichaRegistralRp.generarReportes(false)}"/>
+                            <p:spacer width="10"/>
+                            <p:commandButton value="Reporte XLS" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reporteFichaRegistralRp.generarReportes(true)}"/>
+                        </center>
+                    </p:panel>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

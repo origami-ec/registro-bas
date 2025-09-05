@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Fichas Registrales</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="dtmovimientos" paginator="true" lazy="true" scrollable="true" rows="10" filterEvent="enter" resizableColumns="true"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         value="#{dlgLazyFichas.lazy}" var="mov" emptyMessage="No se encontro Movimientos" style="text-align: center;">
+                <p:column headerText="No Ficha" filterBy="#{mov.numFicha}" filterStyle="width: 95%" width="150">
+                    <p:outputLabel value="#{mov.numFicha}"/>
+                </p:column>
+                <p:column headerText="Clave Predial" filterBy="#{mov.claveCatastral}" filterStyle="width: 95%" width="150">
+                    <p:outputLabel value="#{mov.claveCatastral}"/>
+                </p:column>
+                <p:column headerText="Parroquia" width="80">
+                    <p:outputLabel value="#{mov.parroquia.descripcion}"/>
+                </p:column>
+                <p:column headerText="Sel." width="20">
+                    <p:commandLink actionListener="#{dlgLazyMov.selectFicha(mov)}">
+                        <p:graphicImage value="/resources/icons/ir.png" height="16"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

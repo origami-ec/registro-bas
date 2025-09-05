@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Reportes de Recaudación</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>REPORTES DE RECAUDACIÓN</h1></center>
+            <p:tabView id="mainTab">
+                <p:tab title="Consultas" id="tabInfoConsulta" rendered="false">
+                    <p:panel id="panelConsultas">
+                        <h:panelGrid id="consultas" columns="1" style="margin: 0 auto;">
+                            <h:panelGroup>
+                                <p:outputLabel value="Tipo Consulta:" /><br></br>
+                                <p:selectOneMenu value="#{reportesTesoreria.tipoConsulta}">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                                    <f:selectItem itemLabel="CONSULTA POR SOLICITANTE E INTERVINIENTE" itemValue="#{1}" />
+                                    <p:ajax update="panelConsultas"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <p:row rendered="#{reportesTesoreria.tipoConsulta eq 1}">
+                                <p:column></p:column>
+                                <p:column>
+                                    <p:inputText value="#{reportesTesoreria.solicitanteInterviniente.nombreCompleto}" size="39" readonly="true"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="Buscar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{reportesTesoreria.showDlg('/resources/dialog/dlglazyente')}">
+                                        <p:ajax event="dialogReturn" listener="#{reportesTesoreria.selectObject}" update="consultas"/>
+                                    </p:commandButton>
+                                </p:column>                            
+                            </p:row> 
+                        </h:panelGrid> 
+                        <p:panelGrid styleClass="noBorder" style="margin: 0 auto;">
+                            <p:row rendered="#{reportesTesoreria.tipoConsulta eq 1}">
+                                <p:column>Desde:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesTesoreria.desde2}" pattern="dd/MM/yyyy HH:mm"/>
+                                </p:column>
+                                <p:column>Hasta:</p:column>
+                                <p:column>
+                                    <p:calendar value="#{reportesTesoreria.hasta2}" pattern="dd/MM/yyyy HH:mm"/>
+                                </p:column>
+                            </p:row>                         
+                        </p:panelGrid>  
+                        <p:panelGrid styleClass="noBorder" style="margin: 0 auto;" columns="3">
+                            <p:commandButton value="Consultar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{reportesTesoreria.generarConsulta()}"/>
+                            <p:commandButton value="Reporte Pdf" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesTesoreria.generarDocumento(false)}"/>
+                            <p:commandButton value="Reporte Excel" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesTesoreria.generarDocumento(true)}"/>
+                        </p:panelGrid>                    
+                    </p:panel>
+                    <br></br>
+                    <p:dataTable reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" scrollable="true" scrollWidth="97%"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{reportesTesoreria.solic_interv}" var="sol" emptyMessage="No se encontro ningun Item" rendered="#{reportesTesoreria.tipoConsulta eq 1}" resizableColumns="true" 
+                                 rowKey="#{sol.tramite}" selectionMode="single">                        
+                        <f:facet name="header">RESULTADO DE CONSULTA</f:facet>
+                        <p:column headerText="Tramite" width="65">
+                            #{sol.tramite}
+                        </p:column>
+                        <p:column headerText="Factura" width="75">
+                            #{sol.factura}
+                        </p:column>
+                        <p:column headerText="Fecha Ingreso" width="100">
+                            <h:outputText value="#{sol.fechaingreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Tramitador" width="150">
+                            #{sol.tramitador}
+                        </p:column>
+                        <p:column headerText="Estudio Juridico" width="150">
+                            #{sol.estudioJuridico}
+                        </p:column>                        
+                        <p:column headerText="Informacion Adicional" width="150">
+                            #{sol.infAdicional}
+                        </p:column>
+                        <p:column headerText="Valor Facturado" width="100">
+                            #{sol.valor_fact}
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Reportes" id="tabInfoReporte">
+                    <p:panel id="panelReportes">
+                        <h:panelGrid id="reportes" columns="1" style="margin: 0 auto; font-weight: bolder; text-align: center;">
+                            <h:panelGroup>
+                                <p:outputLabel value="Tipo Reporte:" /><br></br>
+                                <p:selectOneMenu value="#{reportesTesoreria.tipoReporte}" style="width: 250px;">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                                    <f:selectItem itemLabel="CUADRE DE CAJA" itemValue="#{1}" />
+                                    <f:selectItem itemLabel="DESCUENTOS POR LEY" itemValue="#{2}" />
+                                    <f:selectItem itemLabel="DETALLE CONTRATOS" itemValue="#{3}" />
+                                    <f:selectItem itemLabel="FORMAS PAGO" itemValue="#{4}" />
+                                    <f:selectItem itemLabel="TITULOS ANULADOS" itemValue="#{5}" />
+                                    <f:selectItem itemLabel="RESUMEN POR CONTRATOS" itemValue="#{6}" />
+                                    <f:selectItem itemLabel="RESUMEN POR CAJERO" itemValue="#{7}" />
+                                    <f:selectItem itemLabel="VALORES EN CERO" itemValue="#{8}" />
+                                    <f:selectItem itemLabel="TRAMITES GENERADOS" itemValue="#{9}" />
+                                    <p:ajax update="panelReportes"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{reportesTesoreria.tipoReporte ne 9}">
+                                <p:outputLabel value="Usuarios Cajero:" /><br></br>
+                                <p:selectOneMenu value="#{reportesTesoreria.user}" converter="entityConverter"
+                                                 style="width: 250px;" disabled="#{reportesTesoreria.todos}" >
+                                    <f:selectItem itemLabel="TODOS" itemValue="#{null}"/>
+                                    <f:selectItems value="#{reportesTesoreria.cajeros}" var="caj" 
+                                                   itemLabel="#{caj.usuario}" itemValue="#{caj}"/>
+                                </p:selectOneMenu> 
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{reportesTesoreria.tipoReporte eq 9}">
+                                <p:outputLabel value="Usuarios Ventanilla:" /><br></br>
+                                <p:selectOneMenu value="#{reportesTesoreria.user}" converter="entityConverter"
+                                                 style="width: 250px;" filter="true" filterMatchMode="startsWith" >
+                                    <f:selectItem itemLabel="TODOS" itemValue="#{null}"/>
+                                    <f:selectItems value="#{reportesTesoreria.ventanillas}" var="ven" 
+                                                   itemValue="#{ven}" itemLabel="#{ven.ente.nombres} - #{ven.usuario}"/>
+                                </p:selectOneMenu> 
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel value="Desde:" /><br></br>
+                                <p:calendar value="#{reportesTesoreria.desde}" pattern="dd/MM/yyyy HH:mm"/><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup >
+                                <p:outputLabel value="Hasta:" /><br></br>
+                                <p:calendar value="#{reportesTesoreria.hasta}" pattern="dd/MM/yyyy HH:mm"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <center>
+                            <p:commandButton value="Reporte PDF" icon="pi pi-file-pdf" 
+                                             actionListener="#{reportesTesoreria.generarReportes(false)}"/>
+                            <p:spacer width="10"/>
+                            <p:commandButton value="Reporte XLS" icon="pi pi-file-excel" 
+                                             actionListener="#{reportesTesoreria.generarReportes(true)}"/>
+                        </center>
+                    </p:panel>
+                </p:tab>
+
+                <p:tab title="Reportes Historicos" id="tabInfoReporteHist" >
+                    <p:panel id="panelReportesHist">
+                        <h:panelGrid id="reportesHist" columns="1" style="margin: 0 auto;text-align: center; font-weight: bolder;">
+                            Tipo Reporte:
+                            <p:selectOneMenu value="#{reportesTesoreria.tipoReporteHist}">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                                <f:selectItem itemLabel="CUADRE DE CAJA" itemValue="#{1}" />
+                                <f:selectItem itemLabel="DESCUENTOS POR LEY" itemValue="#{2}" />
+                                <f:selectItem itemLabel="DESCUENTOS POR LIMITE" itemValue="#{3}" />
+                                <f:selectItem itemLabel="FACTURAS ANULADAS" itemValue="#{4}" />
+                                <!--<f:selectItem itemLabel="FACTURAS INGRESADAS POR EL BIESS" itemValue="#{5}" />--> 
+                                <f:selectItem itemLabel="DETALLE DE CONTRATOS" itemValue="#{6}" />
+                                <p:ajax update="panelReportesHist"/>
+                            </p:selectOneMenu>
+                            Desde:
+                            <p:calendar value="#{reportesTesoreria.desde3}" navigator="true" pattern="dd/MM/yyyy HH:mm"/>
+                            Hasta:
+                            <p:calendar value="#{reportesTesoreria.hasta3}" navigator="true" pattern="dd/MM/yyyy HH:mm"/>
+                            <p:spacer height="10" />
+                            <p:commandButton value="Reporte PDF" icon="pi pi-file-pdf" 
+                                             actionListener="#{reportesTesoreria.generarReportesHist(false)}"/>
+                            <p:spacer height="10" />
+                            <p:commandButton value="Reporte XLS" icon="pi pi-file-excel" 
+                                             actionListener="#{reportesTesoreria.generarReportesHist(true)}"/>                   
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

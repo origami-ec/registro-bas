@@ -1,0 +1,521 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Consultas ORION</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm" prependId="false">
+            <div class="ui-fluid">
+                <div class="ui-g">
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h5>Consulta de Indices</h5>
+                            <p:panelGrid style="width: 100%;" styleClass="ui-panelgrid-blank form-group form-elements" columns="6" columnClasses="ui-g-12 ui-md-1,ui-g-12 ui-md-3,ui-g-12 ui-md-1,ui-g-12 ui-md-3,ui-g-12 ui-md-1,ui-g-12 ui-md-3">
+                                Año:
+                                <p:inputText value="#{historicoView.anio}" maxlength="4"> <p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                                Inscripcion:
+                                <p:inputText value="#{historicoView.repertorio}"> <p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                                Cliente:
+                                <p:inputText value="#{historicoView.cliente}"/>
+                            </p:panelGrid>
+                            <center >
+                                <p:commandButton value="Buscar" actionListener="#{historicoView.buscarOrion()}" update="dataFind"
+                                                 styleClass="btnStyle" icon="ui-icon-search" style="width: auto;"/>
+                            </center>
+                            <h:panelGroup id="dataFind" style="padding-top: 20px;">
+                                <p:tabView prependId="false" style="padding-top: 10px;"> 
+                                    <p:tab title="COMPRAS - VENTAS">
+                                        <p:panel id="compras" header="COMPRAS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionCompras" widgetVar="dtActosOrionCompras" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.compras}" var="ac" emptyMessage="No se encontraron resultados."
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="ventas" header="VENTAS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionVentas" widgetVar="dtActosOrionVentas" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.ventas}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+                                    <p:tab title="HIPOTECTAS Y PROHIBICION">
+                                        <p:panel id="hipotecas" header="HIPOTECAS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionHipotecas" widgetVar="dtActosOrionHipotecas" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.hipotecas}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Deudor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Institucion" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="prhibiciones" header="PROHIBICIONES DE ENAJENAR" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionProhibiciones" widgetVar="dtActosOrionProhibiciones" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.prohibiciones}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Deudor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Institucion" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+                                    <p:tab title="CERTIFICADOS">
+                                        <p:panel id="certificados" header="CERTIFICADOS" style="margin-bottom:20px">
+
+                                            <p:dataTable id="dtActosOrionCertificados" widgetVar="dtActosOrionCertificados" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.certificados}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         selectionMode="single" selection="#{historicoView.actoSeleccionado}" rowIndexVar="indexInd" rowKey="#{ac.id}" >
+                                                <p:ajax event="rowSelect" listener="#{historicoView.onRowSelectCertificado}" update="teXEditor" />
+                                                <p:ajax event="rowUnselect" listener="#{historicoView.onRowUnselectCertificado}" update="teXEditor"/>
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                            <p:panelGrid columns="1" columnClasses="ui-g-12" layout="grid" style="padding-top: 15px; border:0px none; background-color:transparent;">
+                                                <f:facet name="header">
+                                                    DETALLE CERTIFICADO
+                                                </f:facet>
+                                                <p:textEditor id="teXEditor"  value="#{historicoView.certificado}" readonly="true" toolbarVisible="false" />
+
+                                            </p:panelGrid>
+
+                                        </p:panel>
+                                    </p:tab>
+                                    <p:tab title="DEMANDAS E INTERDICCION">
+                                        <p:panel id="demandas" header="DEMANDAS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOriondemandas" widgetVar="dtActosOriondemandas" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.demandas}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="interdicciones" header="INTERDICCIONES" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrioninterdicciones" widgetVar="dtActosOrioninterdicciones" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.interdicciones}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+                                    <p:tab title="CAUSIONES Y NOMBRAMIENTOS">
+                                        <p:panel id="causiones" header="CAUCIONES" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrioncausiones" widgetVar="dtActosOrioncausiones" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.cauciones}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Descripcion" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="nombramientos" header="NOMBRAMIENTOS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionnombramientos" widgetVar="dtActosOrionnombramientos" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.nombramientos}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+                                    <p:tab title="EMBARGOS Y PATRIMONIOS">
+                                        <p:panel id="embargos" header="EMBARGOS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionembargos" widgetVar="dtActosOrionembargos" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.embargos}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="patrimonio" header="PATRIMONIO FAMILIAR" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrionipatrimonio" widgetVar="dtActosOrionipatrimonio" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.patrimonios}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+                                    <p:tab title="PODERES Y PRENDAS">
+                                        <p:panel id="poderes" header="PODER ESPECIAL" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOriopoderes" widgetVar="dtActosOriopoderes" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.poderes}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Nombre" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="prendas" header="PRENDAS" style="margin-bottom:20px">
+                                            <p:dataTable id="dtActosOrioniprendas" widgetVar="dtActosOrioniprendas" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                         paginatorAlwaysVisible="false"
+                                                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         value="#{historicoView.prendas}" var="ac" emptyMessage="No se encontraron resultados." resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                         rowIndexVar="indexInd" rowKey="#{ac.id}" >
+
+                                                <p:column headerText="Año" width="40" sortBy="#{ac.anio}" filterBy="#{ac.anio}"  filterMatchMode="exact">
+                                                    <h:outputText value="#{ac.anio}"/>
+                                                </p:column>
+                                                <p:column headerText="Inscripcion" width="70" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.repertorio}"/>
+                                                </p:column>
+                                                <p:column headerText="Mes" width="30" filterBy="#{ac.mes}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.mes}"/>
+                                                </p:column>
+                                                <p:column headerText="Vendedor" sortBy="#{ac.cliente}"  filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cliente}"/>
+                                                </p:column>
+                                                <p:column headerText="Comprador" sortBy="#{ac.descripcion}"  filterBy="#{ac.descripcion}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor" width="100" filterBy="#{ac.cuantia}" filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.cuantia}"/>
+                                                </p:column>
+                                                <p:column headerText="Predio" width="150" sortBy="#{ac.predio}" filterBy="#{ac.predio}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.predio}"/>
+                                                </p:column>
+                                                <p:column headerText="Parroquia" width="150" sortBy="#{ac.parroquia}" filterBy="#{ac.parroquia}"  filterMatchMode="contains">
+                                                    <h:outputText value="#{ac.parroquia}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+                                </p:tabView>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

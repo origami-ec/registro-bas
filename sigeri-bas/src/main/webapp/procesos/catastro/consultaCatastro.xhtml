@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:comp="http://xmlns.jcp.org/jsf/composite/dialog">
+    <ui:define name="title">Consulta CATASTRO</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>CONSULTA CATASTRO</h1></center>
+
+            <h:panelGrid columns="7" style="font-weight: bolder;font-size: 16px;margin: 0 auto;" >
+                <p:outputLabel value="Tipo Consulta:" style="font-size: 18px;" />
+                <p:spacer height="1" width="20"/>
+                <p:selectOneMenu value="#{consultaCatastro.tipo}" style="width: 150px;">
+                    <f:selectItem itemLabel="Identificación" itemValue="#{1}"/>
+                    <f:selectItem itemLabel="Clave Predial" itemValue="#{2}"/>
+                </p:selectOneMenu>
+                <p:spacer height="1" width="20"/>
+                <p:inputText value="#{consultaCatastro.ingreso}" size="30" />
+                <p:spacer height="1" width="20"/>
+                <p:commandButton value="Buscar" icon="pi pi-search" update="dtPredios" 
+                                 actionListener="#{consultaCatastro.consultar()}" />
+            </h:panelGrid>
+            <br/><br/>
+            <p:dataTable value="#{consultaCatastro.respuesta}" var="pre" rowIndexVar="rowIndex"
+                         emptyMessage="No se encontraron elementos" id="dtPredios" >
+                <p:column headerText="No" width="60">
+                    #{rowIndex+1}
+                </p:column>
+                <p:column headerText="Clave Catastral" width="200" >
+                    <p:outputLabel value="#{pre.clavecatastral}"/>
+                </p:column>
+                <p:column headerText=" Nombre Propietario" >
+                    <p:outputLabel value="#{pre.nombrepropietario}"/>
+                </p:column>
+                <p:column headerText="Direccion">
+                    <p:outputLabel value="#{pre.direccion}"/>
+                </p:column>
+                <p:column headerText="Sector">
+                    <p:outputLabel value="#{pre.sector}"/>
+                </p:column>
+                <p:column headerText="Area Terreno">
+                    <p:outputLabel value="#{pre.areaterreno}"/>
+                </p:column>
+                <p:column headerText="Ver" width="40">
+                    <p:commandButton icon="pi pi-eye" title="Visualizar Datos" process="@this"
+                                     actionListener="#{consultaCatastro.seleccionar(pre)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Detalle de la Propiedad" widgetVar="dlgPredio" modal="true" resizable="false" >
+            <h:form id="formPredio" >
+                <h:panelGrid columns="2" style="font-weight: bolder;">
+                    Clave Catastral:
+                    <p:inputText value="#{consultaCatastro.seleccionado.clavecatastral}" size="60" readonly="true" />
+                    Manzana:
+                    <p:inputText value="#{consultaCatastro.seleccionado.manzanacooperativa}" size="60" readonly="true" />
+                    Lote:
+                    <p:inputText value="#{consultaCatastro.seleccionado.lotecooperativa}" size="60" readonly="true" />
+                    Sector:
+                    <p:inputText value="#{consultaCatastro.seleccionado.sector}" size="60" readonly="true" />
+                    Direccion:
+                    <p:inputText value="#{consultaCatastro.seleccionado.direccion}" size="60" readonly="true" />
+                    Calle Principal:
+                    <p:inputText value="#{consultaCatastro.seleccionado.calleprincipal}" size="60" readonly="true" />
+                    Identificacion:
+                    <p:inputText value="#{consultaCatastro.seleccionado.identificacionpropietario}" size="60" readonly="true" />
+                    Nombres:
+                    <p:inputText value="#{consultaCatastro.seleccionado.nombrepropietario}" size="60" readonly="true" />
+                    Frente:
+                    <p:inputText value="#{consultaCatastro.seleccionado.frente}" size="60" readonly="true" />
+                    Fondo:
+                    <p:inputText value="#{consultaCatastro.seleccionado.fondo}" size="60" readonly="true" />
+                    Area Terreno:
+                    <p:inputText value="#{consultaCatastro.seleccionado.areaterreno}" size="60" readonly="true" />
+                    Area Construccion:
+                    <p:inputText value="#{consultaCatastro.seleccionado.areaconst}" size="60" readonly="true" />
+                    Estado Predio:
+                    <p:inputText value="#{consultaCatastro.seleccionado.estadopredio}" size="60" readonly="true" />
+                    Avaluo Predio:
+                    <p:inputNumber value="#{consultaCatastro.seleccionado.avaluopredio}" readonly="true" decimalPlaces="2" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        Declaración de Licitud de fondos
+        #{userSession.setTopPage('Declaración de Licitud de fondos')}
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-toggleswitch {
+                vertical-align: bottom;
+            }
+        </style>
+        <h:form id="frmMainSol">
+            <h:panelGrid columns="2" width="100%" >
+                <p:panel id="datSol" header="Identidad del Beneficiario de la transacción">
+                    <p:panelGrid layout="grid" columns="2">
+                        <co:inputTextButton label="Nro. de Identificación" value="#{solicitudesInscripcion.solicitud.sol_cedula}"
+                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 1)}"
+                                            isAjaxButton="true" updateButton="frmMainSol:datSol" listenerAjaxButton="#{solicitudesInscripcion.selectObject}" />
+                        <co:inputText label="Nombres y Apellidos" value="#{solicitudesInscripcion.solicitud.sol_nombres}" />
+                        <co:inputSelect label="Tipo ID" catalogo="#{solicitudesInscripcion.tipoIdCatalogo.ctlgItemCollection}"
+                                        var="cph1" itemLabel="#{cph1.valor}" itemValue="#{cph1}" value="#{solicitudesInscripcion.tipoId}"  />
+                    </p:panelGrid>
+                </p:panel>
+            </h:panelGrid>
+
+            <br/><br/>
+            <center>
+                <p:outputLabel value="Imprimir Documento" />
+                <p:selectOneRadio value="#{solicitudesInscripcion.imprimirDocumento}" unselectable="true">
+                    <f:selectItem itemLabel="Si" itemValue="#{true}" />
+                    <f:selectItem itemLabel="No" itemValue="#{false}" />
+                </p:selectOneRadio>
+                <br/>
+                <p:commandButton value="Guardar" icon="fa fa-save" actionListener="#{solicitudesInscripcion.saveLicitud()}" />
+            </center>
+            <br/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

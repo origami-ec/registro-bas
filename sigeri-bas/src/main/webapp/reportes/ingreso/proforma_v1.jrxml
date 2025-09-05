@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proforma" language="groovy" pageWidth="421" pageHeight="595" columnWidth="391" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="73dd3597-5107-44cb-a7c3-db55bf31f331">
+	<property name="ireport.zoom" value="2.4793388429752063"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="FOOTER" class="java.lang.String"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="VALOR_STRING" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\app_server\\apache-tomee-plus-1.7.1\\webapps\\rpp\\reportes\\ingreso\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select liq.fecha_creacion, ht.num_tramite, sol.ci_ruc, sol.telefono1, sol.direccion, sol.correo1, ben.ci_ruc as ced_bene, ben.telefono1 as telef_bene, ben.direccion as direccion_bene, ben.correo1 as correo_bene, liq.ingreso_direccion, liq.ingreso_num_repertorio, liq.ingreso_fecha_repertorio,
+liq.ingreso_fecha_inscripcion, liq.ingreso_linderos, liq.ingreso_historiado, liq.ingreso_ventas,
+liq.ingreso_num_historiado, liq.ingreso_num_ventas,
+case sol.es_persona when true then coalesce(sol.nombres,'')||' '||coalesce(sol.apellidos,'')
+else sol.razon_social end AS solicitante,
+case ben.es_persona when true then coalesce(ben.nombres,'')||' '||coalesce(ben.apellidos,'')
+else ben.razon_social end AS beneficiario,
+liq.sub_total, liq.descuento_valor, liq.desc_limit_cobro, liq.total_pagar, liq.descuento_porc,
+liq.adicional, liq.ficha, liq.num_inscripcion, liq.anio_inscripcion,
+liq.gastos_generales, it.valor as uso_documento, liq.inf_adicional_prof,
+coalesce(en.titulo_prof,'') ||' '||
+coalesce(en.nombres,'') ||' '|| coalesce(en.apellidos,'') as user_name, us.usuario as elaborado,
+liq.oficio_memo_referencia, liq.num_formulario, liq.estado_ws, liq.mensaje_ws,
+liq.certificado_no_poseer_bien, liq.tramite_corporativo, liq.ride_enviado, pa.descripcion as parroquia
+from flow.regp_liquidacion as liq
+left join flow.historico_tramites ht on (ht.id = liq.tramite)
+left join app.cat_ente sol on (sol.id = liq.solicitante)
+left join app.cat_ente ben on (ben.id = liq.beneficiario)
+left join app.acl_user us on (us.id = liq.user_creacion)
+left join app.cat_ente en on (en.id = us.ente)
+left join app.ctlg_item it on (it.id = liq.uso_documento)
+left join app.cat_parroquia pa on pa.id = liq.parroquia
+where liq.id = $P{ID_LIQUIDACION}]]>
+	</queryString>
+	<field name="fecha_creacion" class="java.sql.Timestamp"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="telefono1" class="java.lang.String"/>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="correo1" class="java.lang.String"/>
+	<field name="ced_bene" class="java.lang.String"/>
+	<field name="telef_bene" class="java.lang.String"/>
+	<field name="direccion_bene" class="java.lang.String"/>
+	<field name="correo_bene" class="java.lang.String"/>
+	<field name="ingreso_direccion" class="java.lang.String"/>
+	<field name="ingreso_num_repertorio" class="java.lang.String"/>
+	<field name="ingreso_fecha_repertorio" class="java.lang.String"/>
+	<field name="ingreso_fecha_inscripcion" class="java.lang.String"/>
+	<field name="ingreso_linderos" class="java.lang.Boolean"/>
+	<field name="ingreso_historiado" class="java.lang.Boolean"/>
+	<field name="ingreso_ventas" class="java.lang.Boolean"/>
+	<field name="ingreso_num_historiado" class="java.lang.String"/>
+	<field name="ingreso_num_ventas" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="beneficiario" class="java.lang.String"/>
+	<field name="sub_total" class="java.math.BigDecimal"/>
+	<field name="descuento_valor" class="java.math.BigDecimal"/>
+	<field name="desc_limit_cobro" class="java.math.BigDecimal"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="descuento_porc" class="java.math.BigDecimal"/>
+	<field name="adicional" class="java.math.BigDecimal"/>
+	<field name="ficha" class="java.lang.Long"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="anio_inscripcion" class="java.lang.Integer"/>
+	<field name="gastos_generales" class="java.math.BigDecimal"/>
+	<field name="uso_documento" class="java.lang.String"/>
+	<field name="inf_adicional_prof" class="java.lang.String"/>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="elaborado" class="java.lang.String"/>
+	<field name="oficio_memo_referencia" class="java.lang.String"/>
+	<field name="num_formulario" class="java.lang.String"/>
+	<field name="estado_ws" class="java.lang.String"/>
+	<field name="mensaje_ws" class="java.lang.String"/>
+	<field name="certificado_no_poseer_bien" class="java.lang.Boolean"/>
+	<field name="tramite_corporativo" class="java.lang.Boolean"/>
+	<field name="ride_enviado" class="java.lang.Boolean"/>
+	<field name="parroquia" class="java.lang.String"/>
+	<pageHeader>
+		<band height="44" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="negrita" x="130" y="20" width="261" height="22" isPrintWhenDetailOverflows="true" uuid="8a435268-07ef-4950-86cf-11b375110a5c"/>
+				<box leftPadding="2">
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Nro. " + java.lang.String.format("%08d", $F{num_tramite})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="130" y="0" width="261" height="20" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="a174ceb2-648a-4585-8f2b-da1285940820"/>
+				<box leftPadding="0">
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="0.0" lineStyle="Double"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[FORMULARIO DE SOLICITUD DE TRÁMITE]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="130" height="42" uuid="808465cd-4f70-425c-8ef7-164418538d97"/>
+				<box>
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<leftPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="178" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="205" y="14" width="66" height="12" isPrintWhenDetailOverflows="true" uuid="366a43f4-d211-4246-9b20-630156c278ec"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TELF./CEL.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="14" width="150" height="12" isPrintWhenDetailOverflows="true" uuid="d9453ead-7369-4c1d-8bce-394793276eff"/>
+				<box>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="271" y="14" width="120" height="12" isPrintWhenDetailOverflows="true" uuid="05f88a8c-6f93-40ba-839e-d02563969f55"/>
+				<box leftPadding="0">
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telefono1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="26" width="336" height="12" isPrintWhenDetailOverflows="true" uuid="9f58f8d4-077e-415a-ae5a-714edcf1ecd0"/>
+				<box>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solicitante}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="391" height="12" backcolor="#CCCCCC" uuid="a0746925-7833-445c-adf4-9beead1dd8f1"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[DATOS DE SOLICITANTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="14" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="39bbcbcb-f597-469a-b097-d284702dc53c"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CI/RUC:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="26" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="2342d652-6d32-43fa-9848-7292db42a9c4"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NOMBRE:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="271" y="64" width="120" height="12" isPrintWhenDetailOverflows="true" uuid="de49dddc-00e1-4a0d-8279-2f640acd9621"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telef_bene}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="64" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="d00b15d6-387d-4a05-b8d8-f6bbb3b91edb"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CI/RUC:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="205" y="64" width="66" height="12" isPrintWhenDetailOverflows="true" uuid="918220ef-a4df-417f-9c5e-f7d289f9c4d8"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TELF./CEL.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="64" width="150" height="12" isPrintWhenDetailOverflows="true" uuid="99bb08bc-bc32-43b8-b7e6-4e7bbf2f1712"/>
+				<box>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_bene}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="88" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="29a6a408-a742-4759-b524-fd3506056693"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CORREO:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="88" width="336" height="12" isPrintWhenDetailOverflows="true" uuid="858ad384-7666-4303-a1b6-cbc557e0ba53"/>
+				<box>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{correo_bene}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="76" width="336" height="12" isPrintWhenDetailOverflows="true" uuid="aabc3fcc-be3e-4442-8a70-a131dca136b5"/>
+				<box>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{beneficiario}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="76" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="28a20363-0f09-482a-89c7-a2e7a8433484"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NOMBRE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="50" width="391" height="12" backcolor="#CCCCCC" uuid="b1b4a7a6-58fe-473c-b92d-8d867d58cc6a"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[DATOS PARA TITULO DE CREDITO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="38" width="55" height="12" isPrintWhenDetailOverflows="true" uuid="defd598f-a393-407e-bf8b-e60faf19600e"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CORREO:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="38" width="336" height="12" isPrintWhenDetailOverflows="true" uuid="f76245d0-8ee2-45fa-9cda-52b3c1323fe7"/>
+				<box>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{correo1}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="261" y="134" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="5007084a-b3f5-4b9c-bd06-81f31b0e479e"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Nro de Inscripción:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="341" y="134" width="50" height="12" isPrintWhenDetailOverflows="true" uuid="24109e9d-3747-4aee-83b6-c532c5b6fd80"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion} > 0 ? $F{num_inscripcion} : ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="134" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="6315c877-207b-4ad7-929b-f19b6753106f"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Fec. de Celebración:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="134" width="50" height="12" isPrintWhenDetailOverflows="true" uuid="ea24429a-8309-47ba-9589-b059318127e4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_fecha_repertorio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="199" y="146" width="62" height="12" isPrintWhenDetailOverflows="true" uuid="0cdd0889-c5b6-4e2c-8dc6-cec2aa8604dd"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ficha} > 0 ? $F{ficha} : ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="130" y="134" width="70" height="12" isPrintWhenDetailOverflows="true" uuid="38cadeb2-8f23-464e-ae9d-35396789c3ce"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Insc.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="200" y="134" width="61" height="12" isPrintWhenDetailOverflows="true" uuid="d8852c80-ad28-4808-bf48-34e18d101a23"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_fecha_inscripcion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="146" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="9a2d196e-4476-4bf8-b794-3e897c75a7f5"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Nro Repertorio:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="146" width="50" height="12" isPrintWhenDetailOverflows="true" uuid="e3c58d20-0e1f-4c25-a5e8-a562f8ad62ac"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_num_repertorio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="130" y="146" width="70" height="12" isPrintWhenDetailOverflows="true" uuid="376bc1de-5bd2-493e-a43e-1be0d5d0c6ba"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Nro de Ficha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="100" width="391" height="12" backcolor="#CCCCCC" uuid="f8d385ea-e1a4-47c1-8b16-fcd70688f28c"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[INFORMACION DE LA PROPIEDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="114" width="60" height="18" isPrintWhenDetailOverflows="true" uuid="6c19a2d0-5d6b-4e2f-ba40-b4122695cae9"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Ubicación:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="261" y="146" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="ff3a8f13-270e-4703-958a-49193fb3dad1"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Con Linderos:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="35" y="162" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="5fbb2979-927f-471c-8619-0e39f4e16baa"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Historia de Dominio:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="162" width="80" height="12" isPrintWhenDetailOverflows="true" uuid="0ab3153f-8e5b-4617-8fae-8345ccac097a"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Historial de Ventas:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="341" y="146" width="14" height="14" isPrintWhenDetailOverflows="true" uuid="4eb0492f-307e-4492-a99a-cdd6c157d7c4"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_linderos} ? "X" : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="116" y="162" width="14" height="14" isPrintWhenDetailOverflows="true" uuid="ae7ebf94-a893-4be3-b752-7c75b905778b"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_historiado} ? "X" : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="280" y="162" width="14" height="14" isPrintWhenDetailOverflows="true" uuid="8a927630-76cb-4f52-9dfe-ba26e43551b9"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_ventas} ? "X" : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="114" width="331" height="18" isPrintWhenDetailOverflows="true" uuid="1eac6dbe-0649-47fd-8d8a-8ec37c34b378"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_direccion}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="133" y="162" width="50" height="12" isPrintWhenDetailOverflows="true" uuid="b6a752e3-34b3-4ad7-a9fa-1d6ce8916d9a"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_num_historiado}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="297" y="162" width="50" height="12" isPrintWhenDetailOverflows="true" uuid="1cfa6d40-5699-4f97-b2e7-c3a31c716123"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso_num_ventas}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="34" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{inf_adicional_prof} != null && !$F{inf_adicional_prof}.isEmpty()]]></printWhenExpression>
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="200" height="12" uuid="6c1b44a7-fb01-4c14-a120-2967c439f384"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Información Adicional:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="12" width="391" height="22" isPrintWhenDetailOverflows="true" uuid="e2ebcfd5-3a23-4011-95e6-9a5663475d47"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inf_adicional_prof}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="22" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="391" height="20" uuid="b74a6668-b163-48a0-8c90-8d59564af9cb"/>
+				<subreportParameter name="GASTO_GENERAL">
+					<subreportParameterExpression><![CDATA[$F{gastos_generales}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUB_TOTAL">
+					<subreportParameterExpression><![CDATA[$F{sub_total}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIQUIDACION">
+					<subreportParameterExpression><![CDATA[$P{ID_LIQUIDACION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VALOR_STRING">
+					<subreportParameterExpression><![CDATA[$P{VALOR_STRING}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ADICIONAL">
+					<subreportParameterExpression><![CDATA[$F{adicional}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TOTAL_PAGAR">
+					<subreportParameterExpression><![CDATA[$F{total_pagar}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESCUENTO">
+					<subreportParameterExpression><![CDATA[$F{descuento_valor}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "proforma_detalles.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="52" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="391" height="50" uuid="97e5bca3-37e4-4f91-b61b-6baa4b0cb0db"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[ATENCIÓN: En cumplimiento a lo que determina la Ley del Sistema Nacional de Registro de Datos Públicos, en su Art. 6.- Accesibilidad y confidencialidad en lo referente a: “...Para acceder a la información sobre el Patrimonio de las personas, el solicitante deberá justificar y motivar su requerimiento, declarar el uso que hará de la misma y consigna sus datos básicos de identidad, tales como: nombres y apellidos completos, Nº. cédula ciudadanía o identidad, dirección domiciliaria y demás datos que mediante el respectivo reglamento se determinen” EL USO DISTINTO AL DECLARADO DARÁ LUGAR A LA DETERMINACIÓN DE RESPONSABILIDADES, SIN PERJUICIO DE LAS ACCIONES LEGALES QUE EL /LA TITULARIDAD DE LA INFORMACIÓN PUEDA EJERCER...”  ]]></text>
+			</staticText>
+		</band>
+		<band height="70" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{uso_documento} != null && !$F{uso_documento}.isEmpty()]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="391" height="32" uuid="2d136366-9b2d-4dc2-aa22-9f0403892dd6"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[IMPORTANTE:
+- La EPMRP-SD no se responsabiliza por los datos ingresados erróneos y/o falsos que consignen en el formulario y puedan inducir a equivocaciones al certificador.
+- Esta administración no se responsabiliza del uso doloso o fraudulento que se pueda realizar con este certificado.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="33" width="391" height="12" backcolor="#CCCCCC" uuid="47202102-d8a6-4914-94f6-991049f9aab9"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[DECLARACION DE USO]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="45" width="391" height="24" isPrintWhenDetailOverflows="true" uuid="615fddcb-b1be-4c35-ad0e-b293ff2cea71"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Yo, " + $F{solicitante}.toUpperCase() + " con número de identificación " + $F{ced_bene} + ", en mi calidad de solicitante y de conformidad con lo dispuesto por la Ley del Sistema Nacional de Registro de Datos Públicos, artículo 5 inciso quinto, expresamente señalo que formulo mi solicitud para el siguiente objetivo: " + $F{uso_documento}.toUpperCase() + "."]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="120" y="23" width="150" height="12" isPrintWhenDetailOverflows="true" uuid="f8493c2a-70a8-4200-a68c-ba493c31f437"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Firma del Solicitante]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="271" y="0" width="80" height="20" uuid="f9d9553b-8e5f-446e-a7bb-f6f63827feb9"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="351" y="0" width="40" height="20" uuid="ef9e87b0-5935-4675-8529-8da808023ea5"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="70" height="10" isPrintWhenDetailOverflows="true" uuid="a2735025-e898-4e54-8a00-801facc08885"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Solicitud:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="0" y="10" width="70" height="10" isPrintWhenDetailOverflows="true" uuid="9df045ec-a730-4658-b4a1-736a729143a6"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Elaborado por:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="70" y="0" width="130" height="10" uuid="909507df-e320-43f1-8782-11c3f353449a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_creacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="10" width="130" height="10" uuid="8a708ce8-8d91-43e8-9a61-5ca211275a80"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{elaborado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

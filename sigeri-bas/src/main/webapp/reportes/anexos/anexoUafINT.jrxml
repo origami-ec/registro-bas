@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="INT" language="groovy" pageWidth="1190" pageHeight="842" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1190" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f6fb164a-af29-420b-80da-5f6660bdf899">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PERIODO" class="java.lang.String"/>
+	<parameter name="DATE_STRING" class="java.lang.String"/>
+	<parameter name="CODIGO_REGISTRO" class="java.lang.String"/>
+	<parameter name="TOTAL_INT" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT ut.movimiento as nit, ti.idi, substr(ti.nri, 1, 149) as nri , ti.rdi, ti.pdi, ti.nai,
+(SELECT COUNT(*) FROM ctlg.uaf_int ti INNER JOIN ctlg.uaf_tra ut ON ti.uaf_tra = ut.id
+WHERE ti.periodo = $P{PERIODO} and ti.seleccionado = true AND ut.seleccionado = true)
+
+FROM ctlg.uaf_int ti INNER JOIN ctlg.uaf_tra ut ON ti.uaf_tra = ut.id
+WHERE ti.periodo = $P{PERIODO} and ti.seleccionado = true AND ut.seleccionado = true
+ORDER BY CAST(ut.fcr AS BIGINT) ASC, ut.nit ASC]]>
+	</queryString>
+	<field name="nit" class="java.lang.Long"/>
+	<field name="idi" class="java.lang.String"/>
+	<field name="nri" class="java.lang.String"/>
+	<field name="rdi" class="java.lang.String"/>
+	<field name="pdi" class="java.lang.String"/>
+	<field name="nai" class="java.lang.String"/>
+	<field name="count" class="java.lang.Long"/>
+	<variable name="nit_2" class="java.lang.Integer" resetType="Column" calculation="Count">
+		<variableExpression><![CDATA[$F{nit}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="50" height="15" uuid="b43a9328-08a6-47f4-ac58-a1d846288d37"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[INT]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="100" height="15" isPrintWhenDetailOverflows="true" uuid="d0d4516a-b146-47e3-96f6-76430dafeda7"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{DATE_STRING}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="aec10c0c-cfaf-405a-8164-d8368cef8569"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{CODIGO_REGISTRO}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="200" y="0" width="790" height="15" isPrintWhenDetailOverflows="true" uuid="dd3bdcf2-5d5c-494e-8b26-d94807cb4bdb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="c695ae3e-bb02-45a4-ac1c-9f3f360b82d6"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nit}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="7f079850-df45-427a-9c73-1328394d82c6"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{idi}.length() == 10 ? "C" : "R"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="100" height="15" isPrintWhenDetailOverflows="true" uuid="16e0302d-e956-4b57-9906-af5e9db0d1b7"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{idi}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="200" y="0" width="790" height="15" isPrintWhenDetailOverflows="true" uuid="5d141ed9-8f5d-484d-95f9-a681c4147034"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nri}.trim().toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1040" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="858294e1-2e4e-4031-9227-f94a40baec0b"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{rdi}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1090" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="d5724419-468f-438d-8c6a-d5eb5951a668"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{pdi}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1140" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="b0c61e47-03c5-462b-9f2f-3eefb62e2564"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{CODIGO_REGISTRO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="990" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="94bb763c-6f80-4ba2-99c6-ea30d1b83141"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nai}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

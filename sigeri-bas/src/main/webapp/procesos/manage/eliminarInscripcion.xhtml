@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:poue="http://primefaces.org/ui/extensions">
+    <ui:define name="title">Eliminar Num. Inscripcion</ui:define>
+
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center>
+                <h2>Eliminar Numero de Inscripcion</h2>
+            </center>
+            <h:panelGrid columns="4" styleClass="noBorder" style="font-weight: bolder;" class="Wid100">
+                <co:inputText label="Num Inscripcion:" value="#{eliminarInscripcionBean.numInscripcion}" />
+                <!--<co:inputText label="Anio Inscripcion:" value="# {eliminarInscripcionBean.anio}" />-->
+                <co:inputDate label="Fecha Inscripcion:" value="#{eliminarInscripcionBean.fechaInscripcion}" />
+                <co:inputSelect label="Libro" value="#{eliminarInscripcionBean.libro}" catalogo="#{eliminarInscripcionBean.libros}" 
+                                var="item1" itemLabel="#{item1.nombre}" itemValue="#{item1}" />
+
+                <p:commandButton actionListener="#{eliminarInscripcionBean.buscarInscripcion()}" update="mainForm" 
+                                 icon="ui-icon-search" value="Buscar" styleClass="btnStyle" />
+            </h:panelGrid>
+            <br></br>
+            <p:panel header="Detalle del Movimiento" class="Wid100" id="pndDetMov">
+                <p:panelGrid columns="4" class="Wid100">
+                    <co:inputText label="Num Repertorio:" value="#{eliminarInscripcionBean.movimiento.numInscripcion}" readonly="true" />
+                    <co:inputDate label="Fecha Repertorio::" value="#{eliminarInscripcionBean.movimiento.fechaRepertorio}" disabled="true" readonly="true" />
+                    <co:inputText label="Num Inscripcion:" value="#{eliminarInscripcionBean.movimiento.numInscripcion}" readonly="true" />
+                    <co:inputDate label="Fecha Inscripcion:" value="#{eliminarInscripcionBean.movimiento.fechaInscripcion}" disabled="true" readonly="true"/>
+                    <co:inputText label="Acto:" value="#{eliminarInscripcionBean.movimiento.acto.nombre}" readonly="true" />
+                    <co:inputText label="Libro:" value="#{eliminarInscripcionBean.movimiento.libro.nombre}" readonly="true" />
+                    <h:panelGroup>
+                        <p:outputLabel value="Dar de Baja a inscripcion" class="FontBold" />
+                        <p:selectBooleanCheckbox value="#{eliminarInscripcionBean.inactivarMovimiento}" />
+                    </h:panelGroup>
+                    <p:outputLabel />
+                </p:panelGrid>
+            </p:panel>
+            <p:panel header="Motivo Eliminacion" class="Wid100" style="text-align: center">
+                <!-- bold • italic • underline • strikethrough • subscript • superscript • font • size • style • color • highlight • bullets • numbering • alignleft • center • alignright • justify • undo • redo • rule • image • link • unlink • cut • copy • paste • pastetext • print • source • outdent • indent • removeFormat -->
+                <poue:ckEditor value="#{eliminarInscripcionBean.observacion}" id="pnEditorMotEli" skin="office2013" width="1100" height="250" label="Motivo Eliminacion" 
+                               toolbar="[['Cut','Copiar','Paste','Pegar Texto','PasteFromWord','-', 'SpellChecker'], '|', ['Undo', 'Retroceder', 'Redo', 'Avanzar'],
+                               ['Bold', 'Negrita', 'Italic', 'Cursiva', 'Underline', 'Subrayado', 'Justify'], ['Font', 'FontSize', 'FontStyle']]"/>
+            </p:panel>
+            <br></br>
+            <center>
+                <p:commandButton actionListener="#{eliminarInscripcionBean.eliminarNumInscripcion()}" icon="ui-icon-document" 
+                                 value="Guardar" styleClass="btnStyle">
+                    <p:confirm header="Confirmacion" message="Seguro de guardar la informacion?" icon="ui-icon-alert" />
+                </p:commandButton>
+                <p:confirmDialog global="true">
+                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+            </center>
+            <br></br>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

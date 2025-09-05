@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Variables de Sistema</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">CONFIGURACIÓN DE VARIABLES DE SISTEMA</h3></center>
+            <p:tabView id="tabViewValores">
+                <p:tab title="TABLA DE VALORES" >
+                    <center><p:commandButton value="Registrar Nueva Variable" icon="pi pi-sort-alpha-up" 
+                                             actionListener="#{variablesSistemaMB.showDlgNuevo()}" /></center>
+                    <p:dataTable paginator="true" lazy="true" rows="10" style="text-align: center;width: 60%;margin: 0 auto;" rowsPerPageTemplate="10,20,30" resizableColumns="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" paginatorPosition="bottom" 
+                                 value="#{variablesSistemaMB.valores}" var="var" emptyMessage="No se encontró registros." filterEvent="enter" >
+                        <p:column headerText="Codigo" filterBy="#{var.code}" filterStyle="width: 95%" filterMatchMode="contains">
+                            <h:outputText  value="#{var.code}"/>
+                        </p:column>
+                        <p:column headerText="Valor Cadena" filterBy="#{var.valorString}" filterStyle="width: 95%" >
+                            <h:outputText  value="#{var.valorString}"/>
+                        </p:column>
+                        <p:column headerText="Valor Numerico" width="200">
+                            <h:outputText  value="#{var.valorNumeric}"/>
+                        </p:column>
+                        <p:column headerText="Edit." width="50">
+                            <p:commandButton icon="pi pi-pencil" title="Editar Valores" actionListener="#{variablesSistemaMB.showDlgEdit(var)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="TABLA CALCULO CUANTIA" >
+                    <center><p:commandButton value="Nuevo Registro" icon="pi pi-sort-alpha-up" 
+                                             actionListener="#{variablesSistemaMB.showDlgNuevaCuantia() }" /></center>
+                    <p:dataTable paginator="true" lazy="true" rows="10" style="text-align: right;width: 60%;margin: 0 auto;" rowsPerPageTemplate="10,20,30" resizableColumns="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" paginatorPosition="bottom"  
+                                 id="dtTablaCuantia" value="#{variablesSistemaMB.cuantias}" var="cua" emptyMessage="No se encontró registros." filterEvent="enter" >
+                        <p:column headerText="Desde" >
+                            <h:outputText  value="#{cua.valor1}"/>
+                        </p:column>
+                        <p:column headerText="Hasta" >
+                            <h:outputText  value="#{cua.valor2}"/>
+                        </p:column>
+                        <p:column headerText="Valor" >
+                            <h:outputText  value="#{cua.cancelar}"/>
+                        </p:column>
+                        <p:column headerText="Cantidad Base" >
+                            <h:outputText  value="#{cua.cantidadBase}"/>
+                        </p:column>
+                        <p:column headerText="Valor Base" >
+                            <h:outputText  value="#{cua.valorBase}"/>
+                        </p:column>
+                        <p:column headerText="Exceso" >
+                            <h:outputText  value="#{cua.exceso}"/>
+                        </p:column>
+                        <p:column headerText="***" width="80" >
+                            <p:commandButton icon="pi pi-pencil" title="Editar Valores" actionListener="#{variablesSistemaMB.showDlgEditCuantia(cua)}"/>
+                            <p:spacer width="20" height="1"/>
+                            <p:commandButton icon="pi pi-trash" title="Borrar Registro" actionListener="#{variablesSistemaMB.deleteCuantia(cua)}" >
+                                <p:confirm header="Confirmación" message="Seguro de eliminar el registro?" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+            <p:confirmDialog id="prueba" global="true" >
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog> 
+        </h:form>
+
+        <p:dialog header="Varibles del Sistema" widgetVar="dlgEdicion" resizable="false" modal="true" closeOnEscape="true" width="500">
+            <h:form id="formEdicion">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="1">
+                    Code:
+                    <p:inputText value="#{variablesSistemaMB.valor.code}" style="width: 100%;"/>
+                    Valor Cadena:
+                    <p:inputText value="#{variablesSistemaMB.valor.valorString}" style="width: 100%;" />
+                    Valor Numerico:
+                    <p:inputNumber value="#{variablesSistemaMB.valor.valorNumeric}" decimalPlaces="2" thousandSeparator=""/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{variablesSistemaMB.guardar()}" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Tabla de Cuantía" widgetVar="dlgEdicionCuantia" resizable="false" modal="true" closeOnEscape="true" >
+            <h:form id="formEdicionCuantia">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="1">
+                    Desde:
+                    <p:inputNumber value="#{variablesSistemaMB.cuantia.valor1}" maxValue="9999999999" decimalPlaces="2" thousandSeparator=""/>
+                    Hasta
+                    <p:inputNumber value="#{variablesSistemaMB.cuantia.valor2}" decimalPlaces="2" thousandSeparator=""/>
+                    Valor:
+                    <p:inputNumber value="#{variablesSistemaMB.cuantia.cancelar}" decimalPlaces="2" thousandSeparator=""/>
+                    Cantidad Base:
+                    <p:inputNumber value="#{variablesSistemaMB.cuantia.cantidadBase}" decimalPlaces="2" thousandSeparator=""/>
+                    Valor Base:
+                    <p:inputNumber value="#{variablesSistemaMB.cuantia.valorBase}" decimalPlaces="2" thousandSeparator=""/>
+                    Exceso:
+                    <p:inputNumber value="#{variablesSistemaMB.cuantia.exceso}" maxValue="999999" decimalPlaces="6" thousandSeparator=""/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{variablesSistemaMB.guardarCuantia()}" />
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

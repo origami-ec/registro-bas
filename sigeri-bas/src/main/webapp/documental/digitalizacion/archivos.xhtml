@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Carga de Habilitantes</ui:define>
+    <ui:define name="content">
+        <center><h3 style="font-weight: bolder;">CARGA DE HABILITANTES</h3></center>
+        <h:form id="formMain" prependId="false" enctype="multipart/form-data;charset=UTF-8">
+
+            <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="width: 40%;margin: 0 auto;">
+                <h:panelGroup>
+                    <p:outputLabel value="Trámite: " style="font-weight: bold;font-size: 16px;"/>
+                    <p:spacer width="20" height="1" />
+                    <p:inputNumber value="#{archivosMB.nroTramite}" decimalPlaces="0" thousandSeparator="" >
+                        <p:ajax event="blur"  listener="#{archivosMB.buscarTramite()}" />
+                    </p:inputNumber>
+                </h:panelGroup>
+                <!--<p:outputLabel value="El nombre del documento puede contener: espacios, números, guion bajo o guion medio."
+                               style="font-weight: bold;color: navy;"/>--> 
+                <p:outputLabel value="El nombre del documento NO debe contener: * + { } ' = ¡ ! ` ´ , ; @ $ [ ] % ^ # / | \\ ( ) ." 
+                               style="font-weight: bold;color: navy;"/>
+                <p:fileUpload listener="#{archivosMB.cargarArchivo}" update="labelFile" 
+                              style="width: 100%" multiple="false"  fileLimit="1"
+                              skinSimple="true" allowTypes="/(\.|\/)(pdf|tif|tiff)$/"
+                              mode="advanced" dragDropSupport="true" 
+                              label="Buscar" uploadLabel="Subir" cancelLabel="Cancelar"  previewWidth="60"   />
+                <h:panelGroup>
+                    <p:outputLabel value="Archivo: " style="font-weight: bold;font-size: 16px;"/>
+                    <p:inputText id="labelFile" readonly="true" value="#{archivosMB.file.fileName}" style="width: 100%;"/>
+                </h:panelGroup>
+            </p:panelGrid>
+
+            <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="width: 40%;margin: 0 auto;text-align: center;">
+                <h:panelGroup style="margin: 0 auto;">
+                    <p:commandButton value="Grabar archivo" icon="pi pi-save" style="background-color: darkred"
+                                     styleClass="info-button rounded-button"
+                                     actionListener="#{archivosMB.grabarArchivo()}" update="formMain" /> 
+                </h:panelGroup>
+            </p:panelGrid>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

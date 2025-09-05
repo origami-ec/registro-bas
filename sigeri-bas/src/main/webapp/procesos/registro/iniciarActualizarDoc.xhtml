@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                >
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Inicio de tramites / cambiar documentos</h2> </center>
+            <p:dataTable paginator="true" lazy="true" rows="15" rowsPerPageTemplate="15, 30, 50" style="text-align: center;"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{cobroRp.liquidaciones}" var="liq" emptyMessage="No se encontro liquidaciones..." filterEvent="enter"
+                         scrollable="true" scrollWidth="99%" resizableColumns="true">
+                <p:column headerText="Prof." width="25">
+                    <p:commandLink actionListener="#{cobroRp.showProforma(liq)}" title="#{liq.numTramiteRp}">
+                        <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>                
+                <p:column headerText="No Tramite" filterBy="#{liq.numTramiteRp}" sortBy="#{liq.numTramiteRp}" width="110" filterStyle="width: 95%">
+                    <h:outputText  value="#{liq.numTramiteRp}"/>
+                </p:column>
+                <p:column headerText="Iniciar " width="40" rendered="true">
+                    <p:commandLink actionListener="#{cobroRp.initTramiteFactura(liq)}" title="#{liq.numTramiteRp}">
+                        <p:graphicImage value="/resources/icons/detalle.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>
+                <p:column headerText="Doc" width="40">
+                    <p:commandLink actionListener="#{cobroRp.showDlgCorrDoc(liq)}" title="#{liq.numTramiteRp}">
+                        <p:graphicImage value="/resources/icons/abrir.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>
+                <p:column headerText="No Factura" filterBy="#{liq.codigoComprobante}" width="140" filterStyle="width: 95%">
+                    <h:outputText  value="#{liq.codigoComprobante}"/>
+                </p:column>
+                <p:column headerText="CI/RUC Solicitante" width="150" filterBy="#{liq.solicitante.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.solicitante.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Solicitante" filterBy="#{liq.tramite.nombrePropietario}" filterStyle="width: 95%;" width="300">
+                    <h:outputText value="#{liq.tramite.nombrePropietario}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="CI/RUC Beneficiario" width="150" filterBy="#{liq.beneficiario.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.beneficiario.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Beneficiario" width="300">
+                    <h:outputText value="#{liq.beneficiario.nombreCompleto}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Fech.Proforma" sortBy="#{liq.fechaCreacion}" width="120">
+                    <h:outputText value="#{liq.fechaCreacion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fech.Ingreso" sortBy="#{liq.fechaIngreso}" width="120">
+                    <h:outputText value="#{liq.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fech.Entrega" width="120">
+                    <h:outputText value="#{liq.tramite.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Valor $" width="100">
+                    <p:outputLabel value="#{liq.totalPagar}"><f:convertNumber minFractionDigits="2"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Usuario Proforma" width="100">
+                    <h:outputText value="#{cobroRp.getNameUserByIdAclUser(liq.userCreacion)}"/>
+                </p:column>
+                <p:column headerText="Usuario Ingreso" width="100">
+                    <h:outputText value="#{cobroRp.getNameUserByIdAclUser(liq.userIngreso)}"/>
+                </p:column>
+                <p:column headerText="Estado Ingreso" width="100">
+                    <h:outputText value="#{liq.estadoLiquidacion.code}"/>
+                </p:column>
+                <p:column headerText="Estado Pago" width="120">
+                    <h:outputText value="#{liq.estadoPago.code}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+
+        <p:dialog id="dlgDocumento" widgetVar="dlgDocs" header="Reemplazar Documento Habilitante" modal="true" width="500" height="300" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formDocs">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="Tramite: #{cobroRp.historico.numTramite}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="Fecha Ingreso: #{cobroRp.historico.fechaIngreso}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:fileUpload listener="#{cobroRp.handleUpload}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+        <p:dialog id="dglEstudioJuridico" widgetVar="estudioJuridico" header="Estudio Juridico" resizable="false" modal="true">
+            <h:form id="formEstudioJuridico">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nombre:" style="font-weight: bolder;font-size: 12px"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{cobroRp.estudioJuridicoNuevo.valor}" size="40" maxlength="50"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{cobroRp.guardarEstudioJuridico()}"/></center>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>        
+    </ui:define>
+</ui:composition>

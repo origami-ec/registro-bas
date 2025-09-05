@@ -1,0 +1,294 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">#{analisisRp.taskDataByTaskID.name} # #{analisisRp.ht.numTramite}</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center>
+                <h3 style="font-weight: bolder;text-transform: uppercase;">
+                    #{analisisRp.taskDataByTaskID.name} - Trámite Nro #{analisisRp.ht.numTramite}
+                </h3>
+            </center>
+            <h:panelGrid  columns="5" style="font-size: 16px;font-weight: bolder;"> 
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                #{analisisRp.ht.numTramite}
+                <p:spacer width="100" height="1"/>
+                <p:outputLabel value="Responsable:" style="font-weight: bolder;color: #005f9c"/>
+                #{analisisRp.taskDataByTaskID.assignee}
+            </h:panelGrid>
+            <br></br>
+            <p:scrollPanel mode="native" style="height: 100px;">
+                <p:outputLabel value="#{analisisRp.advertencias}" class="FontBold icon-lock" style="color: darkred; text-transform: uppercase; font-size: 20px;" escape="false"  />
+            </p:scrollPanel>
+            <br/>
+            <p:tabView id="mainTab">
+                <p:tab title="Informacion de Proforma">
+                    <br></br>
+                    <center>
+                        <p:outputLabel value="TRÁMITE INICIADO EN LÍNEA" rendered="#{analisisRp.online}" 
+                                       style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+                    </center>
+                    <h:panelGrid  columns="8" style="font-size: 16px;">
+                        <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{analisisRp.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                        <p:spacer width="30" height="1"/>
+                        <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{analisisRp.liquidacion.solicitante.nombreCompleto}"
+                                       style="text-transform: uppercase;font-weight: bolder;"/>
+                        <p:spacer width="30" height="1"/>
+                        <p:outputLabel value="Repertorio:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{analisisRp.liquidacion.repertorio}" style="font-weight: bolder;"/>
+                    </h:panelGrid>
+                    <p:outputLabel value="Trámite posee una nota devolutiva" 
+                                   style="font-weight: bolder;color: red; font-size: 16px" rendered="#{analisisRp.tieneNotaDevolutiva}" />
+                    <br></br>
+                    <p:dataTable value="#{analisisRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" 
+                                 reflow="true" style="text-align: center" emptyMessage="Sin observaciones..."
+                                 scrollable="true" scrollHeight="300">
+                        <p:column headerText="Contrato" width="270">
+                            <h:outputText value="#{det.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Avaluo" width="100">
+                            <h:outputText value="#{det.avaluo}"/>
+                        </p:column>
+                        <p:column headerText="Cuantia" width="100">
+                            <h:outputText value="#{det.cuantia}"/>
+                        </p:column>
+                        <p:column headerText="No Repertorio" width="100">
+                            <h:outputText value="#{det.liquidacion.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Repertorio" width="100">
+                            <p:outputLabel value="#{det.liquidacion.fechaRepertorio}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Valor Acto" width="100">
+                            <h:outputText value="#{det.valorTotal}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Informacion Nota Devolutiva" rendered="#{analisisRp.tieneNotaDevolutiva}" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{analisisRp.notaDevolutivaAnalisis}" var="notaDevolutiva" >
+                            <p:column headerText="Nro Devolutiva" >
+                                #{notaDevolutiva.numNotaDevolutiva}
+                            </p:column>
+                            <p:column headerText="Fecha de Emision" >
+                                <p:outputLabel value="#{notaDevolutiva.fechaIngreso}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Realizado" >
+                                #{notaDevolutiva.realizado}
+                            </p:column>
+                            <p:column headerText="Asunto" >
+                                #{notaDevolutiva.asunto}
+                            </p:column>
+                            <p:column headerText="Retiro" >
+                                <p:outputLabel value="#{notaDevolutiva.fechaRetiro}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Reingreso" >
+                                <p:outputLabel value="#{notaDevolutiva.fechaReingreso}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Descargar">
+                                <center>
+                                    <p:commandButton actionListener="#{analisisRp.imprimirNotaDvolutiva(notaDevolutiva.id)}" 
+                                                     icon="pi pi-file-pdf"/>
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Observaciones" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{analisisRp.observacionesTramites}" var="obs" >
+                            <p:column headerText="Fecha de Ingreso" >
+                                #{obs.fecCre}
+                            </p:column>
+                            <p:column headerText="Usuario" >
+                                #{obs.userCre}
+                            </p:column>
+                            <p:column headerText="Tarea" >
+                                #{obs.tarea}
+                            </p:column>
+                            <p:column headerText="Observación" >
+                                #{obs.observacion}
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Documentos del Trámite">
+                    <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Solicitud Electronica"/>
+                        <p:commandLink actionListener="#{analisisRp.showProforma(analisisRp.liquidacion)}">
+                            <p:graphicImage value="/resources/icons/pdf.png" height="60"/>
+                        </p:commandLink>
+                    </h:panelGrid><br/>
+                    <p:dataTable value="#{analisisRp.archivos}" style="text-align: center;" scrollable="true"  
+                                 emptyMessage="Sin documentos digitalizados..." scrollHeight="300" var="doc1" paginator="true" reflow="true" 
+                                 rows="5" paginatorAlwaysVisible="false" rowIndexVar="posicion" >
+                        <f:facet name="header">DOCUMENTOS HABILITANTES DIGITALIZADOS</f:facet>
+                        <p:column headerText="Transaccion">
+                            <p:outputLabel value="#{doc1.id}"/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="100">
+                            <p:outputLabel value="#{doc1.fecha}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Paginas">
+                            <p:outputLabel value="#{doc1.numeroPaginas}"/>
+                        </p:column>
+                        <p:column headerText="Peso" >
+                            <p:outputLabel value="#{doc1.peso}"/>
+                        </p:column>
+                        <p:column headerText="View" width="80">
+                            <p:commandLink actionListener="#{analisisRp.visualizarDocsTramite(analisisRp.ht.numTramite, posicion)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="20" width="20"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+            </p:tabView>
+            <br></br>
+            <center>
+                <h:panelGrid id="pnlAprobacion" columns="5" style="font-size: 16px;width: 100%;" >
+                    <p:spacer width="150" height="1"/>
+                    <p:commandButton value="Ingresar Observación" icon="pi pi-comments" 
+                                     rendered="#{analisisRp.solicitudAprobada}" 
+                                     actionListener="#{analisisRp.nuevaObservacion()}" 
+                                     style="font-size: 16px;background-color: green;" />
+                    <p:commandButton value="Nota Devolutiva" icon="pi pi-thumbs-down"
+                                     actionListener="#{analisisRp.rechazar()}" 
+                                     rendered="#{analisisRp.solicitudAprobada}" 
+                                     update="mainForm:pnlAprobacion, mainForm:pnlRechazada"
+                                     style="font-size: 16px; background-color: orange;"/>
+                    <p:commandButton value="Pasar a Inscribir" icon="pi pi-thumbs-up" 
+                                     rendered="#{analisisRp.solicitudAprobada}" 
+                                     actionListener="#{analisisRp.showDlgAprobado(true)}" style="font-size: 16px;">
+                        <p:confirm header="Confirmacion" message="Esta seguro de que desea aprobar esta Inscripcion?" 
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                    <!--<p:commandButton value="Inscripción Negativa" icon="pi pi-ban" 
+                                     actionListener="# {analisisRp.showDlgNegativa()}" 
+                                     rendered="false" style="font-size: 16px;background-color: red;">
+                        <p:confirm header="Confirmacion" message="Esta seguro de que desea enviar a inscripción NEGATIVA?" 
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>-->
+                    <p:spacer width="150" height="1"/>
+                </h:panelGrid>
+                <h:panelGrid id="pnlRechazada" style="font-size: 16px;" >
+                    <h:panelGrid columns="1" rendered="#{!analisisRp.solicitudAprobada}" >
+                        <p:outputLabel value="Solicitud Rechazada" style="font-weight: bolder;font-size: 16px; color: red" />
+                        <p:outputLabel value="#{analisisRp.notaDevolutiva.fecha}" style="font-weight: bolder" /> 
+                        <p:outputLabel value="Para: #{analisisRp.notaDevolutiva.para.nombreCompleto}"   /> 
+                        <p:outputLabel value="Asunto: #{analisisRp.notaDevolutiva.asunto}"   /> 
+                        <p:outputLabel value="Correo: #{analisisRp.liquidacion.beneficiario.correo1}"   /> 
+                        <br></br>
+                        <p:textEditor widgetVar="editorNotaDevolutiva" secure="false"
+                                      value="#{analisisRp.notaDevolutiva.detalle}"     
+                                      style="margin-bottom:10px; width: 900px; height: 450px; " 
+                                      placeholder="Escriba aquí su Nota Devolutiva">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+
+                                </span>
+                                <span class="ql-formats">
+
+                                </span>
+                            </f:facet>
+                        </p:textEditor>
+
+                        <br></br><br></br>
+
+                        <h:panelGrid columns="5" style="margin: 0 auto;" >
+                            <p:commandButton value="Guardar Devolutiva" icon="pi pi-save" style="font-size: 16px;" 
+                                             update="mainForm" actionListener="#{analisisRp.guardarNotaDevolutiva()}" >
+                                <p:confirm header="Confirmación" message="Está seguro de guardar la devolutiva?" 
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                            <p:spacer width="20" />
+                            <p:commandButton value="Enviar Correo" icon="pi pi-envelope" actionListener="#{analisisRp.completarTareaDevolutiva()}" 
+                                             update="mainForm" style="font-size: 16px;" disabled="#{analisisRp.notaDevolutiva.id eq null}"/>
+                            <p:spacer width="20" />
+                            <p:commandButton value="Cancelar" icon="pi pi-times" actionListener="#{analisisRp.cancelar()}"
+                                             update="mainForm" style="font-size: 16px;" disabled="#{analisisRp.notaDevolutiva.id ne null}" />
+                        </h:panelGrid>
+
+                    </h:panelGrid>
+
+                </h:panelGrid>
+
+
+            </center>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" icon="pi pi-times" />
+            </p:confirmDialog>     
+
+
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Confirmar Tarea" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <center>
+                    <p:outputLabel value="Solicitud Aprobada" style="font-weight: bolder;font-size: 16px; color: green"/>
+                </center>
+                <br></br>
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{analisisRp.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="900"/>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Aceptar" icon="pi pi-check"
+                                     actionListener="#{analisisRp.completarTarea()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgNegativa" header="Motivación de NEGATIVA" modal="true" width="600" resizable="false" position="center">
+            <h:form id="formNegativa">
+                <center>
+                    <p:outputLabel value="NEGATIVA PARA TRÁMITE No #{analisisRp.liquidacion.numTramiteRp}" 
+                                   style="font-weight: bolder;font-size: 16px; color: green"/>
+                </center>
+                <br></br>
+                <p:outputLabel value="Ingrese aquí la Motivación para la NEGATIVA:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{analisisRp.negativa}" rows="10" autoResize="false" style="width: 100%" />
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Enviar a Negativa" icon="pi pi-ban" 
+                                     actionListener="#{analisisRp.guardarNegativa()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObervacionesCertificados" widgetVar="dlgObsvsCertificados" header="Agregar Observación" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObsCertificados">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{analisisRp.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="500"/>
+                <br/><br/>
+                <center><p:commandButton value="Completar" icon="pi pi-save"
+                                         actionListener="#{analisisRp.mantenerEstado()}"/></center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteHipotecasMunicipioExcel" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="f81c8a58-05fc-4231-a3f7-b33ea8fa80be">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="IMG_URL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DESDE" class="java.util.Date"/>
+	<parameter name="HASTA" class="java.util.Date"/>
+	<parameter name="HASTA_STRING" class="java.lang.String"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ac.nombre as tipo_inscripcion, m.fecha_inscripcion, m.num_inscripcion,
+trim(m.cuantia_cadena) as cuantia_cadena,
+ej.nombre as notaria, m.fecha_oto as fecha_notaria, m.base_imponible as cuantia,
+m.id as movimiento, (select f.num_ficha from app.reg_ficha f
+left join app.reg_movimiento_ficha mf on mf.ficha = f.id
+where mf.movimiento = m.id limit 1) as num_ficha,
+(select f.clave_catastral from app.reg_ficha f
+left join app.reg_movimiento_ficha mf on mf.ficha = f.id
+where mf.movimiento = m.id limit 1) as clave_catastral,
+(select f.descripcion_bien from app.reg_ficha f
+left join app.reg_movimiento_ficha mf on mf.ficha = f.id
+where mf.movimiento = m.id limit 1) as descripcion_bien
+from app.reg_movimiento m
+left join app.reg_acto ac on (ac.id = m.acto)
+left join app.reg_ente_judiciales ej on ej.id = m.ente_judicial
+where (m.fecha_inscripcion between $P{DESDE} and $P{HASTA})
+and m.libro in (6, 14) and ac.anexo_uno_reg_propiedad order by m.num_inscripcion]]>
+	</queryString>
+	<field name="tipo_inscripcion" class="java.lang.String"/>
+	<field name="fecha_inscripcion" class="java.sql.Timestamp"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="cuantia_cadena" class="java.lang.String"/>
+	<field name="notaria" class="java.lang.String"/>
+	<field name="fecha_notaria" class="java.sql.Timestamp"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="movimiento" class="java.lang.Long"/>
+	<field name="num_ficha" class="java.lang.Long"/>
+	<field name="clave_catastral" class="java.lang.String"/>
+	<field name="descripcion_bien" class="java.lang.String"/>
+	<title>
+		<band height="26" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="80" height="26" backcolor="#CCCCCC" uuid="082aabdd-baee-4035-bcd3-75d0458b27b5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TIPO INSCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="726" y="0" width="76" height="26" backcolor="#CCCCCC" uuid="4f81eb1b-5251-4aa6-a1c7-16517888a916"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CUANTÍA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="228" y="0" width="50" height="26" backcolor="#CCCCCC" uuid="6b72c1d9-4119-4bbb-817e-b7a12e1ea236"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NOTARÍA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="80" y="0" width="50" height="26" backcolor="#CCCCCC" uuid="a8405289-cc85-4a23-8d74-5a70faf9567a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[FECHA DE INSCRIPCIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="130" y="0" width="50" height="26" backcolor="#CCCCCC" uuid="0ef303ab-ff88-40c0-b37d-893f7cea778e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NÚMERO DE INSCRIPCIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="278" y="0" width="50" height="26" backcolor="#CCCCCC" uuid="f8f6e2fa-5da0-489d-ac96-08bc9a8693da"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[FECHA DE NOTARÍA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="546" y="0" width="80" height="26" backcolor="#CCCCCC" uuid="52bd55d3-b9c8-4a7c-be0b-b0f24a66d76e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CLAVE CATASTRAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="328" y="0" width="60" height="26" backcolor="#CCCCCC" uuid="1830db7c-d1b5-4b33-a23e-074172263ea8"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CÉDULA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="180" y="0" width="48" height="26" backcolor="#CCCCCC" uuid="f3dea6a4-a9ba-4ce0-84e3-afb4233c9ee1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NÚMERO DE FICHA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="626" y="0" width="100" height="26" backcolor="#CCCCCC" uuid="8c3fe70f-33d7-48c8-810f-ec2b13793fa8"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[UBICACION DEL BIEN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="456" y="0" width="90" height="26" backcolor="#CCCCCC" uuid="c802c606-9add-466e-82b9-cbb381edbdaa"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NOMBRES DE LOS INTERVINIENTES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="388" y="0" width="68" height="26" backcolor="#CCCCCC" uuid="8b5c48e1-2db1-4d5f-87e2-bb9161e341cd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CALIDAD]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="278" y="0" width="50" height="30" isPrintWhenDetailOverflows="true" uuid="becef981-d905-408e-82a0-1120a0622171"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_notaria}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="80" height="30" isPrintWhenDetailOverflows="true" uuid="b0c2fae9-4ada-42d2-9ec8-45603b666319"/>
+				<box leftPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="130" y="0" width="50" height="30" isPrintWhenDetailOverflows="true" uuid="6e64686c-0169-4dbd-b80f-de14aa0ed12a"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="228" y="0" width="50" height="30" isPrintWhenDetailOverflows="true" uuid="85cf3edd-fa98-4bde-bbc1-7d37390ba0ba"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{notaria}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="726" y="0" width="76" height="30" isPrintWhenDetailOverflows="true" uuid="7b7e2862-45d2-4944-8edd-8aff3af929e9"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cuantia_cadena} != null ? $F{cuantia_cadena} :
+$F{cuantia} == null ? "INDETERMINADA" :
+$F{cuantia}.compareTo(new BigDecimal("0.00")) > 0 ? $F{cuantia} : "INDETERMINADA"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="80" y="0" width="50" height="30" isPrintWhenDetailOverflows="true" uuid="440f1731-f15a-4309-8934-2d5e2d439d4f"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_inscripcion}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="328" y="0" width="218" height="30" isPrintWhenDetailOverflows="true" uuid="25beb18e-baae-4cb7-8620-d3b7d63f7c2b"/>
+				<subreportParameter name="MOVIMIENTO">
+					<subreportParameterExpression><![CDATA[$F{movimiento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Reporte_subreport_intervinientes_excel.jasper"]]></subreportExpression>
+			</subreport>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="180" y="0" width="48" height="30" isPrintWhenDetailOverflows="true" uuid="58a3478a-a099-4f7d-946a-3061cac542f4"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_ficha}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="546" y="0" width="80" height="30" isPrintWhenDetailOverflows="true" uuid="ce5424f8-05cd-4972-a802-68a67a0b9936"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{clave_catastral}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="626" y="0" width="100" height="30" uuid="136fcb03-6be1-4544-9159-da723e5153a9"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_bien}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

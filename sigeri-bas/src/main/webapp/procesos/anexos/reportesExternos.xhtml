@@ -1,0 +1,688 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"> 
+    <ui:define name="title">Anexos Externos</ui:define>
+    <ui:define name="content">
+        <!--<center><h2>ANEXOS: Dinardap/SRI/UAFE/COTAD/SUPERCIA</h2></center>--> 
+        <center><h2>ANEXOS: Dinardap y UAFE</h2></center>
+        <h:form id="mainForm">
+            <h:panelGrid columns="3" style="margin: 0 auto; font-size: 16px; font-weight: bolder;">
+                <p:outputLabel value="Tipo de Anexo:" />
+                <p:spacer width="20" height="1"/>
+                <p:selectOneMenu value="#{reportesExternos.tipoanexo}" style="width: 250px;">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{0}" />
+                    <f:selectItem itemLabel="ANEXO DINARDAP" itemValue="#{1}" />
+                    <!--<f:selectItem itemLabel="ANEXO NRPM - SRI" itemValue="# {2}"/>-->
+                    <f:selectItem itemLabel="RESU UAFE - FORMATO XLS" itemValue="#{3}"/>
+                    <!--<f:selectItem itemLabel="ANEXO COTAD" itemValue="# {5}"/>-->
+                    <!--<f:selectItem itemLabel="ANEXO SUPERCIA" itemValue="# {6}"/>-->
+                    <p:ajax event="change" update="mainForm" />
+                </p:selectOneMenu>
+            </h:panelGrid>
+            <p:panel header="DINARDAP Resolucion-012-2014" rendered="#{reportesExternos.tipoanexo eq 1}">
+                <h:panelGrid columns="7" style="font-size: 16px; font-weight: bolder;">
+                    Tipo Anexo:
+                    <p:selectOneMenu value="#{reportesExternos.tipoanexosedi}" style="width: 250px;">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                        <f:selectItem itemLabel="Anexo 1 - Resolucion-012-2014" itemValue="#{1}"/>
+                        <!--<f:selectItem itemLabel="Anexo 2 - Resolucion-012-2014" itemValue="# {2}"/>-->
+                        <!--<f:selectItem itemLabel="Anexo 3 - Resolucion-012-2014" itemValue="# {3}"/>-->
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    Fecha de Corte:
+                    <p:calendar value="#{reportesExternos.corte}" pattern="dd-MM-yyyy" placeholder="dd-MM-yyyy"/>
+                    <p:spacer width="40" height="1"/>
+                    <p:commandButton value="Generar Anexo" icon="pi pi-database" style="font-size: 16px;"
+                                     actionListener="#{reportesExternos.generarSedi()}"/>
+                </h:panelGrid>
+            </p:panel>
+            <p:panel header="NRPM (ANEXO DE NOTARIOS, REGISTRADORES DE LA PROPIEDAD Y MERCANTILES)" rendered="#{reportesExternos.tipoanexo eq 2}">
+                <h:panelGrid columns="12" style="font-weight: bolder;font-size: 14px;">
+                    Tipo Anexo:
+                    <p:selectOneMenu value="#{reportesExternos.anexo.tipoAnexo}" style="width: 200px;">
+                        <f:selectItem itemLabel="Anexo Propiedad" itemValue="#{1}"/>
+                        <f:selectItem itemLabel="Anexo Mercantil" itemValue="#{2}"/>
+                        <p:ajax update="mainForm" listener="#{reportesExternos.clear()}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    <p:outputLabel value="Mes de Periodo:" rendered="#{reportesExternos.anexo.tipoAnexo eq 1}"/>
+                    <p:selectOneMenu value="#{reportesExternos.anexo.mes}" rendered="#{reportesExternos.anexo.tipoAnexo eq 1}" 
+                                     style="width: 150px;">
+                        <f:selectItems value="#{reportesExternos.meses}" var="an1" itemLabel="#{an1.clave}" itemValue="#{an1.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1" rendered="#{reportesExternos.anexo.tipoAnexo eq 1}"/>
+                    Año de Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.anexo.anio}" style="width: 150px;">
+                        <f:selectItems value="#{reportesExternos.anios}" var="ann1" itemLabel="#{ann1.clave}" itemValue="#{ann1.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    <p:commandButton value="Buscar Movs. Propiedad" update="mainForm" icon="pi pi-search" style="font-size: 14px;" 
+                                     actionListener="#{reportesExternos.buscarMovientosCapital()}" rendered="#{reportesExternos.anexo.tipoAnexo eq 1}"/>
+                    <p:commandButton value="Buscar Movs. Mercantil" update="mainForm" icon="pi pi-search" style="font-size: 14px;" 
+                                     actionListener="#{reportesExternos.buscarMovientosSriMercantil()}" rendered="#{reportesExternos.anexo.tipoAnexo eq 2}"/>
+                    <p:spacer width="40" height="1"/>
+                    <p:commandButton value="Generar ANEXO" icon="pi pi-file" id="btnGenAnex" style="font-size: 14px;" 
+                                     actionListener="#{reportesExternos.generarAnexoNrpm()}" />
+                    <p:spacer width="40" height="1" rendered="#{reportesExternos.anexo.tipoAnexo eq 2}"/>
+                    <p:spacer width="40" height="1" rendered="#{reportesExternos.anexo.tipoAnexo eq 2}"/>
+                    <p:spacer width="40" height="1" rendered="#{reportesExternos.anexo.tipoAnexo eq 2}"/>
+                </h:panelGrid>
+                <center><p:spacer width="40" height="20"/></center>
+                <p:dataTable id="movCapital1" value="#{reportesExternos.lazy}" var="movcap2" paginator="true" rowKey="#{movcap2.id}"
+                             lazy="true" rows="20" selection="#{reportesExternos.listMovCap}" selectionMode="multiple" filterEvent="enter" >
+                    <p:column headerText="Libro" filterBy="#{movcap2.libro.nombre}"> #{movcap2.libro.nombre}</p:column>
+                    <p:column headerText="Acto" filterBy="#{movcap2.acto.nombre}" > #{movcap2.acto.nombre} </p:column>
+                    <p:column headerText="Repertorio" filterBy="#{movcap2.numRepertorio}" width="100"> #{movcap2.numRepertorio}  </p:column>
+                    <p:column headerText="Inscripcion" filterBy="#{movcap2.numInscripcion}" width="100"> 
+                        <p:outputLabel value="#{movcap2.numInscripcion}" id="numInscripcion" />
+                        <p:tooltip for="numInscripcion">
+                            <p:panel style="width: 450px; max-width: 450px">
+                                <p:dataTable emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" resizableColumns="true" id="dtMoviIntersRow"
+                                             value="#{movcap2.regMovimientoClienteCollection}" scrollHeight="250" rowIndexVar="indexIntv"
+                                             sortBy="#{inter.papel.papel}">
+                                    <f:facet name="header">
+                                        INTERVINIENTES
+                                    </f:facet>
+                                    <p:headerRow>
+                                        <p:column colspan="2">
+                                            <h:outputText value="#{inter.papel.papel}" style="color: #000; " rendered="#{inter.papel ne null}" />
+                                            <h:outputText value="Papel no especificado" style="color: #000; " rendered="#{inter.papel eq null}"  />
+                                        </p:column>
+                                    </p:headerRow>
+                                    <p:column headerText="C.I/R.U.C" width="15%">
+                                        <p:outputLabel id="identInt" value="#{inter.enteInterv.cedRuc}" style="color: #000; "/>
+                                        <p:tooltip value="#{inter.enteInterv.cedRuc}" for="identInt"/>
+                                    </p:column>
+                                    <p:column headerText="Nombre del Cliente">
+                                        <p:outputLabel value="#{inter.enteInterv.nombre}" id="nombreInt" style="color: #000; "/>
+                                        <p:tooltip value="#{inter.enteInterv.nombre}" for="nombreInt"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </p:tooltip>
+                    </p:column>
+                    <p:column headerText="Tomo" width="40">#{movcap2.numTomo}</p:column>
+                    <p:column headerText="Fecha de Inscripcion" width="100"> 
+                        <h:outputText value="#{movcap2.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                    </p:column>
+                    <p:column headerText="Nro de Tramite" width="100">#{movcap2.numeroTramite}</p:column>
+                    <p:column headerText="Opciones" style="text-align: center" width="80" >
+                        <p:commandButton icon="ui-icon-pencil" actionListener="#{reportesExternos.agregarParticipantesAll(movcap2)}"
+                                         process="@(.ui-panel :input)" update="frmAnexoSri1, frmAnexoSri1:selectEntrega1, frmAnexoSri1:selectRecibe1, @(.ui-panel), @(.ui-selectonemenu)"/>
+                        <p:spacer width="5" />
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{reportesExternos.deleteMovimientoParticipante(movcap2)}" update="mainForm:movCapital1" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            <p:panel id="pnlUafeXls" header="UAFE - FORMATO EXCEL" rendered="#{reportesExternos.tipoanexo eq 3}">
+                <h:panelGrid columns="13" style="font-weight: bolder;font-size: 14px;">
+                    Mes Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.mes}" style="width: 150px;">
+                        <f:selectItems value="#{reportesExternos.meses}" var="an2" itemLabel="#{an2.clave}" itemValue="#{an2.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="30" height="1"/>
+                    Año Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.anio}" style="width: 150px;">
+                        <f:selectItems value="#{reportesExternos.anios}" var="ann2" itemLabel="#{ann2.clave}" itemValue="#{ann2.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="30" height="1"/>
+                    Mayores al Umbral:
+                    <p:selectBooleanCheckbox value="#{reportesExternos.umbral}"/>
+                    <p:spacer width="100" height="1"/>
+                    <p:commandButton value="Buscar Movimientos" icon="pi pi-search" update="mainForm" id="btnFindMov" 
+                                     actionListener="#{reportesExternos.buscarMovientos()}" style="font-size: 14px;"/>
+                    <p:spacer width="50" height="1"/>
+                    <p:commandButton value="Generar Archivo TRA" icon="pi pi-file-excel" style="font-size: 14px;" 
+                                     actionListener="#{reportesExternos.generarUafTRA()}" />
+                    <p:commandButton value="Generar Archivo INT" icon="pi pi-file-excel" style="font-size: 14px;" 
+                                     actionListener="#{reportesExternos.generarUafINT()}" />
+                </h:panelGrid>
+                <center><p:spacer width="40" height="20"/></center>
+                <p:dataTable id="movCapital12" value="#{reportesExternos.movimientos}" var="movcap1" paginator="true" rowKey="#{movcap1.id}" 
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             lazy="true" rows="10" selection="#{reportesExternos.movimientosSeleccionados}" widgetVar="movimientosUAFE" >
+                    <p:ajax event="rowSelectCheckbox" listener="#{reportesExternos.onRowSelectUAF}" update="formUAF" />
+                    <p:ajax event="rowUnselectCheckbox" listener="#{reportesExternos.onRowUnselectUAF}" update="formUAF" />
+                    <p:ajax event="rowSelect" listener="#{reportesExternos.onRowSelectUAF}" update="formUAF" />
+                    <p:ajax event="rowUnselect" listener="#{reportesExternos.onRowSelectUAF}" update="formUAF" />
+
+                    <p:column selectionMode="multiple" style="text-align:center;" width="20"/>
+                    <p:column headerText="Libro" filterBy="#{movcap1.libro.nombre}" filterStyle="width: 95%">
+                        <h:outputText  value="#{movcap1.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto" filterBy="#{movcap1.acto.nombre}" filterStyle="width: 95%">
+                        <h:outputText  value="#{movcap1.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Repertorio" filterBy="#{movcap1.numRepertorio}" filterStyle="width: 95%" width="100">
+                        <h:outputText value="#{movcap1.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" filterBy="#{movcap1.numInscripcion}" filterStyle="width: 95%" width="100">
+                        <h:outputText value="#{movcap1.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Tomo" width="40">#{movcap1.numTomo}</p:column>
+                    <p:column headerText="Fecha Inscripcion" filterBy="#{movcap1.fechaInscripcion}" width="150">
+                        <f:facet name="filter">
+                            <p:calendar navigator="true" pattern="dd/MM/yyyy" >
+                                <p:ajax event="dateSelect" update="movCapital12" oncomplete="PF('movimientosUAFE').filter()" />
+                            </p:calendar>
+                        </f:facet>
+                        <h:outputText value="#{movcap1.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                    </p:column>
+                    <p:column headerText="Cuantia" width="100">
+                        <h:outputText value=" #{movcap1.cuantiaCadena}" rendered="#{movcap1.cuantiaCadena ne null and movcap1.baseImponible eq null}" />
+                        <h:outputText value="#{movcap1.baseImponible}" rendered="#{movcap1.baseImponible ne null}">
+                            <f:convertNumber currencySymbol="$" type="currency"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="No de Tramite" width="80">
+                        <h:outputText value="#{movcap1.numeroTramite}"/>
+                    </p:column>
+                    <p:column headerText="Opc." style="text-align: center" width="50">
+                        <p:commandButton icon="pi pi-pencil" actionListener="#{reportesExternos.listarParticipantes(movcap1)}"
+                                         update="formUAF" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            <p:panel id="pnlUafe" header="UAFE - FORMATO XML" rendered="#{reportesExternos.tipoanexo eq 4}">
+                <p:panelGrid styleClass="noBorder" columns="6">
+                    <p:outputLabel value="1.ARCHIVO DETALLE >" style="font-size: 14px;font-weight: bolder;color: #0033FF;"/>
+                    Mes de Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.mesUaf}" style="width: 150px;">
+                        <f:selectItems value="#{reportesExternos.meses}" var="an3" itemLabel="#{an3.clave}" itemValue="#{an3.valor}" />
+                    </p:selectOneMenu>
+                    Anio de Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.anioUaf}" style="width: 150px;">
+                        <f:selectItems value="#{reportesExternos.anios}" var="ann3" itemLabel="#{ann3.clave}" itemValue="#{ann3.valor}" />
+                    </p:selectOneMenu>
+                    <p:commandButton value="Generar DETALLE" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesExternos.generarDetalleResu()}" update="pnlUafe"/>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="6">
+                    <p:outputLabel value="2.ARCHIVO CABECERA >" style="font-size: 14px;font-weight: bolder;color: #0033FF;"/>
+                    Fecha:
+                    <p:outputLabel value="SIN GENERAR" rendered="#{reportesExternos.fechaModificacion eq null}"
+                                   style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="#{reportesExternos.fechaModificacion}" style="font-weight: bolder;font-size: 14px;"
+                                   rendered="#{reportesExternos.fechaModificacion ne null}">
+                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss"/>
+                    </p:outputLabel>
+                    Clave Generada:
+                    <p:inputText value="#{reportesExternos.codigoResu}" size="30"/>
+                    <p:commandButton value="Generar CABECERA" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesExternos.generarCabeceraResu()}"/>
+                </p:panelGrid>
+            </p:panel>
+            <p:panel header="COTAD - FORMATO PDF" rendered="#{reportesExternos.tipoanexo eq 5}" >
+                <h:panelGrid columns="7" style="font-weight: bolder;font-size: 16px;margin: 0 auto;">
+                    <p:outputLabel value="Mes de Periodo:"  />
+                    <p:selectOneMenu value="#{reportesExternos.anexo.mes}"  >
+                        <f:selectItems value="#{reportesExternos.meses}" var="an1" itemLabel="#{an1.clave}" itemValue="#{an1.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    Año de Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.anexo.anio}">
+                        <f:selectItems value="#{reportesExternos.anios}" var="ann1" itemLabel="#{ann1.clave}" itemValue="#{ann1.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    <p:commandButton value="Generar Anexo" icon="ui-icon-document" styleClass="btnStyle" style="font-size: 16px;" 
+                                     actionListener="#{reportesExternos.generarAnexoCotad()}"/>
+                </h:panelGrid>
+            </p:panel>
+            <p:panel header="SUPERCIA - FORMATO PDF" rendered="#{reportesExternos.tipoanexo eq 6}" >
+                <h:panelGrid columns="7" style="font-weight: bolder;font-size: 16px; margin: 0 auto;" >
+                    <p:outputLabel value="Mes de Periodo:"  />
+                    <p:selectOneMenu value="#{reportesExternos.anexo.mes}"  >
+                        <f:selectItems value="#{reportesExternos.meses}" var="an1" itemLabel="#{an1.clave}" itemValue="#{an1.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    Anio de Periodo:
+                    <p:selectOneMenu value="#{reportesExternos.anexo.anio}">
+                        <f:selectItems value="#{reportesExternos.anios}" var="ann1" itemLabel="#{ann1.clave}" itemValue="#{ann1.valor}" />
+                    </p:selectOneMenu>
+                    <p:spacer width="40" height="1"/>
+                    <p:commandButton value="Generar Anexo" icon="ui-icon-document" styleClass="btnStyle" style="font-size: 16px;" 
+                                     actionListener="#{reportesExternos.generarAnexoSupercia()}"/>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <p:dialog id="anexoUAFE" widgetVar="dlgParticipantes" modal="true" closeOnEscape="true">
+            <h:form id="frmAnexoUAFE">
+                <p:panel id="pnlUafe" header="UAFE - FORMATO XML" rendered="#{reportesExternos.tipoanexo eq 4}">
+                    <p:panelGrid styleClass="noBorder" columns="6">
+                        <p:outputLabel value="1.ARCHIVO DETALLE >" style="font-size: 14px;font-weight: bolder;color: #0033FF;"/>
+                        Mes de Periodo:
+                        <p:selectOneMenu value="#{reportesExternos.mesUaf}">
+                            <f:selectItems value="#{reportesExternos.meses}" var="an4" itemLabel="#{an4.clave}"      itemValue="#{an4.valor}" />
+                        </p:selectOneMenu>
+                        Anio de Periodo:
+                        <p:selectOneMenu value="#{reportesExternos.anioUaf}">
+                            <f:selectItems value="#{reportesExternos.anios}" var="ann4" itemLabel="#{ann4.clave}" itemValue="#{ann4.valor}" />
+                        </p:selectOneMenu>
+                        <p:commandButton value="Generar DETALLE" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesExternos.generarDetalleResu()}" update="pnlUafe"/>
+                    </p:panelGrid>
+                    <p:panelGrid styleClass="noBorder" columns="6">
+                        <p:outputLabel value="2.ARCHIVO CABECERA >" style="font-size: 14px;font-weight: bolder;color: #0033FF;"/>
+                        Fecha:
+                        <p:outputLabel value="SIN GENERAR" rendered="#{reportesExternos.fechaModificacion eq null}"
+                                       style="font-weight: bolder;font-size: 14px;"/>
+                        <p:outputLabel value="#{reportesExternos.fechaModificacion}" style="font-weight: bolder;font-size: 14px;"
+                                       rendered="#{reportesExternos.fechaModificacion ne null}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss"/>
+                        </p:outputLabel>
+                        Clave Generada:
+                        <p:inputText value="#{reportesExternos.codigoResu}" size="30"/>
+                        <p:commandButton value="Generar CABECERA" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{reportesExternos.generarCabeceraResu()}"/>
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+        <p:dialog id="dlgParticipantes" widgetVar="dlgParticipantes" modal="true" header="Información SRI">
+            <h:form id="frmAnexoSri">
+                Tipo Transacción:
+                <p:selectOneMenu value="#{reportesExternos.dp.tipoTransaccion}" converter="entityConverter" required="true">
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                    <f:selectItems value="#{reportesExternos.sriCatalogoTransaccion}" var="srict1" itemLabel="#{srict1.nombre}" itemValue="#{srict1}"/>
+                    <p:ajax update="frmAnexoSri, pngTipoEntrega, pnlPart2, selectEntrega" process="pngTipoEntrega" listener="#{reportesExternos.renderTipoActo()}" />
+                </p:selectOneMenu>
+                <p:panelGrid columns="3" styleClass="noBorder" style="font-weight: bolder;">
+                    Transferencia en Vinculo Familiar:
+                    <p:selectOneMenu value="#{reportesExternos.movimiento.vinculoFamiliar}">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="6">
+                    Participante quien Entrega el bien:
+                    <p:outputLabel value="CI/RUC:"/>
+                    <p:inputText value="#{reportesExternos.dp.movimientoParticipante.entrega.cedRuc}" readonly="true"/>
+                    <p:outputLabel value="Nombres:"/>
+                    <p:inputText value="#{reportesExternos.dp.movimientoParticipante.entrega.nombre}" readonly="true" size="30"/>
+                    <p:commandButton icon="ui-icon-search" actionListener="#{reportesExternos.showDlgParticipantes(1)}"/>
+                </p:panelGrid>
+                <p:panelGrid id="pngTipoEntrega" styleClass="noBorder" style="font-weight: bolder;" columns="4">
+                    Tipo Participante - Quien Entrega:
+                    <p:selectOneMenu id="selectEntrega" value="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega}" 
+                                     disabled="#{reportesExternos.dp.tipoTransaccion.codigo ne '12'}" caseSensitive="true" >
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItem itemLabel="OTORGANTE" itemValue="1" itemDisabled="#{reportesExternos.dp.tipoTransaccion.codigo ne '12'}" />
+                        <f:selectItem itemLabel="VENDEDOR" itemValue="3" itemDisabled="#{reportesExternos.dp.tipoTransaccion.codigo ne '12'}"/>
+                        <f:selectItem itemLabel="CAUSANTE" itemValue="4" itemDisabled="true"/>
+                        <f:selectItem itemLabel="PROPIETARIO" itemValue="2" itemDisabled="true"/>
+                        <p:ajax listener="#{reportesExternos.dp.movimientoParticipante.setTipoParticipanteRecibe(reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega eq '1'? '5' : '1')}" update="pnlPart2"/>
+                    </p:selectOneMenu>
+                    Tipo Relación - Quien Entrega:
+                    <p:selectOneMenu value="#{reportesExternos.dp.movimientoParticipante.tipoRelacionEntrega}" >
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="PADRES" itemValue="1"/>
+                        <f:selectItem itemLabel="HIJOS" itemValue="2"/>
+                        <f:selectItem itemLabel="ABUELOS" itemValue="3"/>
+                        <f:selectItem itemLabel="NIETOS" itemValue="4"/>
+                        <f:selectItem itemLabel="TÍOS" itemValue="5"/>
+                        <f:selectItem itemLabel="PRIMOS" itemValue="6"/>
+                        <f:selectItem itemLabel="OTROS" itemValue="7"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:panelGrid id="pnlPart1" styleClass="noBorder" style="font-weight: bolder;" columns="6">
+                    Participante quien Recibe el bien:
+                    <p:outputLabel value="CI/RUC:"/>
+                    <p:inputText value="#{reportesExternos.dp.movimientoParticipante.recibe.cedRuc}" readonly="true"/>
+                    <p:outputLabel value="Nombres:"/>
+                    <p:inputText value="#{reportesExternos.dp.movimientoParticipante.recibe.nombre}" readonly="true" size="30"/>
+                    <p:commandButton icon="ui-icon-search" actionListener="#{reportesExternos.showDlgParticipantes(2)}"
+                                     disabled="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega eq '2'}"/>
+                </p:panelGrid>
+                <p:panelGrid id="pnlPart2" styleClass="noBorder" style="font-weight: bolder;" columns="4">
+                    Tipo Participante - Quien Recibe:
+                    <p:selectOneMenu value="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteRecibe}" disabled="true"  >
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="BENEFICIARIO" itemValue="5"/>
+                        <f:selectItem itemLabel="NO APLICA" itemValue="6"/>
+                        <f:selectItem itemLabel="COMPRADOR" itemValue="1"/>
+                        <f:selectItem itemLabel="HEREDERO-LEGATARIO" itemValue="3"/>
+                    </p:selectOneMenu>
+                    Tipo Relación - Quien Recibe:
+                    <p:selectOneMenu value="#{reportesExternos.dp.movimientoParticipante.tipoRelacionRecibe}" 
+                                     disabled="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega eq '2'}" >
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="PADRES" itemValue="1"/>
+                        <f:selectItem itemLabel="HIJOS" itemValue="2"/>
+                        <f:selectItem itemLabel="ABUELOS" itemValue="3"/>
+                        <f:selectItem itemLabel="NIETOS" itemValue="4"/>
+                        <f:selectItem itemLabel="TÍOS" itemValue="5"/>
+                        <f:selectItem itemLabel="PRIMOS" itemValue="6"/>
+                        <f:selectItem itemLabel="OTROS" itemValue="7"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton icon="ui-icon-disk" action="#{reportesExternos.saveMovimientoParticipante()}" oncomplete="PF('dlgParticipantes').hide();"
+                                     update="mainForm:movCapital1"/>
+                    <p:spacer width="15" />
+                    <p:commandButton icon="ui-icon-close" onclick="PF('dlgParticipantes').hide();"
+                                     update="mainForm:movCapital1"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgParticipantesMC" widgetVar="dlgParticipantesMC" modal="true">
+            <h:form id="frmAnexoSriMc">
+                Tipo Transacción:
+                <p:selectOneMenu value="#{reportesExternos.dp.tipoTransaccion}" converter="entityConverter">
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                    <f:selectItems value="#{reportesExternos.sriCatalogoTransaccion}" var="srict1" itemLabel="#{srict1.nombre}" itemValue="#{srict1}"/>
+                    <p:ajax update="frmAnexoSriMc" listener="#{reportesExternos.renderTipoActo()}" />
+                </p:selectOneMenu>
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="2">
+                    Tipo Participante:
+                    <p:selectOneMenu value="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega}" disabled="true">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="OTORGANTE" itemValue="1"/>
+                        <f:selectItem itemLabel="VENDEDOR" itemValue="3"/>
+                        <f:selectItem itemLabel="CAUSANTE" itemValue="4"/>
+                        <f:selectItem itemLabel="PROPIETARIO" itemValue="2"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="6">
+                    Participante:
+                    <p:outputLabel value="CI/RUC:"/>
+                    <p:inputText value="#{reportesExternos.dp.movimientoParticipante.entrega.cedRuc}" readonly="true"/>
+                    <p:outputLabel value="Nombres:"/>
+                    <p:inputText value="#{reportesExternos.dp.movimientoParticipante.entrega.nombre}" readonly="true" size="30"/>
+                    <p:commandButton icon="ui-icon-search" actionListener="#{reportesExternos.showDlgParticipantes(1)}"/>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton icon="ui-icon-disk" action="#{reportesExternos.saveMovimientoParticipante()}" oncomplete="PF('dlgParticipantesMC').hide();"
+                                     update="mainForm:movCapital1"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        <p:dialog header="Participantes" widgetVar="dlgNrpm" modal="true" width="600" resizable="false">
+            <h:form id="formNrpm">
+                <p:dataTable value="#{reportesExternos.participantes}" var="par" emptyMessage="Sin participantes para seleccionar."
+                             scrollable="true" scrollHeight="250" style="text-align: center;margin: 0 auto;">
+                    <p:column headerText="CI/RUC" width="120">
+                        <p:outputLabel value="#{par.cedRuc}"/>
+                    </p:column>
+                    <p:column headerText="Nombre" >
+                        <p:outputLabel value="#{par.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Sel." width="40">
+                        <p:commandLink actionListener="#{reportesExternos.guardarParticipante(par)}" update="frmAnexoSri">
+                            <p:graphicImage value="/resources/icons/check.png" height="16"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog header="Datos ANEXO UAFE" widgetVar="dlgUAF" modal="true" resizable="false" width="70%" closeOnEscape="true">
+            <h:form id="formUAF">
+                <p:tabView>
+                    <p:tab title="Información">
+                        <h:panelGrid columns="4" >
+                            <p:outputLabel value="Contrato:" style="font-weight: bolder;font-size: 12px;"/>
+                            <p:outputLabel value="Cuantia:" style="font-weight: bolder;font-size: 12px;"/>
+                            <p:outputLabel value="Tipo Bien:" style="font-weight: bolder;font-size: 12px;"/>
+                            <p:outputLabel value="Cod.Catastral:" style="font-weight: bolder;font-size: 12px;"/>
+                            <p:inputText value="#{reportesExternos.tra.movimiento.acto.nombre}" readonly="true" style="width: 300px;"/>
+                            <p:inputText value="#{reportesExternos.tra.vcc}" style="width: 200px;"/>
+                            <p:selectOneMenu value="#{reportesExternos.tra.ttb}" style="width: 200px;">
+                                <f:selectItem itemLabel="CASA" itemValue="CAS" />
+                                <f:selectItem itemLabel="DEPARTAMENTO" itemValue="DEP" />
+                                <f:selectItem itemLabel="TERRENO" itemValue="TER" />
+                                <f:selectItem itemLabel="EDIFICO" itemValue="EDI" />
+                                <f:selectItem itemLabel="OFICINA" itemValue="OFI" />
+                                <f:selectItem itemLabel="VEHICULO" itemValue="VEH" />
+                                <f:selectItem itemLabel="EMBARCACIONES" itemValue="EMB" />
+                                <f:selectItem itemLabel="OTROS" itemValue="OTR" />
+                            </p:selectOneMenu>
+                            <p:inputText value="#{reportesExternos.tra.cca}" style="width: 200px;"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" style="width: 100%;">
+                            <p:outputLabel value="Tipo Tramite:" style="font-weight: bolder;font-size: 12px;"/>
+                            <p:selectOneMenu value="#{reportesExternos.tra.uafTramite}" style="width: 300px;" 
+                                             filter="true" filterMatchMode="contains" converter="entityConverter">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                <f:selectItems value="#{reportesExternos.uafTramites}" var="tt" 
+                                               itemLabel="#{tt.claseTramite}" itemValue="#{tt}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Direccion:" style="font-weight: bolder;font-size: 12px;"/>
+                            <p:inputTextarea value="#{reportesExternos.tra.dtm}" style="width: 100%;" rows="3" autoResize="false" />
+                        </h:panelGrid>
+                        <p:dataTable id="uafTable" value="#{reportesExternos.tra.uafNitList}" var="par" lazy="false"
+                                     emptyMessage="Sin participantes para seleccionar."
+                                     scrollable="true" scrollHeight="200" editable="true" editMode="cell" >
+                            <p:column headerText="CI/RUC" width="120" >
+                                <p:outputLabel value="#{par.idi}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" >
+                                <p:outputLabel value="#{par.nri}"/>
+                            </p:column>
+                            <p:column headerText="Papel" width="150" >
+                                <p:outputLabel value="#{par.papel}"/>
+                            </p:column>
+                            <p:column headerText="Nac." width="80">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{par.nai}" /></f:facet>
+                                    <f:facet name="input">
+                                        <p:selectOneMenu value="#{par.nai}" filter="true" filterMatchMode="startsWith">
+                                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                            <f:selectItems value="#{reportesExternos.uafNacionalidades}" var="nac" itemLabel="#{nac.descripcion}" itemValue="#{nac.codigo}" />
+                                        </p:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Rol" width="80">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{par.rdi}" /></f:facet>
+                                    <f:facet name="input">
+                                        <p:selectOneMenu value="#{par.rdi}">
+                                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                            <f:selectItem itemLabel="OTORGADO POR" itemValue="01" />
+                                            <f:selectItem itemLabel="A FAVOR DE" itemValue="02" />
+                                        </p:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Papel" width="80">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{par.pdi}" /></f:facet>
+                                    <f:facet name="input">
+                                        <p:selectOneMenu value="#{par.pdi}"  filter="true" filterMatchMode="startsWith">
+                                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                            <f:selectItems value="#{reportesExternos.uafPapeles}" var="pap" itemLabel="#{pap.nombre}" itemValue="#{pap.codigo}" />
+                                        </p:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Sel." width="40">
+                                <p:selectBooleanCheckbox value="#{par.seleccionado}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Referencias">
+                        <p:dataTable paginator="true" rows="5" paginatorAlwaysVisible="false" expandedRow="true" lazy="false" id="dtTemp"
+                                     value="#{reportesExternos.tra.movimiento.regMovimientoFichaCollection}" var="movf" rowKey="#{movf.id}">
+                            <p:column style="width:16px">
+                                <p:rowToggler />
+                            </p:column>
+                            <p:column headerText="Nro. Ficha" >
+                                <p:outputLabel value="#{movf.ficha.numFicha}"/>
+                            </p:column>
+                            <p:column headerText="Parroquia" >
+                                <p:outputLabel value="#{movf.ficha.parroquia.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Cod.Predial" >
+                                <p:outputLabel value="#{movf.ficha.claveCatastral}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Bien" >
+                                <p:outputLabel value="#{movf.ficha.uafTipoBien.descripcion}"/>
+                            </p:column>
+                            <p:rowExpansion>
+                                <p:dataTable id="dtMov" value="#{movf.ficha.regMovimientoFichaCollection}" scrollable="true" scrollHeight="140"
+                                             var="mov" rowIndexVar="rowIndex" reflow="true" style="text-align: center;" >
+                                    <p:column headerText="No" width="30">
+                                        #{rowIndex + 1}
+                                    </p:column>
+                                    <p:column headerText="Libro">
+                                        <p:outputLabel value="#{mov.movimiento.libro.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="Acto">
+                                        <p:outputLabel value="#{mov.movimiento.acto.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="Repertorio" width="80">
+                                        <p:outputLabel value="#{mov.movimiento.numRepertorio}" />
+                                    </p:column>
+                                    <p:column headerText="Inscripcion" width="80">
+                                        <p:outputLabel value="#{mov.movimiento.numInscripcion}"/>
+                                    </p:column>
+                                    <p:column headerText="Fec.Insc." width="80">
+                                        <p:outputLabel value="#{mov.movimiento.fechaInscripcion}" >
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:rowExpansion>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+                <center>
+                    <p:commandButton icon="pi pi-save" action="#{reportesExternos.guardarEditMovTraInt()}" value="Guardar Datos"
+                                     update="mainForm:movCapital12,formUAF"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgAnexoSRI1" widgetVar="dlgAnexoSRI1" modal="true" header="Información SRI" width="750" minHeight="400" height="550" >
+            <h:form id="frmAnexoSri1">
+                <p:panelGrid columns="5">
+                    <h:panelGroup>
+                        Acto: <br/>
+                        #{reportesExternos.movimiento.acto.nombre}
+                    </h:panelGroup>
+                    Tipo Transacción:
+                    <p:selectOneMenu value="#{reportesExternos.dp.tipoTransaccion}" converter="entityConverter" required="true">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                        <f:selectItems value="#{reportesExternos.sriCatalogoTransaccion}" var="srict1" itemLabel="(#{srict1.codigo}) #{srict1.nombre}" itemValue="#{srict1}"/>
+                        <p:ajax update="frmAnexoSri1, pngTipoEntrega1, pnlPart2, selectEntrega1" process="pngTipoEntrega1" listener="#{reportesExternos.renderTipoActo()}" />
+                    </p:selectOneMenu>
+                    Transferencia en Vinculo Familiar:
+                    <p:selectOneMenu value="#{reportesExternos.movimiento.vinculoFamiliar}">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                        <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <br/>
+                <p:dataTable emptyMessage="No hay datos para mostrar..." var="mc1" scrollable="true" resizableColumns="true" id="dtMoviInters1"
+                             value="#{reportesExternos.detallesMovimiento}" scrollHeight="250" rowIndexVar="indexIntv" >
+                    <f:facet name="header">
+                        INTERVINIENTES
+                    </f:facet>
+                    <p:column headerText="No" width="15" >
+                        #{indexIntv+1}
+                    </p:column>
+                    <p:column headerText="Entrega C.I/R.U.C" width="70">
+                        <p:outputLabel id="identInt1" value="#{mc1.movimientoParticipante.entrega.cedRuc}"/>
+                    </p:column>
+                    <p:column headerText="Entrega Nombre del Cliente">
+                        <p:outputLabel value="#{mc1.movimientoParticipante.entrega.nombre}" id="nombreInt1"/>
+                    </p:column>
+                    <p:column headerText="Recibe C.I/R.U.C" width="70">
+                        <p:outputLabel id="identInt2" value="#{mc1.movimientoParticipante.recibe.cedRuc}"/>
+                    </p:column>
+                    <p:column headerText="Recibe Nombre del Cliente">
+                        <p:outputLabel value="#{mc1.movimientoParticipante.recibe.nombre}" id="nombreInt2"/>
+                    </p:column>
+
+                    <p:column headerText="***" width="5%">
+                        <p:commandButton icon="fa fa-edit" action="#{reportesExternos.setIndex(indexIntv)}" actionListener="#{reportesExternos.setDp(mc1)}" update="@(.ui-panelgrid)" />
+                    </p:column>
+
+                </p:dataTable>
+                <br/>
+                <p:fieldset title="Detalle Interviniente" id="fsDatosInterv">
+                    <p:panelGrid id="pngTipoEntrega1" styleClass="noBorder" style="font-weight: bolder; width: 100%" columns="4" >
+                        <f:facet name="header">Participante Quien Entrega el Bien:</f:facet>
+                        <p:outputLabel value="CI/RUC:"/>
+                        <p:inputText value="#{reportesExternos.dp.movimientoParticipante.entrega.cedRuc}" readonly="true"/>
+                        <p:outputLabel value="Nombres:"/>
+                        <h:panelGroup>
+                            <p:inputText value="#{reportesExternos.dp.movimientoParticipante.entrega.nombre}" readonly="true" size="30"/>
+                            <p:commandButton value="**" icon="ui-icon-search" actionListener="#{reportesExternos.showDlgParticipantes(1)}" 
+                                             update="frmAnexoSri1:pngTipoEntrega1"/>
+                        </h:panelGroup>
+                        Tipo Participante:
+                        <p:selectOneMenu id="selectEntrega1" value="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega}" 
+                                         disabled="#{reportesExternos.dp.tipoTransaccion.codigo ne '12'}"  >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItem itemLabel="OTORGANTE" itemValue="1" itemDisabled="#{reportesExternos.dp.tipoTransaccion.codigo ne '12'}" />
+                            <f:selectItem itemLabel="VENDEDOR" itemValue="3" itemDisabled="#{reportesExternos.dp.tipoTransaccion.codigo ne '12'}"/>
+                            <f:selectItem itemLabel="CAUSANTE" itemValue="4" itemDisabled="true"/>
+                            <f:selectItem itemLabel="PROPIETARIO" itemValue="2" itemDisabled="true"/>
+                            <p:ajax listener="#{reportesExternos.dp.movimientoParticipante.setTipoParticipanteRecibe(reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega eq '1'? '5' : '1')}" update="pnlPart2"/>
+                        </p:selectOneMenu>
+                        Tipo Relación:
+                        <p:selectOneMenu value="#{reportesExternos.dp.movimientoParticipante.tipoRelacionEntrega}" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="PADRES" itemValue="1"/>
+                            <f:selectItem itemLabel="HIJOS" itemValue="2"/>
+                            <f:selectItem itemLabel="ABUELOS" itemValue="3"/>
+                            <f:selectItem itemLabel="NIETOS" itemValue="4"/>
+                            <f:selectItem itemLabel="TÍOS" itemValue="5"/>
+                            <f:selectItem itemLabel="PRIMOS" itemValue="6"/>
+                            <f:selectItem itemLabel="OTROS" itemValue="7"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:panelGrid id="pnlPart2" styleClass="noBorder" style="font-weight: bolder; width: 100%" columns="4">
+                        <f:facet name="header">Participante Quien Recibe el Bien:</f:facet>
+
+                        <p:outputLabel value="CI/RUC:"/>
+                        <p:inputText value="#{reportesExternos.dp.movimientoParticipante.recibe.cedRuc}" readonly="true"/>
+                        <p:outputLabel value="Nombres:"/>
+                        <h:panelGroup>
+                            <p:inputText value="#{reportesExternos.dp.movimientoParticipante.recibe.nombre}" readonly="true" size="30"/>
+                            <p:commandButton icon="ui-icon-search" actionListener="#{reportesExternos.showDlgParticipantes(2)}"
+                                             disabled="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega eq '2'}" 
+                                             update="frmAnexoSri1:pnlPart2"/>
+                        </h:panelGroup>
+                        Tipo Participante #{reportesExternos.dp.movimientoParticipante.tipoParticipanteRecibe}
+                        <p:selectOneMenu id="selectRecibe1" value="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteRecibe}" disabled="true"  >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="BENEFICIARIO" itemValue="5"/>
+                            <f:selectItem itemLabel="NO APLICA" itemValue="6"/>
+                            <f:selectItem itemLabel="COMPRADOR" itemValue="1"/>
+                            <f:selectItem itemLabel="HEREDERO-LEGATARIO" itemValue="3"/>
+                        </p:selectOneMenu>
+                        Tipo Relación
+                        <p:selectOneMenu value="#{reportesExternos.dp.movimientoParticipante.tipoRelacionRecibe}" 
+                                         disabled="#{reportesExternos.dp.movimientoParticipante.tipoParticipanteEntrega eq '2'}" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="PADRES" itemValue="1"/>
+                            <f:selectItem itemLabel="HIJOS" itemValue="2"/>
+                            <f:selectItem itemLabel="ABUELOS" itemValue="3"/>
+                            <f:selectItem itemLabel="NIETOS" itemValue="4"/>
+                            <f:selectItem itemLabel="TÍOS" itemValue="5"/>
+                            <f:selectItem itemLabel="PRIMOS" itemValue="6"/>
+                            <f:selectItem itemLabel="OTROS" itemValue="7"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <div align="center">
+                        <p:commandButton icon="ui-icon-disk" action="#{reportesExternos.saveMovimientoParticipante()}" 
+                                         update="mainForm:movCapital1, fsDatosInterv"/>
+                    </div>
+                </p:fieldset>
+                <br/>
+                <div align="center">
+                    <p:commandButton icon="ui-icon-close" onclick="PF('dlgAnexoSRI1').hide();" update="mainForm:movCapital1"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="comprobante_proforma_reingreso" pageWidth="210" pageHeight="290" whenNoDataType="AllSectionsNoDetail" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" isIgnorePagination="true" uuid="aa1ebb37-e2f2-4d06-b103-65200ac1521b">
+	<property name="ireport.zoom" value="4.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="ID_LIQUIDACION" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\gutya\\OneDrive\\Documentos\\proyectos\\registropropiedad\\src\\main\\webapp\\reportes\\ingreso\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+pro_us.usuario as user_name,
+ht.num_tramite, ht.fecha_ingreso, ht.fecha_entrega,
+liq.total_pagar, liq.valor_actos, liq.desc_limit_cobro,
+liq.sub_total, liq.clave_acceso, liq.codigo_comprobante,
+liq.numero_autorizacion, en.ci_ruc as doc_beneficiario,
+case en.es_persona when true then
+coalesce(en.nombres,'')||' '||coalesce(en.apellidos,'')
+else en.razon_social end AS beneficiario,
+liq.fecha_autorizacion, en.direccion, en.telefono1,
+us.usuario, liq.descuento_valor,
+financiero.tipo_pago(pago.id) as tipo_pago,
+usuario_reingresa
+from flow.historico_tramites ht
+left join flow.regp_liquidacion liq on ht.id = liq.tramite
+left join flow.regp_nota_devolutiva nod on ht.id = nod.tramite
+left join financiero.ren_pago pago on pago.liquidacion = liq.id
+left join app.cat_ente en on en.id = liq.beneficiario
+left join app.acl_user us on us.id = liq.user_ingreso
+left join app.acl_user pro_us on (pro_us.id = liq.user_creacion)
+left join app.cat_ente pro_en on (pro_en.id = pro_us.ente)
+where liq.id = $P{ID_LIQUIDACION}]]>
+	</queryString>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<field name="fecha_ingreso" class="java.sql.Timestamp"/>
+	<field name="fecha_entrega" class="java.sql.Timestamp"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="valor_actos" class="java.math.BigDecimal"/>
+	<field name="desc_limit_cobro" class="java.math.BigDecimal"/>
+	<field name="sub_total" class="java.math.BigDecimal"/>
+	<field name="clave_acceso" class="java.lang.String"/>
+	<field name="codigo_comprobante" class="java.lang.String"/>
+	<field name="numero_autorizacion" class="java.lang.String"/>
+	<field name="doc_beneficiario" class="java.lang.String"/>
+	<field name="beneficiario" class="java.lang.String"/>
+	<field name="fecha_autorizacion" class="java.sql.Timestamp"/>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="telefono1" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="descuento_valor" class="java.math.BigDecimal"/>
+	<field name="tipo_pago" class="java.lang.String"/>
+	<field name="usuario_reingresa" class="java.lang.String"/>
+	<title>
+		<band height="156" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="112" width="30" height="14" uuid="c4de941a-dd41-41a3-a4c2-08252118525c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cliente:]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="30" y="112" width="140" height="14" uuid="06745487-1563-44b4-ba0c-5f662bc3f80b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{beneficiario}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="98" width="30" height="14" uuid="f28b5256-0fe7-418c-b789-3781174cce9e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CI/Ruc:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="30" y="98" width="140" height="14" uuid="730231e5-6cd4-4f16-8635-83ea17ad3203"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{doc_beneficiario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" isPrintRepeatedValues="false" x="0" y="58" width="170" height="40" uuid="7a62a0dd-6f59-48ba-b362-741512860097"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="20" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_tramite})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="39" width="170" height="19" uuid="85cd842c-f10b-413c-badf-84d7b16bbfb8"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Reingreso de Trámite]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="126" width="170" height="14" uuid="a4a9cd55-215c-44ff-8492-9f7aabea307e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[*** TRÁMITE REINGRESADO ***]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="140" width="100" height="14" uuid="4e207aba-78b6-4c3e-b4ca-a993ddf4e170"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Entrega:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="100" y="140" width="70" height="14" uuid="a3d64b01-89ed-411d-9942-d7c2056adc7f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_entrega}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="0" width="170" height="39" isPrintWhenDetailOverflows="true" uuid="7bb70e9b-7d17-46e9-a06d-8a4bc22fde68"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[REGISTRO MUNICIPAL DE LA PROPIEDAD Y MERCANTIL DEL CANTÓN  PLAYAS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="1" y="0" width="23" height="12" uuid="ab511fa8-ab04-448a-9a8d-c8d2e383564e"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Dashed"/>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cant.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="25" y="0" width="145" height="12" uuid="10f741fa-d9e6-4ccd-9bdd-344de9a87e0d"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Dashed"/>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Contrato]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="170" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="7c7c4996-0782-4456-bda1-60ee85b006ee"/>
+				<subreportParameter name="ID_LIQ">
+					<subreportParameterExpression><![CDATA[$P{ID_LIQUIDACION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "comprobante_proforma_subreport_reingreso.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="60" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement positionType="Float" x="40" y="41" width="110" height="14" uuid="52099c76-269d-4390-aa43-7a24230d4902"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="5" width="170" height="22" uuid="ec424e9d-58ad-4fe1-a349-e03719b2e3a3"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Este comprobante no es válido como documento tributario]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement positionType="Float" x="40" y="27" width="110" height="14" uuid="e33646c5-da41-4fed-ad40-0a2d9e8f7900"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario_reingresa}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="41" width="40" height="14" uuid="12f848e7-dc9e-4b54-b1ab-832eb1f24e80"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Impreso:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="27" width="40" height="14" uuid="3655df53-fe0d-40d3-8ebf-5dd06faa3dca"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

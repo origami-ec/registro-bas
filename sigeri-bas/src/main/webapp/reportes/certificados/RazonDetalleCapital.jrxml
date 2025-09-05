@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RazonDetalleCapital" language="groovy" pageWidth="494" pageHeight="802" columnWidth="494" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="91d02ae5-8095-437e-b718-5e659f3df73e">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_MOVIMIENTO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select ca.nombre, mc.valor
+from app.reg_movimiento_capital mc
+left join app.reg_capital ca on ca.id = mc.capital
+where mc.movimiento = $P{ID_MOVIMIENTO}]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="248" height="14" uuid="b40e54f8-97a0-4831-9eca-5b7a8faca883"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Descripción del(los) capital(es):]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="247" height="14" uuid="5fdd7690-1299-41be-a7fc-f9920371dfc3"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tipo de Capital]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="247" y="0" width="247" height="14" uuid="d62aad12-c2f6-4655-84e8-84fc85024234"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="247" y="0" width="247" height="14" uuid="d526f75b-8f5f-4944-b045-c878ddda625f"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="247" height="14" uuid="be0ceea0-ca96-4f91-82bc-7084bede2a0b"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

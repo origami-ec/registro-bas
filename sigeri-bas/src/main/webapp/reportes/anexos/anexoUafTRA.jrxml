@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TRA" language="groovy" pageWidth="1860" pageHeight="1684" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1860" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f6fb164a-af29-420b-80da-5f6660bdf899">
+	<property name="ireport.zoom" value="1.2396694214876032"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.pdf.compressed" value="true"/>
+	<property name="net.sf.jasperreports.style.backcolor" value="&quot;#&quot; + net.sf.jasperreports.engine.util.JRColorUtil.getColorHexa(new java.awt.Color(&#xA;&#x9;  255, &#xA;&#x9;  255 - Math.min(255,(int)(255 * 20 * .5)), &#xA;&#x9;  255 - Math.min(255,(int)(255 * 20 * 1.25))))"/>
+	<parameter name="PERIODO" class="java.lang.String"/>
+	<parameter name="DATE_STRING" class="java.lang.String"/>
+	<parameter name="CODIGO_REGISTRO" class="java.lang.String"/>
+	<parameter name="CODIGO_CANTON" class="java.lang.String"/>
+	<parameter name="TOTAL_TRA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT tra.movimiento as nit, tra.fcr, t.codigo as ttm, substr(tra.dtm, 1, 149) as dtm, tra.cca, tra.vcc, tra.ttb, substr(tra.drb, 1, 149) as drb, tra.acto
+FROM ctlg.uaf_tra tra
+ INNER JOIN ctlg.uaf_tramite t ON t.id = tra.uaf_tramite
+WHERE tra.periodo = $P{PERIODO} AND tra.seleccionado = true
+ORDER BY CAST(tra.fcr AS BIGINT) ASC, tra.nit ASC]]>
+	</queryString>
+	<field name="nit" class="java.lang.Long"/>
+	<field name="fcr" class="java.lang.String"/>
+	<field name="ttm" class="java.lang.String"/>
+	<field name="dtm" class="java.lang.String"/>
+	<field name="cca" class="java.lang.String"/>
+	<field name="vcc" class="java.lang.String"/>
+	<field name="ttb" class="java.lang.String"/>
+	<field name="drb" class="java.lang.String"/>
+	<field name="acto" class="java.lang.String"/>
+	<title>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="50" height="15" uuid="b43a9328-08a6-47f4-ac58-a1d846288d37"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[TRA]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="60" height="15" isPrintWhenDetailOverflows="true" uuid="d0d4516a-b146-47e3-96f6-76430dafeda7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATE_STRING}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="aec10c0c-cfaf-405a-8164-d8368cef8569"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CODIGO_REGISTRO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="160" y="0" width="200" height="15" isPrintWhenDetailOverflows="true" uuid="dd3bdcf2-5d5c-494e-8b26-d94807cb4bdb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{TOTAL_TRA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="c695ae3e-bb02-45a4-ac1c-9f3f360b82d6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nit}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="7f079850-df45-427a-9c73-1328394d82c6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fcr}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="60" height="15" isPrintWhenDetailOverflows="true" uuid="16e0302d-e956-4b57-9906-af5e9db0d1b7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ttm}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="160" y="0" width="200" height="15" isPrintWhenDetailOverflows="true" uuid="5d141ed9-8f5d-484d-95f9-a681c4147034"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}.toUpperCase() + " DE BIEN INMUEBLE"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="360" y="0" width="200" height="15" isPrintWhenDetailOverflows="true" uuid="858294e1-2e4e-4031-9227-f94a40baec0b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cca}.isEmpty() ? "N/A" : $F{cca}.replaceAll("\\s+", " ").replaceAll(" ", "-").trim()]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="560" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="d5724419-468f-438d-8c6a-d5eb5951a668"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{vcc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1756" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="b0c61e47-03c5-462b-9f2f-3eefb62e2564"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CODIGO_REGISTRO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="610" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="08dd369d-5401-4184-aa77-75ecdf503acf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ttb} == null ? "OTR" : $F{ttb}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="660" y="0" width="1046" height="15" isPrintWhenDetailOverflows="true" uuid="47dc9ab1-a31a-406e-8c7e-83bd1089d25c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dtm}.toUpperCase().replaceAll("[^\\p{ASCII}(N\u0303)(n\u0303)(\u00A1)(\u00BF)(\u00B0)(U\u0308)(u\u0308)]", "")
+.replaceAll("[^\\dA-Za-zñÑ\\s]", "")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1706" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="b4887a1b-6a41-4a99-950f-c4e34a8c607e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CODIGO_CANTON}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1806" y="0" width="50" height="15" isPrintWhenDetailOverflows="true" uuid="9b0eafcd-9ccb-4341-b0d9-3a29e16834ac"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATE_STRING}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

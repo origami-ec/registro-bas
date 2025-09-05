@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Facelet Title</title>
+        <meta charset="utf-8"></meta>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+        <title>test firma</title>
+        <link rel="stylesheet" href=""></link>
+        <h:outputScript name="firma_2.js" library="js" />
+
+    </h:head>
+    <h:body>
+        <canvas id="cnv" name="cnv" width="500" height="100" style="background-color: #000;"></canvas>
+        <br></br>
+        <!--            <p:commandButton  value="FIRMA" />-->
+        <button onclick="StartSign()" >FIRMA</button>
+
+        <textarea name="dataFirma" id="dataFirma" rows="10" cols="60"></textarea>
+        <br></br>
+        <br></br>
+        Campo que estara oculto, en el que recojemos obj.imageData.
+        <br></br>
+
+    </h:body>
+</html>
+

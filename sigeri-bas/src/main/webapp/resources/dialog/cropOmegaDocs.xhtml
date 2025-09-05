@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+    <f:metadata >
+        <f:event type="preRenderView" listener="#{cropOmegaDocs.doPreRenderView()}"/>
+        <f:viewParam name="transaccion" value="#{cropOmegaDocs.transaccion}" />
+        <f:viewParam name="tramite" value="#{cropOmegaDocs.tramite}" />
+        <f:viewParam name="indice" value="#{cropOmegaDocs.indice}" />
+    </f:metadata>
+    <h:head>
+        <title>Digitalización</title>
+        <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+        <ui:include src="styleTemplete.xhtml" />
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+            <meta http-equiv="refresh" content="#{facesContext.externalContext.sessionMaxInactiveInterval};url=#{request.contextPath}/login.xhtml"/>
+        </f:facet>
+    </h:head>
+    <h:body>
+        <style>
+            #marginacion {
+                position: absolute;
+                top: 100%;
+                margin: -50px auto;
+                width: 100%;
+                height: auto;
+                transform: rotate(270deg);
+                transform-origin: 0 0;
+                text-align: start; 
+            }
+        </style>
+        <h:form id="frmMainCrop">
+            <p:growl id="growl" showDetail="true" ><p:autoUpdate /></p:growl>
+            <poue:layout fullPage="true" style="min-width: 400px; min-height: 600px;"  >
+                <poue:layoutPane position="west" resizable="true" size="45%" minSize="250" maxSize="300" closable="true" >
+                    <h:panelGrid columns="1" >
+                        <h:panelGroup>
+                            <p:outputLabel for="enabledOCR" value="¿Habilitar OCR?" class="FontBold "/> <p:spacer width="30" />
+                            <p:selectBooleanButton id="enabledOCR" value="#{cropOmegaDocs.enableOCR}" onLabel="Si" offLabel="No" >
+                                <p:ajax update="frmMainCrop:dgPaguinas" process="frmMainCrop:dgPaguinas" />
+                            </p:selectBooleanButton>
+                        </h:panelGroup><br/>
+                        <h:panelGroup>
+                            <p:dataTable id="dtDocumentos" paginator="true" lazy="true" rows="10" value="#{cropOmegaDocs.archivos}" 
+                                         var="docs" emptyMessage="No se ha encontrado el documento." paginatorPosition="top" 
+                                         style="font-weight: bolder;" > 
+                                <p:column headerText="Documentos">
+                                    <!--<p:outputLabel value="ID: # {docs.id}"/><br/>-->
+                                    <p:outputLabel value="FECHA: #{docs.fecha.subSequence(0, 16)}" /><br/>
+                                    <p:outputLabel value="PAGS:  #{docs.numeroPaginas}"/><br/>
+                                    <p:outputLabel value="PESO:  #{docs.peso}"/>
+                                </p:column>
+                                <p:column headerText="***" width="15">
+                                    <p:commandLink actionListener="#{cropOmegaDocs.descargarDocumento(docs)}" 
+                                                   update="frmMainCrop:dgPaguinas" title="Descargar">
+                                        <p:graphicImage value="/resources/icons/down.png" height="20"/>
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column headerText="***" width="15">
+                                    <p:commandLink actionListener="#{cropOmegaDocs.seleccionarImagenes(docs)}" 
+                                                   update="frmMainCrop:dgPaguinas" title="Visualizar">
+                                        <p:graphicImage value="/resources/icons/next.png" height="20"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </poue:layoutPane>
+
+                <poue:layoutPane position="center" closable="true" >
+                    <p:dataGrid var="pagina1" value="#{cropOmegaDocs.imagenes}" columns="1" layout="grid" rows="1" paginator="true" id="dgPaguinas" 
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowStatePreserved="true" emptyMessage="Debe seleccionar una imagen para visualizar.">
+                        <p:ajax event="page" listener="#{cropOmegaDocs.selectPage}" />
+                        <div align="center" style="width: 100%; height: 100%; " >
+                            <center>
+                                <h:panelGroup style="z-index: 1000; float: top; vertical-align: top; padding-bottom: 5px" class="Wid100" >
+                                    <p:commandButton icon="pi pi-search-plus" onclick="PF('rotateAndResizeWidget').scale(1.1);return false;" 
+                                                     title="Aumentar imagen" style="height: 40px;width: 40px;" />
+                                    <p:spacer width="30" />
+                                    <p:commandButton icon="pi pi-search-minus" onclick="PF('rotateAndResizeWidget').scale(0.90);return false;" 
+                                                     title="Disminuir Imagen" style="height: 40px;width: 40px;" />
+                                    <p:spacer width="30" />
+                                    <p:commandButton icon="pi pi-arrows-v" onclick="PF('rotateAndResizeWidget').restoreDefaults();return false;" 
+                                                     title="Restaurar imagen original" style="height: 40px;width: 40px;" />
+                                    <!--<p:spacer width="10" />
+                                    <p:commandButton icon="fa fa-adjust" actionListener="# {pagina1.suavizarImagen()}" title="Suavizar Imagen" update="imagen, areaSelect"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="fa fa-area-chart" actionListener="# {pagina1.intensificarImagen()}" title="Intensificar Imagen" update="imagen, areaSelect"/>-->
+                                </h:panelGroup>
+                            </center>
+                            <poue:imageRotateAndResize id="rotateAndResize" for="imagen" widgetVar="rotateAndResizeWidget">
+                                <poue:javascript event="resize" execute="PF('areaSelct').reload();  " />
+                                <poue:javascript event="rotate" execute="PF('areaSelct').reload();  " />
+                            </poue:imageRotateAndResize>
+                            <!--<p:graphicImage id="imagen" value="# {pagina1.stream}" stream="false" style="border: 1px solid #f1f1f1; margin-top: 10px; width: 100%" />-->
+                            <p:graphicImage id="imagen" value="#{pagina1.urlWebService}" stream="false" style="border: 1px solid #f1f1f1; margin-top: 10px; width: 100%" />
+                            <poue:imageAreaSelect id="areaSelect" for="imagen" rendered="#{cropOmegaDocs.enableOCR}" widgetVar="areaSelct"
+                                                  autoHide="true" handles="false" movable="false" persistent="false" resizable="false" >
+                                <p:ajax event="selectEnd" listener="#{cropOmegaDocs.selectEndListener}" />
+                            </poue:imageAreaSelect>
+                        </div>
+                    </p:dataGrid>
+                </poue:layoutPane>
+            </poue:layout>
+        </h:form>
+
+        <p:dialog modal="true" widgetVar="dlgTextSelect" resizable="false" height="350" width="750" position="center" header="Texto Seleccionado" closeOnEscape="true" >
+            <h:form id="frmTextAux">
+                <h:panelGrid columns="1" style="text-align: center;width: 99%;">
+                    <p:inputTextarea value="#{cropOmegaDocs.textAux}" autoResize="false" readonly="true" style="width: 99%;" rows="18"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </h:body>
+</html>

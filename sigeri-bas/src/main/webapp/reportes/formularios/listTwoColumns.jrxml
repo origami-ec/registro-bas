@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="listTwoColumns" language="groovy" columnCount="2" printOrder="Horizontal" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="277" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1d461ad9-5069-4e70-a7fe-1c9d091c5d39">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="PROPIETARIOS" uuid="6d444ac8-6cd4-4060-b4bb-468248a79ab8">
+		<field name="nombres" class="java.lang.String"/>
+		<field name="apellidos" class="java.lang.String"/>
+		<variable name="apellidos_1" class="java.lang.Integer" calculation="Count">
+			<variableExpression><![CDATA[$F{apellidos}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<parameter name="PROPIETARIOS" class="java.util.Collection" isForPrompting="false"/>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="apellidos" class="java.lang.String"/>
+	<variable name="apellidos_1" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{apellidos}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="13">
+			<textField>
+				<reportElement x="0" y="0" width="25" height="13" uuid="63b528ed-996d-4b10-be6c-24cdf0e7d10e"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{apellidos_1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="25" y="0" width="200" height="13" uuid="35f0f95a-3c67-4b2f-98b9-4e7e040380a2"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{apellidos} == null? "" : $F{apellidos} ) + ($F{nombres} == null? "" : " " + $F{nombres} )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

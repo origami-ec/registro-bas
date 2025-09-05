@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Trámites Parroquias</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>TRAMITES PARROQUIAS</h1></center>
+            <p:dataTable id="dtTramites" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" style="text-align: center" resizableColumns="false"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{tramitesParroquias.liquidaciones}" var="liq" filterEvent="enter">
+                <p:column headerText="# Tramite" filterBy="#{liq.numTramiteRp}" sortBy="#{liq.numTramiteRp}" width="100" filterStyle="width: 95%;">
+                    <h:outputText  value="#{liq.numTramiteRp}"/>
+                </p:column>
+                <p:column headerText="Nº Titulo" filterBy="#{liq.codigoComprobante}" width="100" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.codigoComprobante}"/>
+                </p:column>
+                <!--<p:column headerText="Nº Oficio" filterBy="# {liq.numFormulario}" width="150" 
+                          filterStyle="width: 95%;" filterMatchMode="contains">
+                    <h:outputText value="# {liq.numFormulario}"/>
+                </p:column>-->
+                <p:column headerText="Usuario Asignado" width="60">
+                    <h:outputText value="#{liq.inscriptor.usuario}"/>
+                </p:column>
+                <p:column headerText="Fecha de Ingreso" width="100">
+                    <h:outputText value="#{liq.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fecha de Entrega" width="80">
+                    <h:outputText value="#{liq.tramite.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="CI/RUC de Titulo" width="100" filterBy="#{liq.beneficiario.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.beneficiario.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres de Titulo" filterBy="#{liq.tramite.nombrePropietario}" filterStyle="width: 95%;" >
+                    <h:outputText value="#{liq.tramite.nombrePropietario}" style="text-transform: uppercase;"/>
+                </p:column>
+                <!--<p:column headerText="Nombres del Titulo" width="250">
+                    <h:outputText value="# {liq.beneficiario.nombreCompleto}" style="text-transform: uppercase;"/>
+                </p:column>-->
+                <p:column headerText="Contratos">
+                    <ui:repeat value="#{liq.regpLiquidacionDetallesCollection}" var="det">
+                        <p:outputLabel value="#{det.acto.nombre} &lt;br/&gt;" escape="false"  style="font-size: 12px"/>
+                    </ui:repeat>
+                </p:column>
+                <p:column headerText="Opciones" width="180">
+                    <p:commandButton icon="pi pi-file-pdf" title="Ver Proforma" style="background-color: green;" 
+                                     actionListener="#{tramitesParroquias.showProforma(liq)}" />
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-wallet" title="Reimprimir Titulo" style="background-color: graytext;" 
+                                     actionListener="#{tramitesParroquias.showTituloCredito(liq)}" />    
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-folder-open" title="Ver Tareas" 
+                                     actionListener="#{tramitesParroquias.showInfo(liq)}"/>
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-shopping-bag" title="Documentos Emitidos" style="background-color: orangered;" 
+                                     actionListener="#{tramitesParroquias.findAllDocumentos(liq)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgVerInfo" header="Informacion de Tramite" widgetVar="dlgVerInfoRp" resizable="false" 
+                  closeOnEscape="true" modal="true" width="700" height="500">
+            <h:form id="formInformLiq">
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="No de Tramite:" style="font-weight: bold; font-size: 18px;color: #d2322d"/>
+                    <p:outputLabel value="#{tramitesParroquias.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" rendered="#{tramitesParroquias.liquidacion.estadoPago.id eq 7}">
+                    <p:outputLabel value="TRÁMITE INGRESADO EN LÍNEA" style="font-weight: bold; font-size: 18px; color: #0033FF;"/>
+                </h:panelGrid>
+                <p:tabView id="tabTramite">
+                    <p:tab title="Tareas">
+                        <p:dataTable value="#{tramitesParroquias.tareas}" emptyMessage="El tramite no ha sido ingresado."
+                                     var="tarea" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Nombre Tarea">
+                                <p:outputLabel value="#{tarea.name}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                <p:outputLabel value="#{tramitesParroquias.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Inicio" width="120">
+                                <p:outputLabel value="#{tarea.createTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Fech.Fin" width="120">
+                                <p:outputLabel value="#{tarea.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observaciones">
+                        <p:dataTable value="#{tramitesParroquias.ht.observacionesCollection}" emptyMessage="Sin elementos..."
+                                     var="obs" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Tarea" width="150">
+                                <p:outputLabel value="#{obs.tarea}"/>
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <p:outputLabel value="#{obs.observacion}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Documentos">
+                        <p:dataTable value="#{tramitesParroquias.archivos}" style="text-align: center;" scrollable="true"  
+                                     emptyMessage="Sin documentos digitalizados." scrollHeight="300" var="doc1" paginator="true" reflow="true" 
+                                     rows="5" paginatorAlwaysVisible="false" rowIndexVar="posicion" >
+                            <f:facet name="header">DOCUMENTOS HABILITANTES DIGITALIZADOS</f:facet>
+                            <p:column headerText="Transaccion">
+                                <p:outputLabel value="#{doc1.id}"/>
+                            </p:column>
+                            <p:column headerText="Fecha" width="110">
+                                <!--<p:outputLabel value="# {doc1.fecha}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>-->
+                                <p:outputLabel value="#{doc1.fecha.subSequence(0, 16)}" />
+                            </p:column>
+                            <p:column headerText="Pag." width="60">
+                                <p:outputLabel value="#{doc1.numeroPaginas}"/>
+                            </p:column>
+                            <p:column headerText="Peso" width="60">
+                                <p:outputLabel value="#{doc1.peso}"/>
+                            </p:column>
+                            <p:column headerText="View" width="60">
+                                <p:commandLink actionListener="#{tramitesParroquias.visualizarDocsTramite(tramitesParroquias.liquidacion.numTramiteRp, posicion)}">
+                                    <p:graphicImage value="/resources/icons/reporte.png" height="20" width="20"/>   
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Documentos del Tramite" widgetVar="dlgVerDocs" resizable="false" 
+                  closeOnEscape="true" modal="true" width="700" height="500">
+            <h:form id="formDocsTramite" >
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="No de Tramite:" style="font-weight: bold; font-size: 18px;color: #d2322d"/>
+                    <p:outputLabel value="#{tramitesParroquias.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/>
+                </h:panelGrid>
+                <p:tabView id="tabDocsTramite" >
+                    <p:tab title="Certificados" rendered="#{tramitesParroquias.certificados.size() gt 0}" >
+                        <p:dataTable id="dtCertificados" var="cer" value="#{tramitesParroquias.certificados}" 
+                                     rowIndexVar="index" style="text-align: center;">
+                            <p:column headerText="N°" width="30">
+                                #{index+1}
+                            </p:column>
+                            <p:column headerText="N° Certificado">
+                                <p:outputLabel value="#{cer.numCertificado}"/>
+                            </p:column>
+                            <p:column headerText="Fecha de Emision">
+                                <p:outputLabel value="#{cer.fechaEmision}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                            </p:column>
+                            <!--<p:column headerText="Tipo de Certificado">
+                                <p:outputLabel value="# {cer.claseCertificado}" />
+                            </p:column>-->
+                            <p:column headerText="N° Ficha">
+                                <p:outputLabel value="#{cer.ficha.numFicha}" />
+                            </p:column>
+                            <p:column headerText="Estado">
+                                <p:outputLabel value="#{cer.documento eq null ? 'NO Firmado':'Firmado'}" />
+                            </p:column>
+                            <p:column headerText="Cod. Verificación">
+                                <p:outputLabel value="#{cer.codVerificacion}" />
+                            </p:column>
+                            <p:column headerText="Down" width="40">
+                                <p:commandLink actionListener="#{tramitesParroquias.descargarCertificado(cer)}" update="dtCertificados" 
+                                               title="Descarga Certificado Nro #{cer.numCertificado}">
+                                    <p:graphicImage value="/resources/icons/reporte.png" height="24"/>   
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Inscripciones" rendered="#{tramitesParroquias.movimientos.size() gt 0}" >
+                        <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;font-size: 18px;" >
+                            <p:outputLabel value="Descargar Razón"/>
+                            <p:commandLink actionListener="#{tramitesParroquias.descargarRazon()}" title="Descargar">
+                                <p:graphicImage value="/resources/icons/pdf.png" height="50"/>
+                            </p:commandLink>
+                        </h:panelGrid>
+                        <p:dataTable id="dtMovimientos" var="mov" value="#{tramitesParroquias.movimientos}" 
+                                     rowIndexVar="index" style="text-align: center;">
+                            <p:column headerText="N°" width="30">
+                                #{index+1}
+                            </p:column>
+                            <p:column headerText="N° Inscripción" width="100">
+                                <p:outputLabel value="#{mov.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="F.Inscripción" width="100">
+                                <p:outputLabel value="#{mov.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="N° Repertorio">
+                                <p:outputLabel value="#{mov.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Contrato">
+                                <p:outputLabel value="#{mov.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Razon Firmada" width="60">
+                                <p:outputLabel value="#{mov.documento eq null ? 'NO':'SI'}" />
+                            </p:column>
+                            <p:column headerText="Cod. Verificación" width="100">
+                                <p:outputLabel value="#{mov.codVerificacion}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

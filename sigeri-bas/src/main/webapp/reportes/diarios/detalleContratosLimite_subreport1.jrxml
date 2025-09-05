@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleContratosLimite_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="af36929c-8375-427f-b12e-a31d604d37cb">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select ac.nombre as acto, de.cuantia, de.avaluo, de.valor_unitario, li.codigo_comprobante,
+de.descuento, de.valor_total, li.num_tramite_rp, li.fecha_ingreso,
+li.numero_comprobante, sol.ci_ruc,
+case sol.es_persona when true then
+coalesce(sol.nombres,'')||' '||coalesce(sol.apellidos,'')
+else sol.razon_social end AS solicitante,
+li.desc_limit_cobro, li.total_pagar, (li.total_pagar + li.desc_limit_cobro) as subtotal
+from flow.regp_liquidacion_detalles de
+left join app.reg_acto ac on (ac.id = de.acto)
+left join flow.regp_liquidacion li on (li.id = de.liquidacion)
+left join app.cat_ente sol on (sol.id = li.solicitante)
+where de.liquidacion = $P{LIQUIDACION} order by de.fecha_ingreso]]>
+	</queryString>
+	<field name="acto" class="java.lang.String"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="codigo_comprobante" class="java.lang.String"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="num_tramite_rp" class="java.lang.Long"/>
+	<field name="fecha_ingreso" class="java.sql.Timestamp"/>
+	<field name="numero_comprobante" class="java.lang.Long"/>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="desc_limit_cobro" class="java.math.BigDecimal"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="subtotal" class="java.math.BigDecimal"/>
+	<variable name="sindescuento" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_unitario}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="28" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="62fad1e8-681a-4463-a337-472a8419c465" x="60" y="1" width="75" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_tramite_rp}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="fc5c43e2-fcae-460c-a05c-543d4e35d23b" x="1" y="1" width="60" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° Tramite:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="45644f5c-b777-44f2-9012-5ecb86570b11" x="375" y="1" width="60" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Ing.:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="55d7f094-48ff-46c8-bf1b-120480a57e03" x="435" y="1" width="120" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_ingreso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="05a95651-7096-479e-b42f-0e0ba3e62e95" x="135" y="1" width="60" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° Factura:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="da580fe1-bf94-42d5-bba1-0af1d6c18d33" x="194" y="1" width="181" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_comprobante}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="dbc2ce73-3bad-4008-9df5-6a99c950e170" x="1" y="14" width="60" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cédula/Ruc:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c2e7c739-1e61-4055-841b-8d31ace52360" x="60" y="14" width="75" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="a4eb27be-93c5-42bf-98dd-6ec82da49c96" x="135" y="14" width="60" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="5656fb03-4f6e-4261-a65e-623c04b28e5e" x="195" y="14" width="360" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solicitante}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="eda4b1f8-b266-4393-91c5-fcfa5aea3579" x="475" y="1" width="80" height="12"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5b3250c7-0302-4693-b000-ad42bb7fdc2c" x="395" y="1" width="80" height="12"/>
+				<box leftPadding="3" rightPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descuento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d52cdc25-cf3e-448f-95db-51c92cee2d09" x="1" y="1" width="214" height="12"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Contrato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e74c9ee5-195e-4979-9653-183a9da333c0" x="215" y="1" width="50" height="12"/>
+				<box rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Avalúo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b3b90843-bfb9-4e6a-9220-1c0bf0568b88" x="265" y="1" width="50" height="12"/>
+				<box rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuantía]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="50512926-f288-47eb-8aef-ae7fb26f7952" x="315" y="1" width="80" height="12"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="df5fc5cf-8b56-4ff3-bbf5-d39da88587d2" x="1" y="-1" width="214" height="14" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="9708b412-837f-4c25-bf95-bcc5f599b220" x="215" y="-1" width="50" height="14" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="0" rightPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{avaluo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="584ff0d4-7cb2-46d2-9b2a-30681a1f3d83" x="265" y="-1" width="50" height="14" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="0" rightPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cuantia}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="43c583c9-7947-4ff4-a79a-c6bad1e39f69" x="315" y="-1" width="80" height="14" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="0" rightPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="0efb0b73-0487-45f0-8481-82c8245167ac" x="395" y="-1" width="80" height="14" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="0" rightPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="0e411519-9e68-48c6-b268-c8261ea9bafc" x="475" y="-1" width="80" height="14" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="0" rightPadding="2">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="42">
+			<staticText>
+				<reportElement uuid="baa231b7-8bd9-483b-860b-eb85ed229c13" x="315" y="10" width="160" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal Con Descuento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="913596a3-6db6-4cdd-a38d-dbfc1b0a1934" x="315" y="20" width="160" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desc. Limite Cobro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9037e425-a6c4-4ef4-8f69-96aceff58138" x="315" y="30" width="160" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total a Pagar]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="a5d37934-4e62-448a-97db-15843bb1924a" x="475" y="10" width="80" height="10" isPrintWhenDetailOverflows="true"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="da760258-07b0-4c7b-a923-6e07cb5f25e8" x="475" y="20" width="80" height="10" isPrintWhenDetailOverflows="true"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{desc_limit_cobro}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="f4d5b6fc-1a79-4f3f-b782-1838d1fa1d68" x="475" y="30" width="80" height="10" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="0" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_pagar}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="8ca9083e-e90a-4bae-9985-5ee92ff99dd9" x="0" y="40" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="e4e8dbc8-0b7a-4ca2-a5b4-e9f623e9544d" x="315" y="0" width="160" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal Sin Descuento]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="305293f4-d5b6-4221-94b5-7e8369cad381" x="475" y="0" width="80" height="10" isPrintWhenDetailOverflows="true"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sindescuento}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Repertorio_apertura" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="455" leftMargin="70" rightMargin="70" topMargin="50" bottomMargin="50" uuid="f3c6b8a2-ebc8-4f48-b9c3-4d17e2fede42">
+	<property name="ireport.zoom" value="1.6500000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="FOLIO" class="java.lang.Integer"/>
+	<parameter name="FECHA_STRING" class="java.lang.String"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<parameter name="LIBRO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select 1]]>
+	</queryString>
+	<field name="?column?" class="java.lang.Integer"/>
+	<detail>
+		<band height="500" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="140" y="0" width="180" height="180" uuid="e815c46a-b191-4671-8844-11c942bb9924"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Double"/>
+				</box>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="198" width="455" height="1" uuid="4a6edf87-ad0f-4005-a269-83d785b03284"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="225" width="455" height="20" uuid="4f0c99c6-8ec3-4899-b21c-7a67c6fb6691"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Abogado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="245" width="455" height="20" uuid="eb894eaa-0986-4eda-9e32-d3c86a63cc45"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Francis Emir Tapia Mahuad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Transparent" x="0" y="265" width="455" height="20" uuid="2d1b88f8-2252-4b10-8a46-32b5477a50c0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[REGISTRADOR DE LA PROPIEDAD Y MERCANTIL DEL CANTÓN PLAYAS]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="315" width="455" height="20" isPrintWhenDetailOverflows="true" uuid="f5fc0258-5e5d-47f6-8c62-9a303b088456"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="12"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<textFieldExpression><![CDATA["En la ciudad de Playas, el " + $P{FECHA_STRING} + ", el Registrador de la Propiedad y Mercantil, "
++ "Abg. Francis Emir Tapia Mahuad, en uso de la disposición contemplada en el artículo 11 literal b "
++ "de la Ley de Registro y en concordancia con la Ley del Sistema Nacional de Registro de Datos Públicos, "
++ "procede a la apertura del presente LIBRO DE " + $P{LIBRO}.toUpperCase() + " del presente año, las " + $P{FOLIO} + " fojas que contiene "
++ "el presente libro entán debidamente firmadas y rubricadas."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="79" y="436" width="300" height="20" uuid="a9b22d81-3ad0-42d2-8e3a-770540167b39"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Abg. Francis Emir Tapia Mahuad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Transparent" x="118" y="456" width="230" height="32" uuid="a698336c-3522-4cfb-8d7f-046238eeb4eb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[REGISTRADOR DE LA PROPIEDAD Y MERCANTIL DEL CANTÓN PLAYAS]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="365" width="455" height="20" isPrintWhenDetailOverflows="true" uuid="f1c7d8d5-e1ee-4a10-ac72-4492ce143b15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Playas, " + $P{FECHA_STRING}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

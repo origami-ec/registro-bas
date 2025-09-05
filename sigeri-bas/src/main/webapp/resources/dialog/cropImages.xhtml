@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+
+    <f:metadata >
+        <f:event type="preRenderView" listener="#{cropImagesM.doPreRenderView()}"/>
+        <f:viewParam name="id" value="#{cropImagesM.id}" />
+        <f:viewParam name="numRepertorio" value="#{cropImagesM.numRepertorio}"/>
+        <f:viewParam name="numInscripcion" value="#{cropImagesM.numInscripcion}" />
+        <f:viewParam name="fechaIns" value="#{cropImagesM.fechaIns}"/>
+    </f:metadata>
+    <h:head>
+        <title>Digitalización</title>
+        <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+        <ui:include src="styleTemplete.xhtml" />
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+            <meta http-equiv="refresh" content="#{facesContext.externalContext.sessionMaxInactiveInterval};url=#{request.contextPath}/login.xhtml"/>
+        </f:facet>
+    </h:head>
+    <h:body>
+        <style>
+            #marginacion {
+                position: initial;
+                top: 100%;
+                margin: -50px auto;
+                width: 100%;
+                height: auto;
+                transform: rotate(270deg);
+                transform-origin: 0 0;
+                text-align: start; 
+            }
+        </style>
+        <h:form id="frmMainCrop">
+            <p:growl id="growl" showDetail="true" ><p:autoUpdate /></p:growl>
+            <poue:layout fullPage="true" style="min-width: 400px; min-height: 600px;"  >
+                <poue:layoutPane position="west" resizable="true" size="35%" minSize="100" maxSize="200" >
+                    <p:panelGrid columns="1" layout="grid">
+                        <h:panelGroup>
+                            <p:outputLabel for="enabledOCR" value="Habilitar OCR" class="FontBold "/> <p:spacer width="30" />
+                            <p:selectBooleanButton id="enabledOCR" value="#{cropImagesM.enableOCR}" onLabel="Si" offLabel="No" >
+                                <p:ajax update="frmMainCrop:dgPaguinas" process="frmMainCrop:dgPaguinas"  />
+                            </p:selectBooleanButton>
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <p:outputLabel for="basic" value="Documentos:" class="FontBold"/>
+                            <p:selectOneListbox id="basic" value="#{cropImagesM.idTransaccion}">
+                                <f:selectItems value="#{cropImagesM.archivos}" var="arch1" itemLabel="#{arch1.idCarpeta.idTipoDoc.desTipoDoc} - #{arch1.idCarpeta.desCarpeta}" 
+                                               itemValue="#{arch1.idTransaccion}"  itemDescription="Registro #{arch1.idTransaccion}" />
+                                <p:ajax update="frmMainCrop:dgPaguinas" listener="#{cropImagesM.refrescBlobs()}" />
+                            </p:selectOneListbox>
+                        </h:panelGroup>
+
+                    </p:panelGrid>
+                </poue:layoutPane>
+
+                <poue:layoutPane position="center" closable="true" >
+                    <p:dataGrid var="pagina1" value="#{cropImagesM.blobsLazy}" columns="1" layout="grid" rows="1" paginator="true" id="dgPaguinas"
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowStatePreserved="true" lazy="true"  >
+                        <div align="center" style="width: 100%; height: 100%; " >
+                            <center>
+                                <h:panelGroup style="z-index: 1000; float: top; vertical-align: top; padding-bottom: 5px" class="Wid100" >
+                                    <p:commandButton icon="pi pi-plus-circle" onclick="PF('rotateAndResizeWidget').scale(1.1);return false;" title="Aumentar Zoom"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-minus-circle" onclick="PF('rotateAndResizeWidget').scale(0.90);return false;" title="Disminuir Zoom"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-image" onclick="PF('rotateAndResizeWidget').restoreDefaults();return false;" title="Restaurar Imagen"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-star-fill" actionListener="#{pagina1.suavizarImagen()}" title="Disminuir Contraste" update="imagen, areaSelect"/>
+                                    <p:spacer width="10" />
+                                    <p:commandButton icon="pi pi-star" actionListener="#{pagina1.intensificarImagen()}" title="Aumentar Contraste" update="imagen, areaSelect"/>
+                                </h:panelGroup>
+                            </center>
+                            <poue:imageRotateAndResize id="rotateAndResize" for="imagen" widgetVar="rotateAndResizeWidget">
+                                <poue:javascript event="resize" execute="PF('areaSelct').reload();  " />
+                                <poue:javascript event="rotate" execute="PF('areaSelct').reload();  " />
+                            </poue:imageRotateAndResize>
+                            <p:graphicImage id="imagen" value="#{pagina1.stream}" stream="false" style="border: 1px solid #f1f1f1; margin-top: 10px; width: 100%"  />
+                            <poue:imageAreaSelect id="areaSelect" for="imagen" rendered="#{cropImagesM.enableOCR}" widgetVar="areaSelct"
+                                                  autoHide="true" handles="false" movable="false" persistent="false" resizable="false" >
+                                <p:ajax event="selectEnd" listener="#{cropImagesM.selectEndListener}" />
+                            </poue:imageAreaSelect>
+                            <p:tooltip for="imagen" >
+                                <p:dataList value="#{pagina1.tbMarginaciones}" var="m1">
+                                    <p:outputLabel id="label1" value="#{m1.descripcion}" style="color: #000" class="FontBold" />
+                                </p:dataList>
+                            </p:tooltip>
+                            <div id="marginacion" >
+                                <p:outputLabel id="label2" value="#{pagina1.marginaciones}" escape="false" style="font-weight: bold; font-size: 17px;" />
+                            </div>
+                        </div>
+                    </p:dataGrid>
+                </poue:layoutPane>
+            </poue:layout>
+        </h:form>
+
+        <p:dialog modal="true" widgetVar="dlgTextSelect" resizable="false" height="50%" width="50%" header="Texto seleccionado."
+                  closeOnEscape="true" >
+            <h:form id="frmTextAux">
+                <p:outputPanel style="text-justify: auto; font-size: 18px" >
+                    <p:inputTextarea value="#{cropImagesM.textAux}" class="Wid100" style="font-size: 17px; text-justify: inter-word" />
+                </p:outputPanel><br/>
+                <div align="center">
+                    <p:commandButton icon="fa fa-close" onclick="PF('dlgTextSelect').hide();"/>
+                </div>
+            </h:form>
+        </p:dialog>
+    </h:body>
+</html>

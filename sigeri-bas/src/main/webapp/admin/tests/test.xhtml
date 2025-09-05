@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Pantalla de Pruebas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <p:tabView id="tvTest">
+                <p:tab title="Prueba de Correo">
+                    <h:panelGrid columns="2" >
+                        <p:outputLabel value="Protocolo: " style="font-size: 14px;font-weight: bolder;" /> 
+                        <p:inputText value="#{testMb.protocol}" size="40" /> 
+                        <p:outputLabel value="Autenticacion: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.auth}" size="40" /> 
+                        <p:outputLabel value="TLS: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.tls}" size="40" /> 
+                        <p:outputLabel value="Host: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.host}" size="40" /> 
+                        <p:outputLabel value="Puerto: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.port}" size="40" /> 
+                        <p:outputLabel value="From: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.user}" size="40" /> 
+                        <p:outputLabel value="Clave: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.pass}" size="40" /> 
+                        <p:outputLabel value="Para: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.to}" size="40" /> 
+                        <p:outputLabel value="Asunto: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputText value="#{testMb.subject}" size="40" /> 
+                        <p:outputLabel value="Contenido: " style="font-size: 14px;font-weight: bolder;" />
+                        <p:inputTextarea value="#{testMb.content}" rows="5" cols="41" /> 
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" >
+                        <p:commandButton value="Enviar Correo" actionListener="#{testMb.enviarCorreo()}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Prueba de Activiti">
+                    <h:panelGrid columns="3" >
+                        <p:outputLabel value="Nro Tramite: " style="font-size: 14px;font-weight: bolder;" /> 
+                        <p:inputNumber value="#{testMb.tramite}" decimalPlaces="0" thousandSeparator="" /> 
+                        <p:commandButton value="Borrar Tramite" actionListener="#{testMb.borrarProceso()}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Prueba de WS">
+                    <h:panelGrid columns="3" >
+                        <p:outputLabel value="Nro Tramite: " style="font-size: 14px;font-weight: bolder;" /> 
+                        <p:inputNumber value="#{testMb.tramite}" decimalPlaces="0" thousandSeparator="" /> 
+                        <p:commandButton value="Enviar WS" actionListener="#{testMb.buscarArchivos()}"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Borrar Tramites">
+                    <h:panelGrid columns="9" >
+                        <p:outputLabel value="Usuario: " style="font-size: 14px;font-weight: bolder;" /> 
+                        <p:inputText value="#{testMb.usuario}" /> 
+                        <p:spacer width="20" height="1" />
+                        <p:outputLabel value="Periodo: " style="font-size: 14px;font-weight: bolder;" /> 
+                        <p:spinner value="#{testMb.anio}" decimalPlaces="0" thousandSeparator="" /> 
+                        <p:spacer width="20" height="1" />
+                        <p:commandButton value="Buscar Tramites" actionListener="#{testMb.buscarTramites()}" icon="pi pi-search"/>
+                        <p:spacer width="20" height="1" />
+                        <p:commandButton value="Borrar Tareas" actionListener="#{testMb.borrarTramites()}" icon="pi pi-trash" 
+                                         title="Se borran hasta 100 tramites"/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Prueba de Secuencia">
+                    <h:panelGrid columns="3" >
+                        <p:outputLabel value="Secuencia: " style="font-size: 14px;font-weight: bolder;" /> 
+                        <p:inputNumber id="secuencia" value="#{testMb.secuencia}" decimalPlaces="0" thousandSeparator="" /> 
+                        <p:commandButton value="Siguiente Secuencia" actionListener="#{testMb.secuenciaRepertorio()}" update="secuencia" />
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

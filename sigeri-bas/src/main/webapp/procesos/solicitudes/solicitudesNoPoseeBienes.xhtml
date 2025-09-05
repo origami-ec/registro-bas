@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        Solicitudes de Inscripción
+        #{userSession.setTopPage('Formulario único para solicitud de certificados de no poseer bienes')}
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-toggleswitch {
+                vertical-align: bottom;
+            }
+        </style>
+        <h:form id="frmMainSol">
+            <h:panelGrid columns="2" width="100%" >
+                <p:panel id="datSol" header="Datos del Solicitante">
+                    <p:panelGrid layout="grid" columns="2">
+                        <co:inputTextButton label="Nro. de Identificación" value="#{solicitudesInscripcion.solicitud.sol_cedula}"
+                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 3)}"
+                                            isAjaxButton="true" updateButton="frmMainSol:datSol" listenerAjaxButton="#{solicitudesInscripcion.selectObject1}" />
+                        <co:inputText label="Nombres" value="#{solicitudesInscripcion.solicitud.sol_nombres}" />
+                        <co:inputText label="Apellido Paterno" value="#{solicitudesInscripcion.solicitud.prop_apellido_paterno}" />
+                        <co:inputText label="Apellido Materno" value="#{solicitudesInscripcion.solicitud.prop_apellido_materno}" />
+                        <co:inputText label="Dirección" value="#{solicitudesInscripcion.solicitud.sol_calles}" />
+                        <co:inputText label="Teléfono" value="#{solicitudesInscripcion.solicitud.sol_convencional}" typeInput="number" />
+                        <co:inputText label="Celular" value="#{solicitudesInscripcion.solicitud.sol_celular}" typeInput="number" />
+                        <co:inputText label="Correo" value="#{solicitudesInscripcion.solicitud.sol_correo}" />
+                        <co:inputSelect catalogo="#{solicitudesInscripcion.estadosCivil.ctlgItemCollection}" var="cph6"
+                                        itemLabel="#{cph6.valor}" itemValue="#{cph6}" value="#{solicitudesInscripcion.estadoCivil}"
+                                        label="Estado civil" />
+                    </p:panelGrid>
+                </p:panel>
+                <!--                <p:panel id="datFact" header="Solicitud a nombre de:" style="margin-bottom: 20px; ">
+                                    <p:panelGrid layout="grid" columns="2">
+                                        <co:inputTextButton label="CI/RUC/PASAPORTE Nro." value="#{solicitudesInscripcion.solicitud.ben_documento}"
+                                                            actionListenerButton="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 2)}"
+                                                            isAjaxButton="true" updateButton="frmMainSol:datFact" listenerAjaxButton="#{solicitudesInscripcion.selectObject}"/>
+                                        <co:inputText label="Apellidos y Nombres" value="#{solicitudesInscripcion.solicitud.ben_nombres}" />
+                                        <co:inputText label="Dirección" value="#{solicitudesInscripcion.solicitud.ben_direccion}" />
+                                        <co:inputText label="Teléfono/Celular" value="#{solicitudesInscripcion.solicitud.ben_telefono}" typeInput="number" />
+                                        <co:inputText label="Correo" value="#{solicitudesInscripcion.solicitud.ben_correo}" />
+                                    </p:panelGrid>
+
+                                </p:panel>-->
+                <h:panelGroup>
+                    <div>
+                        <p:commandButton value="Agregar Propietario" actionListener="#{solicitudesInscripcion.openDialogF('/resources/dialog/dlglazyente', 2)}">
+                            <p:ajax event="dialogReturn" listener="#{solicitudesInscripcion.selectObject2}" update="frmMainSol:dlProp" />
+                        </p:commandButton>
+                    </div>
+                    <p:dataList id="dlProp" value="#{solicitudesInscripcion.solicitud.propietarios}" var="prop1" type="ordered">
+                        #{prop1.apellidos} #{prop1.nombres}
+                    </p:dataList>
+                </h:panelGroup>
+            </h:panelGrid>
+
+            <p:panel id="datPropiedad" header="Datos de la Propiedad">
+                <p:panelGrid layout="grid" columns="3">
+                    <p:outputLabel value="Requiero certificacion de no poseer bienes" />
+                    <p:selectBooleanCheckbox value="#{solicitudesInscripcion.solicitud.copiaEscrituraPublica}" />
+
+                    <p:selectOneRadio value="#{solicitudesInscripcion.solicitud.docAvaluoCatastro}" unselectable="true">
+                        <f:selectItem itemLabel="P. Natural" itemValue="#{true}" />
+                        <f:selectItem itemLabel="P.Juridica" itemValue="#{false}" />
+                    </p:selectOneRadio>
+
+                </p:panelGrid>
+            </p:panel>
+            <br/><br/>
+            <center>
+                <p:outputLabel value="Imprimir Documento" />
+                <p:selectOneRadio value="#{solicitudesInscripcion.imprimirDocumento}" unselectable="true">
+                    <f:selectItem itemLabel="Si" itemValue="#{true}" />
+                    <f:selectItem itemLabel="No" itemValue="#{false}" />
+                </p:selectOneRadio>
+                <br/>
+                <p:commandButton value="Guardar" icon="fa fa-save" actionListener="#{solicitudesInscripcion.saveNoBienes()}" />
+            </center>
+            <br/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

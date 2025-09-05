@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Repertorios_detalles" language="groovy" pageWidth="802" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f81c8a58-05fc-4231-a3f7-b33ea8fa80be">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="793"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pattern="" pdfFontName="Helvetica-Bold"/>
+	<parameter name="FECHA_REPERTORIO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MINIMO" class="java.lang.Integer"/>
+	<parameter name="MAXIMO" class="java.lang.Integer"/>
+	<parameter name="CANTIDAD" class="java.lang.Integer"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="FECHA_DIA_NUM" class="java.lang.String"/>
+	<parameter name="FECHA_MES" class="java.lang.String"/>
+	<parameter name="FECHA_ANIO" class="java.lang.String"/>
+	<parameter name="DIAS_DIFERENCIA" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select string_agg('* ' || rei.nombre || ' - ' || pa.papel, CHR(10) order by rei.nombre) as nombres,
+m.id as movimiento, sec.repertorio, sec.fecha, m.num_repertorio,
+m.fecha_repertorio, m.num_inscripcion, m.fecha_inscripcion,
+m.folio_inicio, m.folio_fin, ac.nombre as acto, li.nombre as libro,
+'* ' || ht.nombre_propietario as solicitante, ej.nombre as notaria,
+dom.nombre as domicilio, m.secuencia_repertorio, m.secuencia_inscripcion
+from secuencias.secuencia_repertorio sec
+left join app.reg_movimiento m on
+(sec.repertorio = m.num_repertorio and sec.anio::varchar = to_char(m.fecha_repertorio, 'yyyy'))
+left join app.reg_movimiento_cliente as mc on (mc.movimiento = m.id)
+left join app.reg_ente_interviniente as rei on (rei.id = mc.ente_interv)
+left join app.reg_papel as pa on (pa.id = mc.papel)
+left join app.reg_acto ac on (ac.id = m.acto)
+left join app.reg_libro li on (li.id = m.libro)
+left join app.reg_ente_judiciales ej on ej.id = m.ente_judicial
+left join app.reg_domicilio dom on dom.id = m.domicilio
+left join flow.regp_tareas_tramite tt on (tt.id = m.num_tramite)
+left join flow.historico_tramites ht on (ht.id = tt.tramite)
+where li.propiedad is true and to_char(sec.fecha, 'dd/MM/yyyy') = $P{FECHA_REPERTORIO}
+group by 2, 3, 4, 11, 12, 13, 14, 15
+order by sec.repertorio, m.fecha_inscripcion, m.num_inscripcion]]>
+	</queryString>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="movimiento" class="java.lang.Long"/>
+	<field name="repertorio" class="java.lang.Integer"/>
+	<field name="fecha" class="java.sql.Timestamp"/>
+	<field name="num_repertorio" class="java.lang.Integer"/>
+	<field name="fecha_repertorio" class="java.sql.Timestamp"/>
+	<field name="num_inscripcion" class="java.lang.Integer"/>
+	<field name="fecha_inscripcion" class="java.sql.Timestamp"/>
+	<field name="folio_inicio" class="java.lang.Integer"/>
+	<field name="folio_fin" class="java.lang.Integer"/>
+	<field name="acto" class="java.lang.String"/>
+	<field name="libro" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="notaria" class="java.lang.String"/>
+	<field name="domicilio" class="java.lang.String"/>
+	<field name="secuencia_repertorio" class="java.lang.String"/>
+	<field name="secuencia_inscripcion" class="java.lang.String"/>
+	<pageHeader>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="200" y="0" width="378" height="42" uuid="7bbd94d4-397a-4fbb-9156-93315fcef409"/>
+				<box leftPadding="5" rightPadding="5">
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<leftPen lineWidth="0.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="false"/>
+				</textElement>
+				<text><![CDATA[LIBRO DE REPERTORIO PROPIEDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="578" y="28" width="124" height="14" uuid="4eea9eb7-84d3-4014-8965-37315688b14c"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Repertorio Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="578" y="14" width="124" height="14" uuid="167fbdbc-ca64-4019-8661-cf593cc9237b"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Repertorio Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="578" y="0" width="124" height="14" uuid="5a5059cc-9d64-41e4-9723-3729a298c28a"/>
+				<box>
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Repertorio:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="702" y="0" width="100" height="14" uuid="3040c431-a685-4c71-a915-e9ff0a583066"/>
+				<box leftPadding="3">
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{FECHA_REPERTORIO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="702" y="14" width="100" height="14" uuid="0510be10-1c06-4b58-9117-7ebdf0ff11d0"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{MINIMO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="702" y="28" width="100" height="14" uuid="24904d32-eebe-4634-9625-310da773a336"/>
+				<box leftPadding="3">
+					<pen lineWidth="2.0" lineStyle="Double"/>
+					<topPen lineWidth="0.0" lineStyle="Double"/>
+					<leftPen lineWidth="0.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+					<rightPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{MAXIMO}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="200" height="42" uuid="46733674-0ed4-4885-bae2-84f0984f99ad"/>
+				<box>
+					<topPen lineWidth="2.0" lineStyle="Double"/>
+					<leftPen lineWidth="2.0" lineStyle="Double"/>
+					<bottomPen lineWidth="2.0" lineStyle="Double"/>
+				</box>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="190" height="24" backcolor="#CCCCCC" uuid="93ec0f75-be96-4a89-9f66-659b83d05dc1"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nombre de quien presenta el documento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="702" y="0" width="100" height="24" backcolor="#CCCCCC" uuid="0ef303ab-ff88-40c0-b37d-893f7cea778e"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Observaciones]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="191" y="0" width="120" height="24" backcolor="#CCCCCC" uuid="082aabdd-baee-4035-bcd3-75d0458b27b5"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Naturaleza del Acto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="312" y="0" width="80" height="24" backcolor="#CCCCCC" uuid="6b72c1d9-4119-4bbb-817e-b7a12e1ea236"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Clase de
+Inscripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="524" y="0" width="60" height="24" backcolor="#CCCCCC" uuid="a8405289-cc85-4a23-8d74-5a70faf9567a"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Hora
+Repertorio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="393" y="0" width="70" height="24" backcolor="#CCCCCC" uuid="4f81eb1b-5251-4aa6-a1c7-16517888a916"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha, Hora
+Nro Inscripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="464" y="0" width="60" height="24" backcolor="#CCCCCC" uuid="0f100092-e4fe-475c-ba1c-69ec760f2d1a"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Registro
+Parcial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="585" y="0" width="117" height="24" backcolor="#CCCCCC" uuid="35e45870-807b-43e1-9111-cef66310ab54"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Autoridad
+Cantón]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{num_inscripcion} != null || $P{DIAS_DIFERENCIA} <= 60]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="312" y="0" width="80" height="24" isPrintWhenDetailOverflows="true" uuid="c94efcdb-76b1-4235-b613-c0e6227bbd3b"/>
+				<box leftPadding="2" bottomPadding="1">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{libro}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="392" y="0" width="71" height="12" isPrintWhenDetailOverflows="true" uuid="becef981-d905-408e-82a0-1120a0622171"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="190" height="24" isPrintWhenDetailOverflows="true" uuid="b0c2fae9-4ada-42d2-9ec8-45603b666319"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="none">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres} == null ? $F{solicitante}.toUpperCase(): $F{nombres}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="191" y="0" width="120" height="24" isPrintWhenDetailOverflows="true" uuid="6e64686c-0169-4dbd-b80f-de14aa0ed12a"/>
+				<box topPadding="1" leftPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="524" y="0" width="60" height="12" isPrintWhenDetailOverflows="true" uuid="7b7e2862-45d2-4944-8edd-8aff3af929e9"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_repertorio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="524" y="12" width="60" height="12" isPrintWhenDetailOverflows="true" uuid="f328d95d-a0de-4a3b-ab9a-8d0a39d993ad"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{repertorio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="392" y="12" width="71" height="12" isPrintWhenDetailOverflows="true" uuid="64ccc3b3-489c-4b6a-9e40-71449b261d0c"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="702" y="0" width="100" height="24" isPrintWhenDetailOverflows="true" uuid="2bdf4747-93b6-4c82-ae24-026bdf34c941"/>
+				<box leftPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="none">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="464" y="0" width="60" height="24" isPrintWhenDetailOverflows="true" uuid="b2d5f69a-fc05-4918-9ceb-0dbd0a802396"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="585" y="12" width="117" height="12" isPrintWhenDetailOverflows="true" uuid="19f50d80-0d4c-4dc7-8c9f-0aff89aceaec"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{domicilio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="585" y="0" width="117" height="12" isPrintWhenDetailOverflows="true" uuid="059ae2c4-13ec-46e1-abf6-e60f3964ee8b"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{notaria}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="24" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{num_inscripcion} == null && $P{DIAS_DIFERENCIA} > 60]]></printWhenExpression>
+			<textField pattern="HH:mm:ss" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="524" y="0" width="60" height="12" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="3a67c057-8477-43ff-ab9f-4c46027c85db"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_repertorio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="190" height="24" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="c670deb0-23ca-4317-8664-8eb8b612da20"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Repertorio caducado, artículo 13 de la
+Ley de Registro.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="524" y="12" width="60" height="12" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="70bf23b9-936a-41a9-8ed5-0dcc04f638e0"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{repertorio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="312" y="0" width="80" height="24" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="a1516b05-97e6-4d8b-8059-dc0d9b7ee873"/>
+				<box leftPadding="2" bottomPadding="1">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{libro}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="393" y="0" width="70" height="12" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="61c85e2f-32ad-4855-acb3-a093d3bb2e4e"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_inscripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="191" y="0" width="120" height="24" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="566e4847-c11f-4578-a10f-b8a1b5c72532"/>
+				<box topPadding="1" leftPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="393" y="12" width="70" height="12" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="3126b5ad-21a0-4d61-96e7-6dc29d7baec1"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_inscripcion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" stretchType="RelativeToBandHeight" mode="Opaque" x="702" y="0" width="100" height="24" backcolor="#E3E3E3" uuid="281c13b9-b1ab-42b9-a961-fbc9b4042867"/>
+				<box>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="464" y="0" width="60" height="24" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="fcf5052f-546a-4705-ad90-95740542edf5"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="585" y="12" width="117" height="12" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="69b5f432-b97b-46b0-bf05-ae2008c99cf6"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{domicilio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="585" y="0" width="117" height="12" isPrintWhenDetailOverflows="true" backcolor="#E3E3E3" uuid="aba19467-6e3e-4781-a3bc-b04c90037ad1"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{notaria}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="102" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="254" y="70" width="300" height="32" isPrintWhenDetailOverflows="true" uuid="f2bbe6d6-f3a7-40ed-9851-4fe6d2be0da1"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{REGISTRADOR}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="negrita" x="0" y="0" width="802" height="32" isPrintWhenDetailOverflows="true" uuid="83c0b394-0201-4425-a110-3405c280ce3c"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RAZÓN: Hoy, " + $P{FECHA_DIA} + " " + $P{FECHA_DIA_NUM} + " de " + $P{FECHA_MES}
++ " del " + $P{FECHA_ANIO} + ", se realizaron " + $P{CANTIDAD}
++ " anotaciones en el libro de repertorio a mi cargo, las mismas que van de la "
++ $P{MINIMO} + " a la " + $P{MAXIMO} + "."]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

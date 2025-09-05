@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Contribuyentes</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center>
+                <h3 style="font-weight: bolder;">
+                    ADMINISTRACION DE PERSONAS NATURALES Y JURIDICAS
+                    <p:commandButton value="Ingresar Nueva Persona" icon="pi pi-user-plus" style="float: right;" 
+                                     actionListener="#{administradorEnte.showDlgNewEnte()}"/>
+                </h3>
+            </center>
+            <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="15" 
+                         rowsPerPageTemplate="15,25,50" filterEvent="enter"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{administradorEnte.cel}" var="user" 
+                         emptyMessage="No se encontró ningún Item" style="text-align: center;background-color: #000000;">
+                <p:column headerText="C.I./R.U.C." width="150" filterBy="#{user.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{user.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres / Razon Social" filterBy="#{user.nombrerazonsocial}" filterStyle="width: 95%;">
+                    <h:outputText value="#{user.nombres}" rendered="#{user.esPersona}"/>
+                    <h:outputText value="#{user.razonSocial}" rendered="#{!user.esPersona}"/>
+                </p:column>
+                <p:column headerText="Apellidos / Nombre Comercial" filterBy="#{user.apellidonombrecomercial}" filterStyle="width: 95%;">
+                    <h:outputText value="#{user.apellidos}" rendered="#{user.esPersona}"/>
+                    <h:outputText value="#{user.nombreComercial}" rendered="#{!user.esPersona}"/>
+                </p:column>
+                <!--<p:column headerText="Persona" width="50">
+                    <h:outputText value="Natural" rendered="# {user.esPersona}"/>
+                    <h:outputText value="Jurídica" rendered="# {!user.esPersona}"/>
+                </p:column>-->
+                <p:column headerText="Registra Documento" width="70">
+                    <h:outputText value="No" rendered="#{user.excepcional}"/>
+                    <h:outputText value="Si" rendered="#{!user.excepcional}"/>
+                </p:column>
+                <p:column headerText="Tipo Documento" width="70">
+                    <h:outputText value="Cedula" rendered="#{user.tipoIdentificacion eq 'C' and !user.excepcional}"/>
+                    <h:outputText value="Ruc" rendered="#{user.tipoIdentificacion eq 'R'}"/>
+                    <h:outputText value="Pasaporte" rendered="#{user.tipoIdentificacion eq 'P'}"/>
+                </p:column>
+                <p:column headerText="Editar" width="40">
+                    <p:commandButton icon="pi pi-pencil" actionListener="#{administradorEnte.showDlgEditEnte(user)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="DATOS DEL CLIENTE" widgetVar="dlgEditEnte" modal="true" resizable="false" closeOnEscape="true" position="center">
+            <h:form id="formEditEnte">
+                <h:panelGrid columns="2" style="width: 100%; font-weight: bolder;" >
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Tipo Persona:" for="esPersona"/><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.esPersona}" id="esPersona" style="width: 120px;">
+                            <f:selectItem itemLabel="NATURAL" itemValue="#{true}" />
+                            <f:selectItem itemLabel="JURIDICA" itemValue="#{false}" />
+                            <p:ajax listener="#{administradorEnte.updateTipoDoc()}" update="formNewEnte"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Tipo Documento:" for="tipoDocumento" /><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.tipoDocumento}" id="tipoDocumento" style="width: 120px;" 
+                                         disabled="#{!administradorEnte.ente.esPersona}" >
+                            <f:selectItem itemLabel="CEDULA" itemValue="C" />
+                            <f:selectItem itemLabel="RUC" itemValue="R" />
+                            <f:selectItem itemLabel="PASAPORTE" itemValue="P" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Identificación:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.ciRuc}" maxlength="13" size="40"/> 
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <h:panelGroup>
+                            Dinardap:<br></br>
+                            <p:commandButton value="Consultar" icon="pi pi-cloud" update="formNewEnte" 
+                                             actionListener="#{administradorEnte.buscarDinardap()}"/>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nombres:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombres}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Apellidos:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.apellidos}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Razón Social:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.razonSocial}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nom. Comercial:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombreComercial}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" >
+                        <p:outputLabel value="Dirección:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.direccion}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" >
+                        <p:outputLabel value="Correo:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.correo1}" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" >
+                        <p:outputLabel value="Cel./Tlfn.:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.telefono1}" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="font-weight: bolder;" rendered="#{administradorEnte.ente.esPersona}">
+                        Estado Civil:<br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.estadoCivil}" converter="entityConverter" style="width: 200px;">  
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                            <f:selectItems value="#{administradorEnte.estadosCiviles}" var="e" itemLabel="#{e.valor}" itemValue="#{e}"/>  
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:spacer width="1" height="1"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Guardar" actionListener="#{administradorEnte.editEnte()}" icon="pi pi-save"/>
+                </center>
+            </h:form>   
+        </p:dialog>
+
+        <p:dialog header="DATOS DEL CLIENTE" widgetVar="dlgNewCliente" modal="true" resizable="false" closeOnEscape="true" position="center">
+            <h:form id="formNewEnte">
+                <h:panelGrid columns="2" style="width: 100%; font-weight: bolder;" >
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Tipo Persona:" for="esPersona"/><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.esPersona}" id="esPersona" style="width: 120px;">
+                            <f:selectItem itemLabel="NATURAL" itemValue="#{true}" />
+                            <f:selectItem itemLabel="JURIDICA" itemValue="#{false}" />
+                            <p:ajax listener="#{administradorEnte.updateTipoDoc()}" update="formNewEnte"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Tipo Documento:" for="tipoDocumento" /><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.tipoDocumento}" id="tipoDocumento" style="width: 120px;" 
+                                         disabled="#{!administradorEnte.ente.esPersona}" >
+                            <f:selectItem itemLabel="CEDULA" itemValue="C" />
+                            <f:selectItem itemLabel="RUC" itemValue="R" />
+                            <f:selectItem itemLabel="PASAPORTE" itemValue="P" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Identificación:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.ciRuc}" maxlength="13" size="40"/> 
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <h:panelGroup>
+                            Dinardap:<br></br>
+                            <p:commandButton value="Consultar" icon="pi pi-cloud" update="formNewEnte" 
+                                             actionListener="#{administradorEnte.buscarDinardap()}"/>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nombres:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombres}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Apellidos:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.apellidos}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Razón Social:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.razonSocial}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nom. Comercial:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombreComercial}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" >
+                        <p:outputLabel value="Dirección:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.direccion}" style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" >
+                        <p:outputLabel value="Correo:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.correo1}" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" >
+                        <p:outputLabel value="Cel./Tlfn.:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.telefono1}" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="font-weight: bolder;" rendered="#{administradorEnte.ente.esPersona}">
+                        Estado Civil:<br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.estadoCivil}" converter="entityConverter" style="width: 200px;">  
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                            <f:selectItems value="#{administradorEnte.estadosCiviles}" var="e" itemLabel="#{e.valor}" itemValue="#{e}"/>  
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:spacer width="1" height="1"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <p:commandButton value="Guardar" actionListener="#{administradorEnte.saveEnte()}" icon="pi pi-save"/>
+                </center>
+            </h:form>   
+        </p:dialog>
+
+        <p:dialog header="Documento de Cliente" widgetVar="dlgCorrEnte" modal="true" resizable="false" closeOnEscape="true" position="center">
+            <h:form id="formCorr">
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="2">
+                    Tipo de Persona:
+                    <p:selectOneMenu value="#{administradorEnte.ente.esPersona}">
+                        <f:selectItem itemLabel="Natural" itemValue="#{true}" />
+                        <f:selectItem itemLabel="Juridica" itemValue="#{false}" />
+                        <p:ajax listener="#{administradorEnte.updateTipoDoc()}" update="formNewEnte"/>
+                    </p:selectOneMenu>
+                    Tipo de Documento:
+                    <p:selectOneMenu value="#{administradorEnte.tipoDocumento}" disabled="#{!administradorEnte.ente.esPersona}">
+                        <f:selectItem itemLabel="Cedula" itemValue="C" />
+                        <f:selectItem itemLabel="RUC" itemValue="R" />
+                        <f:selectItem itemLabel="Pasaporte" itemValue="P" />
+                    </p:selectOneMenu>
+                    Documento:
+                    <p:inputText value="#{administradorEnte.ente.ciRuc}" maxlength="13"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteObservaciones" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="08980bea-0e1f-4864-bfbe-47deb40f4473">
+	<property name="ireport.zoom" value="1.126972201352367"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_OBSERVACION" class="java.lang.Long"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ob.numero, ob.fecha_ingreso, ob.observacion1, ob.observacion2, ob.observacion3,
+en.ci_ruc,
+CASE en.es_persona when TRUE THEN
+coalesce(en.nombres,'')||' '||coalesce(en.apellidos,'')
+else en.razon_social end AS cliente, coalesce(enus.titulo_prof,'')||' '||
+coalesce(enus.nombres,'')||' '||coalesce(enus.apellidos,'') AS revisor,
+us.usuario
+from flow.regp_observaciones_ingreso as ob
+left join app.cat_ente as en on (en.id = ob.ente)
+left join app.acl_user as us on (us.id = ob.user_ingreso)
+left join app.cat_ente as enus on (enus.id = us.ente)
+where ob.id = $P{ID_OBSERVACION}]]>
+	</queryString>
+	<field name="numero" class="java.lang.Long"/>
+	<field name="fecha_ingreso" class="java.sql.Timestamp"/>
+	<field name="observacion1" class="java.lang.String"/>
+	<field name="observacion2" class="java.lang.String"/>
+	<field name="observacion3" class="java.lang.String"/>
+	<field name="ci_ruc" class="java.lang.String"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="revisor" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<background>
+		<band height="842" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="-22" y="0" width="595" height="842" uuid="029d35b9-f285-4445-ac21-3617b32733a0"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Double"/>
+					<leftPen lineWidth="0.0" lineStyle="Double"/>
+					<bottomPen lineWidth="0.0" lineStyle="Double"/>
+				</box>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="110">
+			<staticText>
+				<reportElement x="1" y="94" width="554" height="16" uuid="577c9d6c-6498-4d24-9921-25201223d97e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE OBSERVACIONES]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="140" splitType="Stretch">
+			<staticText>
+				<reportElement x="185" y="0" width="70" height="20" isPrintWhenDetailOverflows="true" uuid="4e6cbe4a-9e67-4914-a700-e1062bd9d1a8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° de Revisión:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="50" height="20" isPrintWhenDetailOverflows="true" uuid="287aa31a-0a83-4f2a-9961-c6a4d27ddec3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="255" y="0" width="100" height="20" isPrintWhenDetailOverflows="true" uuid="9b49146b-16b6-481d-9af1-1553a02ee6ec"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="20" width="235" height="20" isPrintWhenDetailOverflows="true" uuid="6093970f-36e3-4317-9211-c26d08dd937d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="285" y="20" width="50" height="20" isPrintWhenDetailOverflows="true" uuid="0fbfb72b-28b4-441e-891b-64b6a213721b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Revisor:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="335" y="20" width="220" height="20" isPrintWhenDetailOverflows="true" uuid="1f703540-3fd8-45e7-8ed3-f2c546b5a895"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="355" y="0" width="50" height="20" isPrintWhenDetailOverflows="true" uuid="111c2911-c52b-46e2-85e7-692a1a221fd5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a" isBlankWhenNull="true">
+				<reportElement x="405" y="0" width="150" height="20" uuid="e9020851-95cb-4b97-a59b-fd65432ddfc1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_ingreso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="44" width="75" height="14" isPrintWhenDetailOverflows="true" uuid="2d6be4ee-cb77-45fe-a423-6094064ce718"/>
+				<textElement verticalAlignment="Top">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Observación:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="57" width="555" height="16" isPrintWhenDetailOverflows="true" uuid="9bc730a3-9c6a-414a-bd4b-f091ade8c0fa"/>
+				<textElement verticalAlignment="Top">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observacion1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="0" width="50" height="20" isPrintWhenDetailOverflows="true" uuid="261281b9-af44-4567-99c4-5057b5dac7ef"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[C.I./R.U.C.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="51" y="0" width="134" height="20" isPrintWhenDetailOverflows="true" uuid="54aa8328-707b-4486-8d33-d31bf1e60d40"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

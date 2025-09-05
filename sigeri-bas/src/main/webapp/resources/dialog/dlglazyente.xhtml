@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Administración de Personas</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:tabView activeIndex="#{dlgLazyEnte.tabIndex}" >
+                <p:tab title="Lista de Contribuyentes">
+                    <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="10" rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 value="#{dlgLazyEnte.lazy}" var="user" emptyMessage="No se encontró ningún Item" style="text-align: center;">
+                        <p:column headerText="C.I./R.U.C." width="20%" filterBy="#{user.ciRuc}" filterStyle="width: 95%;">
+                            <h:outputText value="#{user.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres / Razon Social" filterBy="#{user.nombrerazonsocial}" filterStyle="width: 95%;">
+                            <h:outputText value="#{user.nombres}" rendered="#{user.esPersona}"/>
+                            <h:outputText value="#{user.razonSocial}" rendered="#{!user.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Apellidos / Nombre Comercial" filterBy="#{user.apellidonombrecomercial}" filterStyle="width: 95%;">
+                            <h:outputText value="#{user.apellidos}" rendered="#{user.esPersona}"/>
+                            <h:outputText value="#{user.nombreComercial}" rendered="#{!user.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" width="5%">
+                            <h:outputText value="N" rendered="#{user.esPersona}"/>
+                            <h:outputText value="J" rendered="#{!user.esPersona}"/>
+                        </p:column>
+                        <!--<p:column headerText="Exc" width="5%">
+                            <h:outputText value="Si" rendered="# {user.excepcional}"/>
+                            <h:outputText value="No" rendered="# {!user.excepcional}"/>
+                        </p:column>-->
+                        <p:column headerText="Sel." width="5%">
+                            <p:commandButton actionListener="#{dlgLazyEnte.selectEnte(user)}" icon="pi pi-forward"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Nuevo Contribuyente">
+                    <h:panelGrid id="formNewEnte" style="margin: 0 auto;" columns="2">
+                        <h:panelGroup style="font-weight: bolder;">
+                            Tipo Persona:<br></br>
+                            <p:selectOneMenu value="#{dlgLazyEnte.ente.esPersona}" style="width: 120px;">
+                                <f:selectItem itemLabel="Natural" itemValue="#{true}" />
+                                <f:selectItem itemLabel="Jurídica" itemValue="#{false}" />
+                                <p:ajax listener="#{dlgLazyEnte.updateTipoDoc()}" update="formNewEnte"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;">
+                            Tipo Documento:<br></br>
+                            <p:selectOneMenu value="#{dlgLazyEnte.tipoDocumento}" style="width: 120px;"
+                                             disabled="#{!dlgLazyEnte.ente.esPersona}">
+                                <f:selectItem itemLabel="Cédula" itemValue="C" />
+                                <f:selectItem itemLabel="RUC" itemValue="R" />
+                                <f:selectItem itemLabel="Pasaporte" itemValue="P" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;">
+                            CI/RUC/PAS.:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.ciRuc}" maxlength="13" size="40"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;">
+                            Dinardap:<br></br>
+                            <p:commandButton value="Consultar" icon="pi pi-cloud" update="formNewEnte" 
+                                             actionListener="#{dlgLazyEnte.buscarDinardap()}"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;" rendered="#{dlgLazyEnte.ente.esPersona}">
+                            Apellidos:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.apellidos}" style="text-transform: uppercase;" size="40"/>    
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;" rendered="#{dlgLazyEnte.ente.esPersona}">
+                            Nombres:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.nombres}" style="text-transform: uppercase;" size="40"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;" rendered="#{!dlgLazyEnte.ente.esPersona}">
+                            Razón Social:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.razonSocial}" style="text-transform: uppercase;" size="40"/>    
+                        </h:panelGroup >
+                        <h:panelGroup style="font-weight: bolder;" rendered="#{!dlgLazyEnte.ente.esPersona}">
+                            Nom.Comercial:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.nombreComercial}" style="text-transform: uppercase;" size="40"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;">
+                            Dirección:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.direccion}" style="text-transform: uppercase;" size="40"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;">
+                            Correo:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.correo1}" size="40"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;">
+                            Tlfn./Cel.:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.telefono1}" size="40"/>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-weight: bolder;" rendered="#{dlgLazyEnte.ente.esPersona}">
+                            Estado Civil:<br></br>
+                            <p:selectOneMenu value="#{dlgLazyEnte.ente.estadoCivil}" converter="entityConverter" style="width: 200px;">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                <f:selectItems value="#{dlgLazyEnte.estadosCiviles}" var="e" 
+                                               itemLabel="#{e.valor}" itemValue="#{e}"/>  
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{!dlgLazyEnte.ente.esPersona}">
+                            <p:spacer width="1" height="1"/>
+                        </h:panelGroup>
+                    </h:panelGrid><br/>
+                    <center>
+                        <p:commandButton value="Guardar" actionListener="#{dlgLazyEnte.saveEnte()}" icon="pi pi-save"/>
+                    </center>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </h:body>
+</html>

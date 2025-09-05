@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="comprobante_factura_subreport" language="groovy" pageWidth="450" pageHeight="802" columnWidth="450" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3f60f481-3db4-4ef1-b0e1-e5e1f6341b74">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_LIQ" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select ac.nombre, det.cantidad as cant, det.valor_total as valor, det.cuantia, det.avaluo, det.observacion, det.valor_unitario
+from flow.regp_liquidacion_detalles as det
+left join app.reg_acto as ac on (ac.id = det.acto)
+where det.liquidacion = $P{ID_LIQ}]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="cant" class="java.lang.Integer"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="54" y="0" width="200" height="23" isRemoveLineWhenBlank="true" uuid="bf66619d-bac6-4fcb-85f9-a2008e5568c4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="17" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0">
+				<reportElement positionType="Float" x="0" y="0" width="54" height="23" isRemoveLineWhenBlank="true" uuid="9cc0e517-9c61-4998-9205-f69ee4ace919"/>
+				<textElement verticalAlignment="Middle">
+					<font size="17" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="349" y="0" width="95" height="23" isRemoveLineWhenBlank="true" uuid="9eaa4ec4-47c5-4ab6-8ea2-9540f2fe4a32"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="17" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="254" y="0" width="95" height="23" isRemoveLineWhenBlank="true" uuid="5223d82b-bfb8-48df-9da3-e7cb3366347a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="17" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

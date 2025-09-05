@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                >
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>Ingreso de Solicitud de Prohibiciones</h1></center>
+
+            <p:tab title="Datos del Juicio" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                <p:panel id="pnlSolicitante" header="Solicitante" style="width: 49%; float: left;">
+                    <h:panelGrid styleClass="noBorder" columns="1">
+                        <co:inputTextButton label="Identificación:" value="#{iniciarTramiteRP.solicitante.ciRuc}" 
+                                            actionListenerButton="#{iniciarTramiteRP.showDlg('/resources/dialog/dlglazyente')}"
+                                            isAjaxButton="true" listenerAjaxButton="#{iniciarTramiteRP.selectSolicitanteJuridico}" 
+                                            />
+                        <h:panelGroup>
+                            <p:outputLabel value="Nombres:" style="font-weight: bold" /><br></br>    
+                            <p:inputText value="#{iniciarTramiteRP.solicitante.nombreCompleto}" readonly="true" size="60" style="text-transform: uppercase;"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Dirección:" style="font-weight: bold" /><br></br>    
+                            <p:inputText value="#{iniciarTramiteRP.solicitante.direccion}" size="60" style="text-transform: uppercase;"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Correo:" style="font-weight: bold" /><br></br>    
+                            <p:inputText value="#{iniciarTramiteRP.solicitante.correo1}" size="60"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Teléfono:" style="font-weight: bold" /><br></br>    
+                            <p:inputText value="#{iniciarTramiteRP.solicitante.telefono1}"  size="60"/>
+                        </h:panelGroup>                        
+                    </h:panelGrid>
+                    <br></br>
+                    <p:commandLink  style="margin-left: 28%; margin-top: 25%" title="Actualizar Datos Solicitante" actionListener="#{iniciarTramiteRP.actualizarDatosSolicitante()}" update="pnlSolicitante">
+                        <p:graphicImage value="/resources/icons/refres.png" style="text-align: right" height="16"/>
+                    </p:commandLink>
+                </p:panel>
+                <p:panel id="pnlUnidadJudicial" header="Unidad Judicial" style="width: 49%; float: left;">
+                    <h:panelGrid styleClass="noBorder" columns="3">
+                        <co:inputTextButton label="Notaria pública" value="#{iniciarTramiteRP.enju.abreviatura}"
+                                            actionListenerButton="#{iniciarTramiteRP.showDlg('/resources/dialog/dlglazynotarias')}"
+                                            listenerAjaxButton="#{iniciarTramiteRP.selectNotaria}" 
+                                            />
+                        <p:spacer width="20" />
+                        <h:panelGroup>
+                            <p:outputLabel value="Nombre: " style="font-weight: bold" /><br></br>    
+                            <p:inputText value="#{iniciarTramiteRP.enju.nombre}"  size="60"/>
+                        </h:panelGroup>      
+
+
+                    </h:panelGrid>
+                    <br></br><br></br><br></br>
+                    <center>
+
+
+                        <p:commandButton value="Generar Solicitud" icon="ui-icon-disk" styleClass="btnStyle" 
+                                         actionListener="#{iniciarTramiteRP.guardarSolicitudJudicial()}" update="mainForm" >
+                            <p:confirm header="Confirmación" message="Estas Seguro?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true">
+                            <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </center>
+                    <br></br><br></br><br></br>
+                </p:panel>
+            </p:tab>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+

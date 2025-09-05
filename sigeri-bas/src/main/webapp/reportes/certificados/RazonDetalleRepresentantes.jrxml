@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RazonDetalleRepresentantes" language="groovy" pageWidth="494" pageHeight="802" columnWidth="494" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e42ffaf8-62b7-4117-9cae-8b53559e3928">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_MOVIMIENTO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select int.nombre as nombres, int.ced_ruc, c.nombre as domicilio,
+ca.nombre as cargo, (select valor from app.ctlg_item where id = mc.atribucion) as atribucion,
+mc.tiempo, (select valor from app.ctlg_item where id = mc.cod_tiempo) as cod_tiempo,
+(mc.fecha_fin_cargo - mc.fecha_inicio_cargo)/365 as tiempo_cargo
+from app.reg_movimiento m
+left join app.reg_movimiento_representante mc on(m.id=mc.movimiento)
+left join app.reg_ente_interviniente int on(mc.ente_interv=int.id)
+left join app.reg_domicilio c on (mc.domicilio=c.id)
+left join app.ctlg_cargo ca on ca.id = mc.cargo
+where m.id= $P{ID_MOVIMIENTO}]]>
+	</queryString>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="ced_ruc" class="java.lang.String"/>
+	<field name="domicilio" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="atribucion" class="java.lang.String"/>
+	<field name="tiempo" class="java.lang.Integer"/>
+	<field name="cod_tiempo" class="java.lang.String"/>
+	<field name="tiempo_cargo" class="org.postgresql.util.PGInterval"/>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="282" height="14" uuid="0c840f2c-0e34-4d14-afa8-bac802af3573"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Representantes:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="194" height="14" uuid="2bda75e3-1f8a-4c52-8156-f3374585e4c7"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Nombres]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="194" y="0" width="100" height="14" uuid="59277bf9-15ff-464e-b6b0-8a1dd8e85f3c"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cédula/RUC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="294" y="0" width="100" height="14" uuid="467bb3d5-20fe-4ca9-8814-23a484927898"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cargo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" x="394" y="0" width="100" height="14" uuid="338e04e4-9adb-412d-8422-0a52ffce07a6"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Domicilio]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="194" y="0" width="100" height="14" uuid="5a43f2c2-d293-4b37-92ec-ab13dc7bf22b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="194" height="14" uuid="24784b50-f006-4822-9822-297a1dc3cfbc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="294" y="0" width="100" height="14" uuid="d6237b23-6b0e-4e58-aece-b39261a5d547"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="0" width="100" height="14" uuid="894ea656-995e-4ac3-8992-487be065d47c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{domicilio}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

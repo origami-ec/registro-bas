@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="proforma_descuentos" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9fb9e8db-f0d9-4e7e-9221-eae9023560ba">
+	<property name="ireport.zoom" value="1.8150000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="LIQUIDACION" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select de.id as detalle, ac.nombre as acto,
+de.cuantia, de.avaluo, de.valor_unitario, de.descuento, de.recargo,
+de.cantidad, de.valor_total, de.descuento_promedio, case en.es_persona when true then
+coalesce(en.apellidos,'')||' '||coalesce(en.nombres,'')
+else en.razon_social end AS solicitante,
+exo.concepto, exo.valor, pa.papel
+from flow.regp_intervinientes rv
+left join flow.regp_liquidacion_detalles de on rv.liquidacion = de.id
+left join flow.regp_exoneracion exo on exo.id = rv.exoneracion
+left join app.reg_acto ac on ac.id = de.acto
+left join app.cat_ente en on en.id = rv.ente
+left join app.reg_papel pa on pa.id = rv.papel
+where de.liquidacion = $P{LIQUIDACION} and rv.exoneracion is not null
+order by de.fecha_ingreso]]>
+	</queryString>
+	<field name="detalle" class="java.lang.Long"/>
+	<field name="acto" class="java.lang.String"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="recargo" class="java.math.BigDecimal"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="descuento_promedio" class="java.math.BigDecimal"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="concepto" class="java.lang.String"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<field name="papel" class="java.lang.String"/>
+	<group name="detalles">
+		<groupExpression><![CDATA[$F{detalle}]]></groupExpression>
+		<groupHeader>
+			<band height="12" splitType="Stretch">
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="505" y="0" width="50" height="12" uuid="a9c4eb9b-7b83-4fe7-8e85-b823f553c944"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_total}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="455" y="0" width="50" height="12" uuid="7549f560-cf06-454e-895c-667cd63b0738"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="329" y="0" width="50" height="12" uuid="959a0674-296b-4e9c-befa-fa2b16cc2dc1"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="267" height="12" uuid="8ed552db-dd6f-4ef6-b40e-0e7ceab82c58"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{acto}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="405" y="0" width="50" height="12" uuid="72697955-068d-4105-9ddf-55c0afe56d17"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{recargo}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0" isBlankWhenNull="true">
+					<reportElement x="379" y="0" width="26" height="12" uuid="019ae426-c5d6-4d69-aab5-cd2877b54702"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="279" y="0" width="50" height="12" uuid="a5f322ab-6899-432b-aaa7-507828021d08"/>
+					<box>
+						<topPen lineWidth="0.5" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cuantia}.compareTo($F{avaluo}) == 0 ? $F{cuantia} : $F{avaluo}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<title>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="12" backcolor="#CCCCCC" uuid="10e09d27-22a6-43e4-b141-b6fad5567a13"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DETALLE DE DESCUENTO POR EXONERACIÓN]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="255" height="12" uuid="1da92584-511b-403e-8450-88b717ecf948"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[CONTRATO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="0" width="50" height="12" uuid="2b978f07-a875-4c9b-a465-226d42013a54"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[DESCUENTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="505" y="0" width="50" height="12" uuid="cf6ef809-eb31-4fa1-848a-78256d3d160d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[VALOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="329" y="0" width="50" height="12" uuid="e32ffd81-7b14-4b79-8b44-266b083a1007"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[VALOR UNI.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="0" width="50" height="12" uuid="34269bd1-7192-4e71-a52e-444030b164d3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[ADICIONAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="379" y="0" width="26" height="12" uuid="10e167be-6f3a-496f-ae5e-2fbcd8a7004a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[CANT.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="267" y="0" width="62" height="12" uuid="216135a2-69f5-40c8-a199-0c2754b7d9f0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[BASE IMP.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="165" height="12" uuid="2ab2d3d5-e194-4afb-a387-e87dd5a88719"/>
+				<box leftPadding="0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solicitante}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="165" y="0" width="290" height="12" uuid="745825f9-78ae-45fe-8810-76ca948d95a9"/>
+				<box leftPadding="0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{concepto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00 %">
+				<reportElement x="455" y="0" width="50" height="12" uuid="09f188cb-7f5b-4a19-b6f2-4f1cb5c318ed"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

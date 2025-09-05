@@ -1,0 +1,573 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"> 
+    <ui:define name="title">Ingresar Inscripción</ui:define>
+    <ui:define name="content">
+        <h:form  id="formNuevInsc">
+            <center><h1>INGRESAR INSCRIPCIÓN</h1></center>
+            <p:tabView id="tVdetalle">
+                <p:tab title="Datos de Inscripción">
+                    <h:panelGrid columns="4" style="font-weight: bolder; width: 100%">
+                        <h:panelGroup layout="block">
+                            Nro Repertorio:<br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.movimiento.numRepertorio}"/><br/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            <co:inputDate label="Fecha Repertorio:" value="#{inscripcionNuevaDirecta.movimiento.fechaRepertorio}" maxdate="sysdate" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" >
+                            ** Nro Inscripción:<br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.movimiento.numInscripcion}"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            <co:inputDate label="** Fec.Inscripción:" value="#{inscripcionNuevaDirecta.movimiento.fechaInscripcion}" maxdate="sysdate" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Nro Tomo:<br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.movimiento.numTomo}" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Folio Inicio:<br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.movimiento.folioInicio}" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Folio Fin:<br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.movimiento.folioFin}" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            ** Secuencia:<br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.movimiento.indice}" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Cuantía:<br></br>
+                            <p:inputNumber value="#{inscripcionNuevaDirecta.movimiento.cuantia}" decimalPlaces="2" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Avalúo:<br></br>
+                            <p:inputNumber value="#{inscripcionNuevaDirecta.movimiento.avaluoMunicipal}" decimalPlaces="2" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Estado:<br/>
+                            <p:selectOneMenu value="#{inscripcionNuevaDirecta.movimiento.registro}" converter="entityConverter" >
+                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                                <f:selectItems value="#{inscripcionNuevaDirecta.estadosInscripcion}" var="est" 
+                                               itemLabel="#{est.nombre}" itemValue="#{est}"/> 
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <p:spacer width="1" />
+                    </h:panelGrid>
+                    <p:fieldset legend="Datos de Escritura"  style="font-weight: bolder; width: 100%">
+                        <h:panelGrid id="pnlgdIngre" columns="4" style="width: 100%;">
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Libro:"/><br/>
+                                <p:selectOneMenu id="nomblibro" value="#{inscripcionNuevaDirecta.movimiento.libro}" converter="entityConverter" 
+                                                 style="width: 300px;" var="nomlib" filter="true" filterMatchMode="startsWith" >
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" /> 
+                                    <f:selectItems value="#{inscripcionNuevaDirecta.libros}" var="lib" itemValue="#{lib}" itemLabel="#{lib.nombre}" />  
+                                    <p:column>
+                                        <f:facet name="header">Tipo</f:facet>
+                                        <h:outputText value="#{nomlib.propiedad ? 'Propiedad' : 'Mercantil'}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">Nombre</f:facet>
+                                        <h:outputText value="#{nomlib.nombre}"/>
+                                    </p:column>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Acto:"/><br/>
+                                <p:inputText id="actonomb" value="#{inscripcionNuevaDirecta.movimiento.acto.nombre}" readonly="true" size="40"/>
+                                <p:commandButton icon="pi pi-search" actionListener="#{inscripcionNuevaDirecta.showDlg('/resources/dialog/dlglazyactos')}" >
+                                    <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectObjectActo}" update="actonomb"/>
+                                </p:commandButton> 
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Notaria/Juzgado:"/><br/>
+                                <p:inputText id="enteJudnomb" value="#{inscripcionNuevaDirecta.movimiento.enteJudicial.nombre}" readonly="true" size="35" />
+                                <p:commandButton icon="pi pi-search" actionListener="#{inscripcionNuevaDirecta.showDlg('/resources/dialog/dlglazynotarias')}">
+                                    <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectObjectJudicial}" update="enteJudnomb"/>
+                                </p:commandButton>
+                                <p:spacer width="5" />
+                                <p:commandButton icon="pi pi-trash" update="formNuevInsc:tVdetalle:enteJudnomb" 
+                                                 actionListener="#{inscripcionNuevaDirecta.movimiento.setEnteJudicial(null)}" title="Limpiar" />
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Canton:" /><br/>
+                                <p:selectOneMenu  value="#{inscripcionNuevaDirecta.movimiento.domicilio}" converter="entityConverter" 
+                                                  filter="true" filterMatchMode="startsWith" >  
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                                    <f:selectItems value="#{inscripcionNuevaDirecta.domicilios}" var="can" itemLabel="#{can.nombre}" itemValue="#{can}"/>  
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <co:inputDate label="Fech.Celebracion:" value="#{inscripcionNuevaDirecta.movimiento.fechaOto}" maxdate="sysdate" />
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <co:inputDate label="Fech.Resolucion:" value="#{inscripcionNuevaDirecta.movimiento.fechaResolucion}" maxdate="sysdate" />
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Escrit/Juic/Provi/Resolucion:"/>
+                                <p:inputText value="#{inscripcionNuevaDirecta.movimiento.escritJuicProvResolucion}" style="width: 80%" />
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel  value="Inscripcion por Orden Judicial:"/>
+                                <p:selectOneMenu  value="#{inscripcionNuevaDirecta.movimiento.ordJud}" 
+                                                  style="display: block; margin-top: 3px; min-width: 0px !important; width: 38% !important" >  
+                                    <f:selectItem itemLabel="SI" itemValue="#{true}"/>  
+                                    <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </p:tab>
+                <p:tab title="Intervinientes">
+                    <div style="width: 100%; margin-top: 20px;">
+                        <p:commandButton icon="pi pi-search" value="Buscar Interviniente" styleClass="btnStyle" style="float: right; width: auto;"
+                                         actionListener="#{inscripcionNuevaDirecta.showDlg('/resources/dialog/dlglazyinterv')}">
+                            <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectInterv}" update="dtInterviniente"/>
+                        </p:commandButton>
+                        <p:spacer width="20" height="1" style="float: right;" />
+                        <p:commandButton icon="pi pi-user-plus" value="Nuevo Interviniente" styleClass="btnStyle" style="float: right; width: auto;"
+                                         actionListener="#{inscripcionNuevaDirecta.showDlgNewInterv(1)}"/>
+                    </div>
+                    <p:spacer height="35" width="0"/>                    
+                    <p:dataTable id="dtInterviniente" value="#{inscripcionNuevaDirecta.mcs}" var="inter" emptyMessage="Sin Intervinientes..." 
+                                 rowIndexVar="indexCli" resizableColumns="true" scrollable="true" scrollHeight="300">
+                        <p:column headerText="No" style="width: 30px">
+                            #{indexCli+1}
+                        </p:column>
+                        <p:column headerText="C.I/R.U.C" width="100">
+                            <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado Civil" width="100">
+                            <p:outputLabel value="#{inter.estado}"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="100">
+                            <p:outputLabel value="#{inter.papel.papel}"/>
+                        </p:column>
+                        <p:column headerText="Domicilio" width="100">
+                            <p:outputLabel value="#{inter.domicilio.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Edit." width="25" style="text-align: center;">
+                            <p:commandButton icon="pi pi-pencil" actionListener="#{inscripcionNuevaDirecta.showDlgEditInterv(indexCli)}" />
+                        </p:column>
+                        <p:column headerText="Del." width="25" style="text-align: center;">
+                            <p:commandButton icon="pi pi-trash" update="dtInterviniente" actionListener="#{inscripcionNuevaDirecta.deleteInterv(indexCli)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Partes" rendered="false" >
+                    <p:tabView id="tabPartes">
+                        <p:tab title="Capital">
+                            <h:panelGrid id="pnlCapital" columns="7" style="margin: 0 auto;font-weight: bolder;">
+                                Capital:
+                                <p:inputNumber value="#{inscripcionNuevaDirecta.movCap.valor}" decimalPlaces="2"/>
+                                <p:spacer width="40" height="1"/>
+                                Tipo de Capital:
+                                <p:selectOneMenu value="#{inscripcionNuevaDirecta.movCap.capital}" converter="entityConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>  
+                                    <f:selectItems value="#{inscripcionNuevaDirecta.regCapitales}" var="caps" itemLabel="#{caps.nombre}" itemValue="#{caps}"/>  
+                                </p:selectOneMenu>
+                                <p:spacer width="40" height="1"/>
+                                <p:commandButton value="Agregar" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{inscripcionNuevaDirecta.addCapital()}"/>
+                            </h:panelGrid><br/>
+                            <p:dataTable id="dtcapitales" value="#{inscripcionNuevaDirecta.mcps}" var="cap" rowIndexVar="capIndex"
+                                         scrollable="true" scrollHeight="250" style="width: 700px;margin: 0 auto;">
+                                <p:column headerText="No" width="40">
+                                    #{capIndex+1}
+                                </p:column>
+                                <p:column headerText="Tipo Capital">
+                                    <p:outputLabel value="#{cap.capital.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Valor" style="text-align: right;" width="200">
+                                    <p:outputLabel value="#{cap.valor}"><f:convertNumber type="currency" currencySymbol="$"/></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Borrar" width="40" style="text-align: center;">
+                                    <p:commandLink update="dtcapitales" actionListener="#{inscripcionNuevaDirecta.deleteCapitales(capIndex)}">
+                                        <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Otros Representantes">
+                            <h:panelGrid style="width: 100%">
+                                <p:row>
+                                    <p:column>
+                                        <div align="right">
+                                            <p:commandButton icon="ui-icon-search" value="Buscar Representante" styleClass="btnStyle" 
+                                                             actionListener="#{inscripcionNuevaDirecta.showDlg('/resources/dialog/dlglazyinterv')}">
+                                                <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectRepresentante}" update="dtrepresentantes"/>
+                                            </p:commandButton>
+                                            <p:spacer width="20" height="1"/>
+                                            <p:commandButton icon="ui-icon-plus" value="Nuevo Representante" styleClass="btnStyle" 
+                                                             actionListener="#{inscripcionNuevaDirecta.showDlgNewInterv(2)}"/>
+                                        </div>
+                                    </p:column>
+                                </p:row>
+                            </h:panelGrid><br/>
+                            <p:dataTable id="dtrepresentantes" value="#{inscripcionNuevaDirecta.mres}" var="repr" emptyMessage="Agregar Representantes" rowIndexVar="indexRepr"
+                                         resizableColumns="true" liveResize="true" scrollable="true" scrollHeight="200" style="text-align: center;">
+                                <p:column headerText="No" width="20">
+                                    #{indexRepr+1}
+                                </p:column>
+                                <p:column headerText="CI/RUC/DOC" width="100">
+                                    <p:outputLabel value="#{repr.enteInterv.cedRuc}"/>
+                                </p:column>
+                                <p:column headerText="Nombres">
+                                    <p:outputLabel value="#{repr.enteInterv.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Cargo" width="150">
+                                    <p:outputLabel value="#{repr.cargo.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Domicilio" width="100">
+                                    <p:outputLabel value="#{repr.domicilio.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Tiempo" width="50">
+                                    <p:outputLabel value="#{repr.codTiempo.valor}"/>
+                                </p:column>
+                                <p:column headerText="Plazo" width="50">
+                                    <p:outputLabel value="#{repr.tiempo}"/>
+                                </p:column>
+                                <p:column headerText="Edit" width="30">
+                                    <p:commandLink actionListener="#{inscripcionNuevaDirecta.showDlgEditInterv(indexRepr, 2)}">
+                                        <p:graphicImage value="/resources/icons/edit.png"/>   
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column headerText="Del" width="30">
+                                    <p:commandLink update="dtrepresentantes" actionListener="#{inscripcionNuevaDirecta.deleteRepresentante(indexRepr)}">
+                                        <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Socios">
+                            <h:panelGrid style="width: 100%" >
+                                <p:row>
+                                    <p:column style="float: right;">
+                                        <div align="right"> 
+                                            <p:commandButton icon="ui-icon-search" value="Buscar Socio" styleClass="btnStyle" 
+                                                             actionListener="#{inscripcionNuevaDirecta.showDlg('/resources/dialog/dlglazyinterv')}">
+                                                <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectSocio}" update="dtsocios"/>
+                                            </p:commandButton>
+                                            <p:spacer width="20" height="1"/>
+                                            <p:commandButton icon="ui-icon-plus" value="Nuevo Socio" styleClass="btnStyle" 
+                                                             actionListener="#{inscripcionNuevaDirecta.showDlgNewInterv(3)}"/>
+                                        </div>
+                                    </p:column>
+                                </p:row>
+                            </h:panelGrid><br/>
+                            <p:dataTable id="dtsocios" value="#{inscripcionNuevaDirecta.msos}" var="socio" emptyMessage="Agregar Socios" rowIndexVar="indexSocio"
+                                         resizableColumns="true" liveResize="true" scrollable="true" scrollHeight="200" style="text-align: center;">
+                                <p:column headerText="No" width="20">
+                                    #{indexSocio+1}
+                                </p:column>
+                                <p:column headerText="CI/RUC/DOC" width="100">
+                                    <p:outputLabel value="#{socio.enteInterv.cedRuc}"/>
+                                </p:column>
+                                <p:column headerText="Nombres">
+                                    <p:outputLabel value="#{socio.enteInterv.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Participacion" width="200">
+                                    <p:outputLabel value="#{socio.tipoParticipacion.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Cant./Unid." width="80">
+                                    <p:outputLabel value="#{socio.cantidad}"><f:convertNumber maxFractionDigits="2"/></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Valor/Total" width="80">
+                                    <p:outputLabel value="#{socio.valor}"><f:convertNumber maxFractionDigits="2"/></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Edit" width="30">
+                                    <p:commandLink actionListener="#{inscripcionNuevaDirecta.showDlgEditInterv(indexSocio, 3)}">
+                                        <p:graphicImage value="/resources/icons/edit.png"/>   
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column headerText="Del" width="30">
+                                    <p:commandLink update="dtsocios" actionListener="#{inscripcionNuevaDirecta.deleteSocio(indexSocio)}">
+                                        <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </p:tab>
+                <p:tab title="Observación">
+                    <h:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group form-elements" style="font-weight: bolder;width: 200px;">
+                        Motivación:
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.movimiento.esNegativa}" style="width: 100px;">
+                            <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <p:inputTextarea value="#{inscripcionNuevaDirecta.movimiento.observacion}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                    <p:spacer height="5"/>
+                </p:tab>
+                <p:tab title="Bienes">
+                    <h:panelGrid style="margin: 0 auto;font-weight: bolder;" columns="7" >
+                        Tipo de Ficha:
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.tipoFicha}" converter="entityConverter" autoWidth="false" disabled="true"
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 250px !important;">
+                            <f:selectItems value="#{inscripcionNuevaDirecta.regTiposFicha}" var="tf" itemLabel="#{tf.nombre}" itemValue="#{est}" />
+                            <p:ajax update="dtFichas" />
+                        </p:selectOneMenu>
+                        <p:spacer width="20" height="1"/>
+                        Nro de Ficha:
+                        <p:inputNumber value="#{inscripcionNuevaDirecta.numFicha}" decimalPlaces="0" thousandSeparator="" />
+                        <p:spacer width="20" height="1"/>
+                        <p:commandButton icon="pi pi-search" value="Buscar Ficha" update="dtFichas" 
+                                         actionListener="#{inscripcionNuevaDirecta.buscarByNumFicha()}"/>
+                    </h:panelGrid><br/>
+                    <p:dataTable id="dtFichas" value="#{inscripcionNuevaDirecta.mfs}" var="f" rowIndexVar="rowIndex" emptyMessage="Agregar fichas registrales."
+                                 scrollable="true" scrollHeight="250" style="text-align: center;width: 75%;margin: 0 auto;">
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="No Ficha">
+                            <p:outputLabel value="#{f.ficha.numFicha}"/>
+                        </p:column>
+                        <p:column headerText="Clave Catastral">
+                            <p:outputLabel value="#{f.ficha.claveCatastral}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="150">
+                            <p:outputLabel value="#{f.ficha.estado.valor}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="40">
+                            <p:commandButton icon="pi pi-trash" title="Eliminar" update="dtFichas" 
+                                             actionListener="#{inscripcionNuevaDirecta.deleteFicha(rowIndex)}" /> 
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Referencias">
+                    <div style="float: right">
+                        <p:commandButton icon="pi pi-search" value="Agregar Refs. Ficha" 
+                                         actionListener="#{inscripcionNuevaDirecta.showDlgWithFicha('/resources/dialog/dlglazymov')}" >
+                            <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectObjectReferencia}" update="dtMovimientosReff" />
+                        </p:commandButton>
+                        <p:spacer width="20" height="1"/>
+                        <p:commandButton icon="pi pi-list" value="Agregar Refs. Movs." 
+                                         actionListener="#{inscripcionNuevaDirecta.showDlgAllMovs('/resources/dialog/dlglazymov')}" >
+                            <p:ajax event="dialogReturn" listener="#{inscripcionNuevaDirecta.selectObjectReferencia}" update="dtMovimientosReff" />
+                        </p:commandButton>
+                    </div>
+                    <div style="clear: both;width: 100%"/>
+                    <p:spacer width="0" height="5"/>
+                    <p:dataTable id="dtMovimientosReff" value="#{inscripcionNuevaDirecta.mrs}" var="m" emptyMessage="No se ha Agregado Ninguna Referencia" 
+                                 scrollable="true" scrollHeight="250" rowIndexVar="rowIndex" style="text-align: center">
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{m.movimientoReferencia.libro.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{m.movimientoReferencia.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Inscripcion" width="120">
+                            <p:outputLabel value="#{m.movimientoReferencia.fechaInscripcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Del." width="50">
+                            <p:commandButton icon="pi pi-trash" title="Eliminar" update="dtMovimientosReff" 
+                                             actionListener="#{inscripcionNuevaDirecta.deleteMovsRef(rowIndex)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView><br/>
+            <div align="center">
+                <p:commandButton value="** Validar" icon="pi pi-bell" styleClass="btnStyle" title="Campos con ** son obligatorios"
+                                 actionListener="#{inscripcionNuevaDirecta.buscarInscripcion()}" update="formNuevInsc" style="width: auto;"/>
+                <p:spacer width="20" height="1"/>
+                <p:commandButton value="Guardar" icon="pi pi-save" styleClass="btnStyle" title="Guarda los datos del movimiento"
+                                 actionListener="#{inscripcionNuevaDirecta.guardarMovimiento()}" update="formNuevInsc" style="width: auto;"/>
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgCrearInterv" header="Ingreso de Interviniente" widgetVar="dlgCrearInterviniente" resizable="false" modal="true" width="500">
+            <h:form id="formCreaInterv">
+                <h:panelGrid id="pnlInterviniente" columns="1" style="width: 100%">
+                    <p:outputLabel value="Tipo Persona: " style="font-weight: bolder; font-size: 12px"/>
+                    <p:selectOneMenu value="#{inscripcionNuevaDirecta.re.tipoInterv}" style="width: 100px;">
+                        <f:selectItem itemLabel="Natural" itemValue="N" />
+                        <f:selectItem itemLabel="Juridica" itemValue="J" />
+                    </p:selectOneMenu>
+                    <p:outputLabel value="CI/RUC : " style="font-weight: bolder; font-size: 12px"/>
+
+                    <h:panelGroup>
+                        <p:inputText value="#{inscripcionNuevaDirecta.re.cedRuc}"/>
+                        <p:spacer width="10" />
+                        <p:commandButton icon="pi pi-search" actionListener="#{inscripcionNuevaDirecta.buscarIntervinienteDinardap()}" 
+                                         update="formCreaInterv:pnlInterviniente" title="Datos Dinardap" />
+                    </h:panelGroup>
+                    <p:outputLabel value="Nombres : " style="font-weight: bolder; font-size: 12px" />
+                    <p:inputText value="#{inscripcionNuevaDirecta.re.nombre}" style="width: 100%;" />
+                </h:panelGrid>
+                <br/>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" icon="pi pi-save" 
+                                     actionListener="#{inscripcionNuevaDirecta.guardarInterviniente()}" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgEditInterviniente" header="Información de Interviniente" widgetVar="dlgEditInter" resizable="false" modal="true" position="center" width="400">
+            <h:form id="formEditInterv">
+                <div>
+                    <p:outputLabel value="** En el modulo de Mantenimiento de Intervinientes se pueden editar la identificación y los nombres del interviniente." 
+                                   style="color: #0033FF;font-weight: bolder;"/>
+                </div>
+                <h:panelGrid id="pnlDatosInterv" style="font-weight: bolder;width: 100%;" columns="1">
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="** Identificación:" /><br/>
+                        <p:inputText value="#{inscripcionNuevaDirecta.interv.enteInterv.cedRuc}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="** Nombres:" /><br/>
+                        <p:inputText value="#{inscripcionNuevaDirecta.interv.enteInterv.nombre}" style="width: 95%;" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Papel:" /><br/>
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.interv.papel}" converter="entityConverter" filter="true" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 70% !important" 
+                                         filterMatchMode="startsWith" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{inscripcionNuevaDirecta.papeles}" var="p" itemLabel="#{p.papel}" itemValue="#{p}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Domicilio:" /><br/>
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.interv.domicilio}" converter="entityConverter" filter="true" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 70% !important" 
+                                         filterMatchMode="startsWith">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{inscripcionNuevaDirecta.domicilios}" var="dom" itemLabel="#{dom.nombre}" itemValue="#{dom}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Tipo:" /><br/>
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.interv.conyugue}" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 70% !important">
+                            <f:selectItem itemLabel="Estados Civiles" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="Cargos Representantes" itemValue="#{false}"/>
+                            <p:ajax update="pnlGrpEstado" event="change"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup id="pnlGrpEstado" style="block">
+                        <h:outputText value="Estado Civil:" style="font-weight: bolder" rendered="#{inscripcionNuevaDirecta.interv.conyugue}"/>
+                        <h:outputText value="Cargo:" style="font-weight: bolder" rendered="#{!inscripcionNuevaDirecta.interv.conyugue}"/><br/>
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.interv.item}" 
+                                         converter="entityConverter" rendered="#{inscripcionNuevaDirecta.interv.conyugue}"
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 70% !important">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{inscripcionNuevaDirecta.estadosCivil}" var="e" itemLabel="#{e.valor}" itemValue="#{e}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu value="#{inscripcionNuevaDirecta.interv.cargo}" filter="true" filterMatchMode="startsWith" 
+                                         converter="entityConverter" rendered="#{!inscripcionNuevaDirecta.interv.conyugue}"
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 70% !important">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{inscripcionNuevaDirecta.ctlgCargos}" var="carg" itemLabel="#{carg.nombre}" itemValue="#{carg}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <p:fieldset legend="Persona Relacionada" rendered="false">
+                    <h:panelGrid id="pngInterEdit" style="width: 100%;font-weight: bolder;" >
+                        <h:panelGroup>
+                            <p:outputLabel value="Identificación:" /><br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.interv.cedula}"/><p:spacer width="10" height="1"/>
+                            <p:commandButton icon="ui-icon-search" actionListener="#{inscripcionNuevaDirecta.buscarInterviniente()}"
+                                             update="pngInterEdit" styleClass="btnStyle"/><p:spacer width="10" height="1"/>
+                            <p:commandButton  styleClass="btnStyle" actionListener="#{inscripcionNuevaDirecta.limpiarDatos()}"
+                                              update="pngInterEdit" icon="ui-icon-refresh"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Nombre:" /><br></br>
+                            <p:inputText value="#{inscripcionNuevaDirecta.interv.nombres}" size="40" readonly="true"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </p:fieldset><br/>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{inscripcionNuevaDirecta.agregarListaIntervEdit()}"
+                                     icon="pi pi-save"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Representante" widgetVar="dlgEditRepr" resizable="false" modal="true" width="450">
+            <h:form id="formEditRepr">
+                <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;" >
+                    CI/RUC:
+                    <p:inputText value="#{inscripcionNuevaDirecta.movRep.enteInterv.cedRuc}" readonly="true" style="width: 94%;"/>
+                    Nombres:
+                    <p:inputText value="#{inscripcionNuevaDirecta.movRep.enteInterv.nombre}" readonly="true" style="width: 94%;"/>
+                    Cargo:
+                    <p:selectOneMenu value="#{inscripcionNuevaDirecta.movRep.cargo}" converter="entityConverter" 
+                                     filter="true" filterMatchMode="startsWith">
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>  
+                        <f:selectItems value="#{inscripcionNuevaDirecta.ctlgCargos}" var="car" itemLabel="#{car.nombre}" itemValue="#{car}"/>  
+                    </p:selectOneMenu>
+                    Atribución:
+                    <p:selectOneMenu value="#{inscripcionNuevaDirecta.movRep.atribucion}">
+                        <f:selectItem itemLabel="Legal, judicial y extrajudicial Individual" itemValue="#{23}"/>
+                        <f:selectItem itemLabel="Legal, judicial y extrajudicial Conjunta" itemValue="#{24}"/>
+                    </p:selectOneMenu>
+                    Domicilio:
+                    <p:selectOneMenu value="#{inscripcionNuevaDirecta.movRep.domicilio}" converter="entityConverter" 
+                                     filter="true" filterMatchMode="startsWith">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                        <f:selectItems value="#{inscripcionNuevaDirecta.domicilios}" var="dom" itemLabel="#{dom.nombre}" itemValue="#{dom}"/>  
+                    </p:selectOneMenu>
+                    Tiempo:
+                    <p:selectOneMenu value="#{inscripcionNuevaDirecta.movRep.codTiempo}" converter="entityConverter">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                        <f:selectItems value="#{inscripcionNuevaDirecta.codigosTiempo}" var="cod" itemLabel="#{cod.valor}" itemValue="#{cod}"/>  
+                    </p:selectOneMenu>
+                    Plazo:
+                    <p:inputNumber decimalPlaces="0" value="#{inscripcionNuevaDirecta.movRep.tiempo}"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar" styleClass="btnStyle" oncomplete="PF('dlgEditRepr').hide()" 
+                                     update=":formNuevInsc:tVdetalle:tabPartes:dtrepresentantes" icon="ui-icon-disk"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Socio" widgetVar="dlgEditSocio" resizable="false" modal="true" width="450">
+            <h:form id="formEditSocio">
+                <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;" >
+                    CI/RUC:
+                    <p:inputText value="#{inscripcionNuevaDirecta.movSoc.enteInterv.cedRuc}" readonly="true" style="width: 94%;"/>
+                    Nombres:
+                    <p:inputText value="#{inscripcionNuevaDirecta.movSoc.enteInterv.nombre}" readonly="true" style="width: 94%;"/>
+                    Participacion:
+                    <p:selectOneMenu value="#{inscripcionNuevaDirecta.movSoc.tipoParticipacion}" converter="entityConverter">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                        <f:selectItems value="#{inscripcionNuevaDirecta.ctlgParticipacion}" var="part" itemLabel="#{part.nombre}" itemValue="#{part}"/>  
+                    </p:selectOneMenu>
+                    Cantidad/Unidad:
+                    <p:inputNumber value="#{inscripcionNuevaDirecta.movSoc.cantidad}" decimalPlaces="0" />
+                    Valor/Total:
+                    <p:inputNumber value="#{inscripcionNuevaDirecta.movSoc.valor}" decimalPlaces="2"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar" styleClass="btnStyle" oncomplete="PF('dlgEditSocio').hide()" 
+                                     update=":formNuevInsc:tVdetalle:tabPartes:dtsocios" icon="ui-icon-disk"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

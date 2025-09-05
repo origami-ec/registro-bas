@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CertificadoGeneral_contenido" language="groovy" pageWidth="455" pageHeight="802" columnWidth="455" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="bf514fd5-5382-4f65-81c3-7b27bdecb732">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_CERTIFICADO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select regexp_split_to_table(observacion , E'\\.\\s\\s') as observacion from app.reg_certificado where id = $P{ID_CERTIFICADO}]]>
+	</queryString>
+	<field name="observacion" class="java.lang.String"/>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="0" width="455" height="14" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="31fb1527-7549-46ee-a367-9c4b582b8bc7"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observacion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,253 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="title">Administración Activiti</ui:define>
+    <ui:define name="content">
+        <h:form id="formMain">
+            <p:tabView id="tbViewTramites">
+                <p:tab title="Administración de Trámites">
+                    <p:dataTable id="dtDetail" value="#{tramitesRp.details}" var="det" paginator="true" rows="20" rowsPerPageTemplate="20,50,100" reflow="true"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 filterEvent="enter" style="text-align: center;" resizableColumns="false">
+                        <p:column headerText="No Tramite" filterBy="#{det.idProceso}" width="120" filterMatchMode="equals">
+                            <p:outputLabel value="#{det.idProceso}"/>
+                        </p:column>
+                        <p:column headerText="No Instancia" filterBy="#{det.instancia}" width="120" filterMatchMode="equals">
+                            <p:outputLabel value="#{det.instancia}"/>
+                        </p:column>
+                        <p:column headerText="Nombre Proceso" >
+                            <p:outputLabel value="#{det.nombreProceso}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Inicio" sortBy="#{det.fechaInicio}" width="150">
+                            <p:outputLabel value="#{det.fechaInicio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Fecha Fin" sortBy="#{det.fechaFin}" width="150">
+                            <p:outputLabel value="#{det.fechaFin}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Tasks" width="25">
+                            <p:commandButton icon="pi pi-search" actionListener="#{tramitesRp.showDetalis(det)}" title="Tareas del Proceso"/>
+                        </p:column>
+                        <p:column headerText="User" width="25">
+                            <p:commandButton icon="pi pi-user" actionListener="#{tramitesRp.showDlgReasigancion(det)}" title="Cambiar Usuario"/>
+                        </p:column>
+                        <p:column headerText="Diag." width="25">
+                            <p:commandButton actionListener="#{tramitesRp.viewProcess(det)}" icon="pi pi-share-alt" title="Visualizar Diagrama"/>
+                        </p:column>
+                        <p:column headerText="Prio." width="25">
+                            <p:commandButton icon="pi pi-chart-line" actionListener="#{tramitesRp.showDlgPrioridad(det)}" title="Cambiar Prioridad"/>
+                        </p:column>
+                        <p:column headerText="Del." width="25">
+                            <p:commandButton icon="pi pi-trash" actionListener="#{tramitesRp.showDlgDelete(det)}" title="Terminar Proceso"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Usuarios de Trámites" rendered="true">
+                    <p:panel id="pnlreasignacion" header="REASIGNACION GRUPAL">
+                        <p:panelGrid styleClass="noBorder" columns="8">
+                            TAREAS DE USUARIO:
+                            <p:inputText value="#{tramitesRp.usuario}"> 
+                                <p:ajax event="blur" listener="#{tramitesRp.cantidadTareas()}" update="formMain:tbViewTramites:pnlreasignacion"/>
+                            </p:inputText>
+                            NOMBRE DE TAREA:
+                            <p:selectOneMenu value="#{tramitesRp.taskDefKey}">
+                                <f:selectItem itemLabel="TODAS" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="PI Revision Legal" itemValue="PIrevisionJuridico"/>
+                                <f:selectItem itemLabel="PI Nota Devolutiva" itemValue="PInotaDevolutiva"/>
+                                <f:selectItem itemLabel="PI Inscribir" itemValue="PIcompletarDatos"/>
+                                <f:selectItem itemLabel="PI Firmar Tramite" itemValue="PIfirmarTramite"/>
+                                <f:selectItem itemLabel="PC Emitir Certificado" itemValue="PCemitirCertificado"/>
+                                <f:selectItem itemLabel="PC Nota Devolutiva" itemValue="PCnotaDevolutiva"/>
+                                <f:selectItem itemLabel="PC Firmar Certificado" itemValue="PCfirmarCertificado"/>
+                                <p:ajax event="change" listener="#{tramitesRp.cantidadTareas()}" update="formMain:tbViewTramites:pnlreasignacion"/>
+                            </p:selectOneMenu>
+                            TOTAL TRAMITES:
+                            <p:outputLabel value="#{tramitesRp.cantidad}" style="font-size: 16px;font-weight: bolder;" />
+                            <p:commandButton value="ReAsignar Tramites" icon="ui-icon-refresh" styleClass="btnStyle" 
+                                             actionListener="#{tramitesRp.showDlg('/resources/dialog/dlglazyusers')}" >
+                                <p:ajax event="dialogReturn" listener="#{tramitesRp.reasignarTramitesByUsuario}"/>
+                            </p:commandButton>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:panel id="pnlgrupal" header="AGREGAR USUARIOS CANDIDATOS">
+                        <p:panelGrid styleClass="noBorder" columns="4">
+                            TAREAS DE USUARIO:
+                            <p:inputText value="#{tramitesRp.usuario2}"> 
+                                <p:ajax event="blur" listener="#{tramitesRp.cantidadTareas2()}" update="formMain:tbViewTramites:pnlgrupal"/>
+                            </p:inputText>
+                            NOMBRE DE TAREA:
+                            <p:selectOneMenu value="#{tramitesRp.taskDefKey2}">
+                                <f:selectItem itemLabel="TODAS" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="PI Revision Legal" itemValue="PIrevisionJuridico"/>
+                                <f:selectItem itemLabel="PI Nota Devolutiva" itemValue="PInotaDevolutiva"/>
+                                <f:selectItem itemLabel="PI Inscribir" itemValue="PIcompletarDatos"/>
+                                <f:selectItem itemLabel="PI Firmar Tramite" itemValue="PIfirmarTramite"/>
+                                <f:selectItem itemLabel="PC Emitir Certificado" itemValue="PCemitirCertificado"/>
+                                <f:selectItem itemLabel="PC Nota Devolutiva" itemValue="PCnotaDevolutiva"/>
+                                <f:selectItem itemLabel="PC Firmar Certificado" itemValue="PCfirmarCertificado"/>
+                                <p:ajax event="change" listener="#{tramitesRp.cantidadTareas2()}" update="formMain:tbViewTramites:pnlgrupal"/>
+                            </p:selectOneMenu>
+                            TOTAL TRAMITES:
+                            <p:outputLabel value="#{tramitesRp.cantidad2}" style="font-size: 16px;font-weight: bolder;" />
+                            NOMBRE DE USUARIOS CANDIDATOS:
+                            <p:inputText value="#{tramitesRp.candidatos}"/>
+                            <p:commandButton value="AGREGAR CANDIDATOS" icon="ui-icon-refresh" styleClass="btnStyle" actionListener="#{tramitesRp.asignarCanditeUsers()}"/>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:panel id="pnleliminar" header="ELIMINAR USUARIOS CANDIDATOS">
+                        <p:panelGrid styleClass="noBorder" columns="8">
+                            TAREAS DE USUARIO:
+                            <p:inputText value="#{tramitesRp.usuario3}"> 
+                                <p:ajax event="blur" listener="#{tramitesRp.cantidadTareas3()}" update="formMain:tbViewTramites:pnleliminar"/>
+                            </p:inputText>
+                            NOMBRE DE TAREA:
+                            <p:selectOneMenu value="#{tramitesRp.taskDefKey3}">
+                                <f:selectItem itemLabel="TODAS" itemValue="#{null}"/>
+                                <f:selectItem itemLabel="PI Revision Legal" itemValue="PIrevisionJuridico"/>
+                                <f:selectItem itemLabel="PI Nota Devolutiva" itemValue="PInotaDevolutiva"/>
+                                <f:selectItem itemLabel="PI Inscribir" itemValue="PIcompletarDatos"/>
+                                <f:selectItem itemLabel="PI Firmar Tramite" itemValue="PIfirmarTramite"/>
+                                <f:selectItem itemLabel="PC Emitir Certificado" itemValue="PCemitirCertificado"/>
+                                <f:selectItem itemLabel="PC Nota Devolutiva" itemValue="PCnotaDevolutiva"/>
+                                <f:selectItem itemLabel="PC Firmar Certificado" itemValue="PCfirmarCertificado"/>
+                                <p:ajax event="change" listener="#{tramitesRp.cantidadTareas3()}" update="formMain:tbViewTramites:pnleliminar"/>
+                            </p:selectOneMenu>
+                            TOTAL TRAMITES:
+                            <p:outputLabel value="#{tramitesRp.cantidad3}" style="font-size: 16px;font-weight: bolder;" />
+                            <p:commandButton value="ELIMINAR CANDIDATO" icon="ui-icon-refresh" styleClass="btnStyle" actionListener="#{tramitesRp.deleteCanditeUsers()}"/>
+                        </p:panelGrid>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="Iniciar Trámite Activiti" >
+                    <p:panel header="INICIAR INSTANCIA DE PROCESO">
+                        <h:panelGrid columns="3" style="font-weight: bolder;font-size: 16px;">
+                            NÚMERO DE TRÁMITE:
+                            <p:inputText value="#{tramitesRp.tramite}"/>
+                            <p:commandButton value="Iniciar Trámite" actionListener="#{tramitesRp.iniciarTramiteEspecifico()}" icon="pi pi-star"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog id="dlgEditor" widgetVar="dlgEditCert" header="Eliminar Trámite" resizable="false" position="center" modal="true">
+            <h:form id="formEdit">
+                <h:panelGrid columns="1" style="text-align: center;font-weight: bolder;">
+                    <p:outputLabel value="Observación: (Trámite No #{tramitesRp.proceso.idProceso})" style="font-weight: bolder;font-size: 18px;color: #0033FF;"/>
+                    <p:inputTextarea value="#{tramitesRp.observacion}" cols="50" rows="10" autoResize="false" style="color: #000000;font-size: 12px;"/>
+                    <p:commandButton value="Aceptar" icon="pi pi-check" actionListener="#{tramitesRp.deleteTramite()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar prioridad de Trámite" widgetVar="editPrioridadTraDlg" modal="true" resizable="false">
+            <h:form id="formEditPrioridadTra">
+                <p:outputLabel value="Nro Trámite: #{tramitesRp.proceso.idProceso}" style="font-weight: bolder;font-size: 18px;color: #0033FF;"/>
+                <p:selectOneRadio value="#{tramitesRp.prioridad}" layout="pageDirection">
+                    <f:selectItem itemLabel="Alta" itemValue="100"/>
+                    <f:selectItem itemLabel="Normal" itemValue="50"/>
+                    <f:selectItem itemLabel="Baja" itemValue="20"/>
+                </p:selectOneRadio>
+                <center>
+                    <p:commandButton value="Guardar" actionListener="#{tramitesRp.actualizarPrioridad()}" icon="pi pi-save">
+                        <p:confirm header="Confirmacion" message="Cambiar prioridad de Tramite #{tramitesRp.proceso.idProceso}?" icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </center>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-ban" />
+                </p:confirmDialog>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgVerInfo" header="Información de Trámite" widgetVar="dlgVerInfoRp" resizable="false" 
+                  closeOnEscape="true" modal="true" width="700" height="500">
+            <h:form id="formInformLiq">
+                <p:outputLabel value="No de Tramite:" style="font-weight: bolder; font-size: 20px;color: #0033FF"/>
+                <p:spacer width="20" height="1"/>
+                <p:outputLabel value="#{tramitesRp.proceso.idProceso}" style="font-weight: bolder; font-size: 20px;color: #0033FF"/>
+                <p:tabView id="tvInfo">
+                    <p:tab title="Tareas">
+                        <p:dataTable id="dtTareas" value="#{tramitesRp.tareas}" emptyMessage="El tramite no ha sido ingresado."
+                                     var="tarea" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Nombre Tarea">
+                                <p:outputLabel value="#{tarea.name}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="80">
+                                <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                <p:outputLabel value="#{tramitesRp.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Inicio" width="110">
+                                <p:outputLabel value="#{tarea.createTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"    />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Fecha Fin" width="110">
+                                <p:outputLabel value="#{tarea.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"    />
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observaciones">
+                        <p:dataTable id="dtobservacionesCollection" value="#{tramitesRp.ht.observacionesCollection}" 
+                                     emptyMessage="Sin elementos..." lazy="false"
+                                     var="obs" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Tarea" width="120">
+                                <p:outputLabel value="#{obs.tarea}"/>
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <p:outputLabel value="#{obs.observacion}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="80">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgReasignarTarea" header="Reasignar Trámite" widgetVar="dlgReasignar" resizable="false"
+                  closeOnEscape="true" modal="true" width="600">
+            <h:form id="formreasignar">
+                <h:panelGrid style="font-weight: bolder;color: #0033FF;font-size: 14px;" columns="2">
+                    Nro Trámite:
+                    <p:inputText value="#{tramitesRp.proceso.idProceso}" readonly="true"/>
+                    Usuario Actual:
+                    <p:inputText value="#{tramitesRp.tareaActual.assignee}" readonly="true"/>
+                    Tarea Actual:
+                    <p:inputText value="#{tramitesRp.tareaActual.name}" readonly="true" size="50"/>
+                </h:panelGrid>
+                <p:dataTable value="#{tramitesRp.users}" emptyMessage="Sin elementos..." scrollHeight="300" scrollable="true"
+                             var="usuario" style="text-align: center;">
+                    <p:column headerText="Usuario" filterBy="#{usuario.usuario}">
+                        <p:outputLabel value="#{usuario.usuario}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <p:outputLabel value="#{usuario.ente.nombres}"/>
+                    </p:column>
+                    <p:column headerText="Selec." width="50">
+                        <p:commandButton actionListener="#{tramitesRp.reasignarTarea(usuario)}" icon="pi pi-forward">
+                            <p:confirm header="Confirmacion" message="Reasignar tarea?" icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-ban" />
+                    </p:confirmDialog>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgDiagrama" header="Diagrama de Proceso" modal="true" position="top" closeOnEscape="true" height="650" width="1000">
+            <h:form id="frmDiagrama">
+                <p:graphicImage value="#{tramitesRp.stream}" rendered="#{tramitesRp.stream ne null}" stream="false"/>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

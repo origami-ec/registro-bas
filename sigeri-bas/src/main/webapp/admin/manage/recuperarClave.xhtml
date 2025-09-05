@@ -1,0 +1,49 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <f:view contentType="text/html" locale="es" encoding="UTF-8" />
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+        </f:facet>
+        <title>Recuperacion de contraseña</title>
+    </h:head>
+
+    <h:body styleClass="main-body">
+        <h:form id="frmMaim" >
+            <h:panelGroup style="position: absolute; padding-left: 200px; padding-top: 100px;">
+                <p:messages showDetail="true" closable="true" id="msgDet" ><p:autoUpdate/></p:messages>
+                <p:outputLabel value="Cambio de contraseña" class="FontBold" style="font-size: 30px; color: #A6B7D0" /><br/>
+                <p:panelGrid columns="2"  >
+                    <p:outputLabel value="Contraseña" class="FontBold" />
+                    <p:password value="#{recuperarClave.pass}" id="pass1" >
+                    </p:password>
+                    <p:outputLabel value="Confirme Contraseña" class="FontBold" />
+                    <p:password value="#{recuperarClave.passConfirm}" id="pass2">
+                    </p:password>
+                </p:panelGrid>
+                <br/>
+                <br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{recuperarClave.actualizarPass()}" 
+                                     update="frmMaim" process="pass2, pass1"  />
+                </center>
+            </h:panelGroup>
+        </h:form>
+
+        <p:growl  globalOnly="true" showDetail="true" showSummary="true"  id="grwRc" >
+            <p:autoUpdate />
+        </p:growl>
+        <h:outputStylesheet name="css/nanoscroller.css" library="paradise-layout" />
+        <h:outputStylesheet name="css/primeflex.min.css" library="paradise-layout" />
+        <h:outputStylesheet name="css/primeicons.css" library="paradise-layout" />
+    </h:body>
+
+</html>

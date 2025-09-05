@@ -1,0 +1,607 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="title">Inscripcion Nueva</ui:define>
+    <ui:define name="content">
+        <h:form id="formNuevInsc">
+            <h1>
+                <center>
+                    <p:outputLabel value="Inscripción Nueva" rendered="#{inscribir.habilitar}"/>
+                    <p:outputLabel value="Inscripción " rendered="#{!inscribir.habilitar}"/> <br></br>
+                    <p:outputLabel value="* #{inscribir.movimiento.acto.nombre} *" style="font-weight: bolder;" />
+                </center>
+            </h1>
+            <p:tabView id="tVdetalle">
+                <p:tab title="Inscripcion">
+                    <br></br>
+                    <h:panelGrid columns="4"  style="font-weight: bolder; width: 100%">
+                        <h:panelGroup layout="block">
+                            <p:outputLabel value="Nro Repertorio:" rendered="#{!inscribir.caduco}"/>
+                            <p:outputLabel value="Nro Repertorio:" style="color: #ff0000" rendered="#{inscribir.caduco}"/><br></br>
+                            <p:inputText value="#{inscribir.movimiento.numRepertorio}" disabled="true"/>    
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            <p:outputLabel value="Fec.Repertorio:" rendered="#{!inscribir.caduco}"/>
+                            <p:outputLabel value="Fec.Repertorio:" style="color: #ff0000" rendered="#{inscribir.caduco}"/><br></br>
+                            <p:calendar value="#{inscribir.movimiento.fechaRepertorio}" pattern="dd/MM/yyyy" maxdate="sysdate" disabled="true" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" >
+                            Nro Inscripcion: <br></br>
+                            <p:inputText value="#{inscribir.movimiento.numInscripcion}" disabled="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Fec.Inscripción:<br></br>
+                            <p:calendar value="#{inscribir.movimiento.fechaInscripcion}" pattern="dd/MM/yyyy" maxdate="sysdate" disabled="true" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Cuantía:<br></br>
+                            <p:inputNumber value="#{inscribir.movimiento.cuantia}" decimalPlaces="2" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Avalúo Municipal:<br></br>
+                            <p:inputNumber value="#{inscribir.movimiento.avaluoMunicipal}" decimalPlaces="2" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            <p:outputLabel  value="Tipo de Juicio:"/> 
+                            <p:selectOneMenu  value="#{inscribir.movimiento.tipoJuicio}" 
+                                              style="display: block; margin-top: 3px; min-width: 0px !important; width: 100px !important;">  
+                                <f:selectItem itemLabel="CIVIL" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="PENAL" itemValue="#{2}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <p:commandButton value="Generar Repertorio" icon="ui-icon-alert" rendered="#{inscribir.caduco}" 
+                                         actionListener="#{inscribir.generarRepertorio()}">
+                            <p:confirm header="Confirmación" message="¿Seguro de generar Repertorio?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:spacer width="5" rendered="#{!inscribir.caduco}"/>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:fieldset legend="Datos de Escrituras" style="width: 100%">
+                        <br></br>
+                        <h:panelGrid id="pnlgdIngre" columnClasses="ui-g-12 ui-md-3,ui-g-12 ui-md-3,ui-g-12 ui-md-3 ui-grc-3,ui-g-12 ui-md-3"
+                                     columns="4" styleClass="ui-panelgrid-blank form-group form-elements" style="width: 100%;font-weight: bolder;">
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Canton:" />  
+                                <p:selectOneMenu  value="#{inscribir.movimiento.domicilio}" 
+                                                  converter="entityConverter" 
+                                                  disabled="#{!inscribir.habilitar}" 
+                                                  style="display: block; margin-top: 3px; min-width: 0px !important; width: 38% !important" 
+                                                  filter="true" filterMatchMode="startsWith">  
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                                    <f:selectItems value="#{inscribir.domicilios}" var="can" itemLabel="#{can.nombre}" itemValue="#{can}"/>  
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel  value="Inscripcion por Orden Judicial:"/> 
+                                <p:selectOneMenu  value="#{inscribir.movimiento.ordJud}" 
+                                                  style="display: block; margin-top: 3px; min-width: 0px !important; width: 38% !important" 
+                                                  disabled="#{!inscribir.habilitar}">  
+                                    <f:selectItem itemLabel="SI" itemValue="#{true}"/>  
+                                    <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Escrit/Juic/Provi/Resolucion:"/>
+                                <p:inputText value="#{inscribir.movimiento.escritJuicProvResolucion}" style="width: 92%"  readonly="#{!inscribir.habilitar}"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Libro:"/>
+                                <p:inputText id="nomblibro" value="#{inscribir.movimiento.libro.nombre}"   style="width: 92%" readonly="true"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel  value="Fech.Celebracion: "/> <br></br>
+                                <p:calendar value="#{inscribir.movimiento.fechaOto}" pattern="dd/MM/yyyy" maxdate="sysdate"  
+                                            style="display: block; margin-top: 3px; min-width: 0px !important; width: 38% !important" 
+                                            disabled="#{!inscribir.habilitar}"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Fech.Resolucion:"/> <br></br>
+                                <p:calendar value="#{inscribir.movimiento.fechaResolucion}" pattern="dd/MM/yyyy" maxdate="sysdate"  style=" width: 92%" 
+                                            disabled="#{!inscribir.habilitar}"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Acto:"/>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12">
+                                        <div class="ui-inputgroup">
+                                            <p:inputText id="actonomb" value="#{inscribir.movimiento.acto.nombre}" readonly="true" />
+                                            <p:commandButton icon="fa fa-search"  styleClass="white-button" rendered="#{inscribir.habilitar}"
+                                                             actionListener="#{inscribir.showDlg('/resources/dialog/dlglazyactos')}" disabled="false">
+                                                <p:ajax event="dialogReturn" listener="#{inscribir.selectObjectActo}" update="actonomb, nomblibro"/>
+                                            </p:commandButton>    
+                                        </div>
+                                    </div>
+                                </div> 
+                            </h:panelGroup>
+
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Notaria/Juzg :"/>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12">
+                                        <div class="ui-inputgroup">
+                                            <p:inputText id="enteJudnomb" value="#{inscribir.movimiento.enteJudicial.nombre}" readonly="true" />
+                                            <p:commandButton icon="fa fa-search"  styleClass="white-button" rendered="#{inscribir.habilitar}"
+                                                             actionListener="#{inscribir.showDlg('/resources/dialog/dlglazynotarias')}">
+                                                <p:ajax event="dialogReturn" listener="#{inscribir.selectObjectJudicial}" update="enteJudnomb"/>
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </p:tab>
+                <p:tab title="Intervinientes">
+                    <br></br>
+                    <h:panelGrid styleClass="noBorder" style="width: 100%">
+                        <p:row>
+                            <p:column >
+                                <div align="right">
+                                    <p:commandButton icon="ui-icon-search" value="Buscar Interviniente" styleClass="btnStyle" actionListener="#{inscribir.showDlg('/resources/dialog/dlglazyinterv')}"
+                                                     rendered="#{inscribir.habilitar}">
+                                        <p:ajax event="dialogReturn" listener="#{inscribir.selectInterv}" update="dtInterviniente"/>
+                                    </p:commandButton>
+                                    <p:spacer width="20" height="1"/>
+                                    <p:commandButton icon="ui-icon-plus" value="Nuevo Interviniente" styleClass="btnStyle" actionListener="#{inscribir.showDlgNewInterv()}"
+                                                     rendered="#{inscribir.habilitar}"/>
+                                </div>
+                            </p:column>
+                        </p:row>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:dataTable id="dtInterviniente" value="#{inscribir.mcs}" var="inter" emptyMessage="Agregar Intervinientes" rowIndexVar="indexCli"
+                                 resizableColumns="true" liveResize="true" scrollable="true" scrollHeight="200" style="text-align: center;">
+                        <p:column headerText="No" style="width: 45px">
+                            #{indexCli+1}
+                        </p:column>
+                        <p:column headerText="UAF" width="40" rendered="#{inscribir.uaf}">
+                            <p:commandLink actionListener="#{inscribir.showDlgInfoUaf(indexCli)}">
+                                <p:graphicImage value="/resources/icons/unir.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="CI/RUC/DOC" >
+                            <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado Civil" >
+                            <p:outputLabel value="#{inter.estado}"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="150">
+                            <p:outputLabel value="#{inter.papel.papel}"/>
+                        </p:column>
+                        <p:column headerText="Domicilio" width="150">
+                            <p:outputLabel value="#{inter.domicilio.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Edit" width="40"  rendered="#{inscribir.habilitar}">
+                            <p:commandLink actionListener="#{inscribir.showDlgEditInterv(indexCli)}">
+                                <p:graphicImage value="/resources/icons/edit.png"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Del" width="40"  rendered="#{inscribir.habilitar}">
+                            <p:commandLink update="dtInterviniente" actionListener="#{inscribir.deleteInterv(indexCli)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Observacion">
+                    <br></br>
+                    <h:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder;">
+                        Motivacion:
+                        <p:selectOneMenu value="#{inscribir.movimiento.esNegativa}" disabled="#{!inscribir.habilitar}">
+                            <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:inputTextarea value="#{inscribir.movimiento.observacion}" rows="14" cols="130" 
+                                     scrollHeight="250" autoResize="false" readonly="#{!inscribir.habilitar}"/>
+                    <p:spacer height="5"/>
+                </p:tab>
+                <p:tab title="Bien Inmueble">
+                    <h:panelGrid style="margin: 0 auto;" styleClass="noBorder" columns="3" rendered="#{inscribir.habilitar}">
+                        No de Ficha:
+                        <p:inputNumber value="#{inscribir.ficha}" decimalPlaces="0"/>
+                        <p:commandButton icon="ui-icon-search" value="Buscar Ficha" update="dtFichas" styleClass="btnStyle" 
+                                         actionListener="#{inscribir.buscarByNumFicha()}"/>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:dataTable id="dtFichas" value="#{inscribir.mfs}" var="f" rowIndexVar="rowIndex" emptyMessage="Agregar fichas registrales."
+                                 scrollable="true" scrollHeight="250" style="text-align: center;width: 75%;margin: 0 auto;">
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="No Ficha">
+                            <p:outputLabel value="#{f.ficha.numFicha}"/>
+                        </p:column>
+                        <p:column headerText="Clave Catastral">
+                            <p:outputLabel value="#{f.ficha.claveCatastral}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="150">
+                            <p:outputLabel value="#{f.ficha.estado.valor}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="40" rendered="#{inscribir.habilitar}">
+                            <p:commandLink update="dtFichas" actionListener="#{inscribir.deleteFicha(rowIndex)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                </p:tab>
+                <p:tab title="Referencia">
+                    <br></br>
+                    <div style="float: right">
+                        <p:commandButton icon="ui-icon-plus" value="Agregar Antecedentes" styleClass="btnStyle" 
+                                         actionListener="#{inscribir.showDlgWithFicha('/resources/dialog/dlglazymov')}" 
+                                         rendered="#{inscribir.habilitar}">
+                            <p:ajax event="dialogReturn" listener="#{inscribir.selectObjectReferencia}" update="dtMovimientosReff"/>
+                        </p:commandButton>
+                    </div>
+                    <div style="clear: both;width: 100%"/>
+                    <p:spacer width="0" height="5"/>
+                    <p:dataTable id="dtMovimientosReff" value="#{inscribir.mrs}" var="m" emptyMessage="No se ha Agregado Ninguna Referencia" 
+                                 scrollable="true" scrollHeight="240" rowIndexVar="rowIndex" style="text-align: center"
+                                 editable="true" editMode="cell" >
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{m.movimientoReferencia.libro.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{m.movimientoReferencia.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Inscripcion" width="120">
+                            <p:outputLabel value="#{m.movimientoReferencia.fechaInscripcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Estado" width="120">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{appConfig.estadoMovimiento(m.movimientoReferencia.registro)}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{m.movimientoReferencia.registro}" >
+                                        <f:selectItem itemLabel="Selecccione..." itemValue="#{null}" />
+                                        <f:selectItem itemLabel="Vendido" itemValue="#{1}" />
+                                        <f:selectItem itemLabel="Vendido Parcial" itemValue="#{2}" />
+                                        <f:selectItem itemLabel="Cancelado" itemValue="#{3}" />
+                                        <f:selectItem itemLabel="Cancelado Parcial" itemValue="#{4}" />
+                                        <f:selectItem itemLabel="Vigente" itemValue="#{5}" />
+                                        <f:selectItem itemLabel="Propietario" itemValue="#{6}" />
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column headerText="Del." width="50" rendered="#{inscribir.habilitar}">
+                            <p:commandLink update="dtMovimientosReff" actionListener="#{inscribir.deleteMovsRef(rowIndex)}">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                </p:tab>
+            </p:tabView><br/>
+            <h:panelGrid styleClass="noBorder" style="width: 100%;">
+                <p:row>
+                    <p:column>
+                        <div align="center">
+                            <p:commandButton icon="ui-icon-disk" value="Guardar" actionListener="#{inscribir.guardarTomo()}" 
+                                             styleClass="btnStyle" rendered="#{inscribir.habilitar}"/>
+
+                            <p:commandButton icon="ui-icon-disk" value="Guardar" actionListener="#{inscribir.actualizarMovimiento()}" 
+                                             styleClass="btnStyle" rendered="#{inscribir.archivo}"/>
+
+                            <p:spacer width="20"/>
+                            <p:commandButton icon="fa fa-file-pdf-o" value="Generar Inscripcion" actionListener="#{inscribir.generarInscripcion(true)}" 
+                                             rendered="#{inscribir.esJuridico or !inscribir.habilitar or inscribir.archivo}" styleClass="btnStyle" 
+                                             update="formNuevInsc" />
+                            <p:spacer width="20"/>
+
+                            <p:commandButton icon="fa fa-file-pdf-o" value="Generar Razon" actionListener="#{inscribir.razonInscripcion()}"  styleClass="btnStyle" 
+                                             update="formNuevInsc" rendered="#{inscribir.esJuridico or !inscribir.habilitar or inscribir.archivo}" />   
+                            <p:spacer width="20"/>
+                            <!--<p:commandButton icon="ui-icon-refresh" value="Foliar" actionListener="# {inscribir.contarInscripcion()}" styleClass="btnStyle" update="formNuevInsc"/>-->
+                            <p:commandButton icon="fa fa-mail-reply" value="Regresar"  actionListener="#{inscribir.realizarTarea()}" 
+                                             rendered="#{!inscribir.habilitar or inscribir.archivo}"  styleClass="btnStyle" />   
+                            <p:spacer width="20"/>
+                            <p:commandButton icon="ui-icon-check" value="Completar Tarea"  actionListener="#{inscribir.completarTareaInscripcion()}" 
+                                             rendered="#{!inscribir.habilitar or inscribir.archivo}"  styleClass="btnStyle" />   
+
+                            <p:spacer width="20"/>
+                            <p:commandButton icon="fa fa-thumbs-up" value="Realizar Tarea"  
+                                             actionListener="#{inscribir.realizarTarea()}" 
+                                             rendered="#{inscribir.habilitar or  inscribir.archivo or !inscribir.esJuridico}"  
+                                             styleClass="btnStyle" />   
+                        </div>
+                    </p:column>
+                </p:row>
+            </h:panelGrid>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog>
+        </h:form>
+
+        <p:dialog id="dlgCrearInterv" showHeader="false" widgetVar="dlgCrearInterviniente" resizable="false" modal="true" 
+                  closable="true" closeOnEscape="true">
+            <h:form id="formCreaInterv">
+                <br></br>
+                <center>
+                    <p:outputLabel value="Ingreso de Interviniente" style="font-weight: bolder; font-size: 16px;"/>
+                </center>
+                <br></br>
+                <h:panelGrid columns="1" id="pnlInterviniente"
+                             style="font-weight: bolder; font-size: 12px;">
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo Persona:" for="tipoInterv"/><br></br>
+                        <p:selectOneMenu value="#{inscribir.re.tipoInterv}"  autoWidth="true"  id="tipoInterv"> 
+                            <f:selectItem itemLabel="Natural" itemValue="N" />
+                            <f:selectItem itemLabel="Juridica" itemValue="J" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Identificación:" /> <br></br>
+                        <p:inputText value="#{inscribir.re.cedRuc}" size="40"/>
+                        <p:spacer width="10" />
+                        <p:commandLink  title="Buscar"  
+                                        actionListener="#{inscribir.buscarIntervinienteDianardap()}"
+                                        update="formCreaInterv:pnlInterviniente">
+                            <p:graphicImage value="/resources/icons/buscar.png" style="text-align: right" height="16"/>
+                        </p:commandLink>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombres:" /> <br></br>
+                        <p:inputText value="#{inscribir.re.nombre}" size="45"/>
+                    </h:panelGroup>                    
+                </h:panelGrid>
+                <br></br>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" 
+                                     actionListener="#{inscribir.guardarInterviniente()}" 
+                                     icon="ui-icon-disk"/>
+                    <p:spacer width="10" />
+                    <p:commandButton id="closeIntervButon" value="Cerrar" 
+                                     oncomplete="PF('dlgCrearInterviniente').hide();"
+                                     icon="ui-icon-close"/>
+                </div>
+                <br></br>
+            </h:form>
+        </p:dialog>
+        <p:dialog id="dlgAsignacionTomoid" header="Asignacion Tomo" widgetVar="dlgAsignacionTomo" resizable="false" 
+                  modal="true" width="60%" height="70%" position="center">
+            <h:form id="formAsignacionTomo">
+                <p:dataTable id="dtMovimientoTomos" value="#{inscribir.movimientosPorTomosList}" var="mov">
+                    <f:facet name="header">  
+                        Inscripciones Anteriores del Libro <b>#{mov.libro.nombre}</b>
+                    </f:facet>
+                    <p:column  headerText="Num. Repertorio" style="text-align: center" >
+                        <h:outputText value="#{mov.numRepertorio}"/>
+                    </p:column> 
+                    <p:column  headerText="Num.Inscripcion" style="text-align: center" >
+                        <h:outputText value="#{mov.numInscripcion}"/>
+                    </p:column>
+                    <p:column  headerText="Fec.Inscripcion" style="text-align: center" >
+                        <h:outputText value="#{mov.fechaInscripcion}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Num. Tomo" style="text-align: center" >
+                        <h:outputText value="#{mov.numTomo}"/>
+                    </p:column>
+                    <p:column headerText="Folio Ini." style="text-align: center" >
+                        <h:outputText value="#{mov.folioInicio}"/>
+                    </p:column>
+                    <p:column headerText="Folio Fin." style="text-align: center" >
+                        <h:outputText value="#{mov.folioFin}"/>
+                    </p:column>
+                </p:dataTable>
+                <p:spacer width="1" height="5"/>
+                <p:outputLabel value="Ingrese Num. Tomo : " style="font-weight: bolder"/>
+                <p:spacer width="10" height="1"/>
+                <p:inputText value="#{inscribir.movimiento.numTomo}"/>
+                <p:spacer width="10" height="1"/>
+                <p:commandButton icon="ui-icon-disk" value="Guardar Inscripcion" actionListener="#{inscribir.guardarTomo()}" 
+                                 styleClass="btnStyle"/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgEditInterviniente" header="Informacion de Interviniente" widgetVar="dlgEditInter" resizable="false" modal="true" position="center" width="500">
+            <h:form id="formEditInterv">
+                <h:panelGrid styleClass="noBorder" style="font-weight: bolder;">
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:outputLabel value="** En el modulo de Mantenimiento de Intervinientes se pueden editar los nombres del interviniente." style="color: #0033FF"/>
+                        </p:column>
+                    </p:row>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Papel: " /> <br></br>
+                        <p:selectOneMenu value="#{inscribir.interv.papel}" converter="entityConverter" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 60% !important"
+                                         filter="true" filterMatchMode="startsWith">  
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                            <f:selectItems value="#{inscribir.papeles}" var="p" itemLabel="#{p.papel}" itemValue="#{p}"/>  
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="**C.I./R.U.C.:" /><br></br>
+                        <p:inputText value="#{inscribir.interv.enteInterv.cedRuc}" size="51" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="**Nombres:" /><br></br>
+                        <p:inputText value="#{inscribir.interv.enteInterv.nombre}" size="51" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Domicilio:" /> <br></br>
+                        <p:selectOneMenu value="#{inscribir.interv.domicilio}" converter="entityConverter"
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 60% !important" 
+                                         filter="true" filterMatchMode="startsWith">  
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                            <f:selectItems value="#{inscribir.domicilios}" var="dom" itemLabel="#{dom.nombre}" itemValue="#{dom}"/>  
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Estado Civil:" /> <br></br>
+                        <p:selectOneMenu value="#{inscribir.interv.item}" converter="entityConverter"
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 60% !important">  
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                            <f:selectItems value="#{inscribir.estadosCivil}" var="e" itemLabel="#{e.valor}" itemValue="#{e}"/>  
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <p:fieldset legend="Relaciones">
+                    <p:panelGrid id="pngInterEdit" styleClass="ui-panelgrid-blank form-group form-elements" style="width: 100%;font-weight: bolder;" >
+                        <p:row>
+                            <p:column colspan="2" style="text-align: center;">
+                                <p:commandButton value="Limpiar Datos" styleClass="btnStyle" actionListener="#{inscribir.limpiarDatos()}"
+                                                 update="pngInterEdit" icon="ui-icon-refresh"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>C.I.:</p:column>
+                            <p:column>
+                                <p:inputText value="#{inscribir.interv.cedula}"/><p:spacer width="10" height="1"/>
+                                <p:commandButton icon="ui-icon-search" actionListener="#{inscribir.buscarInterviniente()}"
+                                                 update="pngInterEdit" styleClass="btnStyle"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Nombre: " style="font-weight: bolder" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{inscribir.interv.nombres}" size="40" readonly="true"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Estado: " style="font-weight: bolder" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{inscribir.interv.estado}" size="40" readonly="true"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Mostrar Relacion de:" style="font-weight: bolder"/>
+                                <br/>
+                                <p:selectOneMenu value="#{inscribir.interv.conyugue}">
+                                    <f:selectItem itemLabel="Conyugue" itemValue="#{true}"/>
+                                    <f:selectItem itemLabel="Representante" itemValue="#{false}"/>
+                                    <p:ajax update="pngInterEdit" event="change"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+
+                                <h:outputText value="Cargo:" style="font-weight: bolder" rendered="#{!inscribir.interv.conyugue}"/>
+                                <br/>
+                                <p:selectOneMenu value="#{inscribir.interv.item}" 
+                                                 converter="entityConverter" rendered="#{!inscribir.interv.conyugue}"
+                                                 style="display: block; margin-top: 3px; min-width: 0px !important; width: 60% !important">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                    <f:selectItems value="#{inscribir.cargosRep}" var="carg" itemLabel="#{carg.valor}" itemValue="#{carg}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:fieldset>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{inscribir.agregarListaIntervEdit()}" styleClass="btnStyle"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Informacion UAF" widgetVar="dlgUafe" resizable="false" modal="true">
+            <h:form id="formUaf">
+                <p:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder; font-size: 12px;">
+                    CI/RUC:
+                    <p:outputLabel value="#{inscribir.interv.enteInterv.cedRuc}"/>
+                    NOMBRES:
+                    <p:outputLabel value="#{inscribir.interv.enteInterv.nombre}"/>
+                </p:panelGrid>
+                <p:panelGrid id="pnlNacionalidad" columns="3" styleClass="noBorder" style="font-weight: bolder; font-size: 12px;">
+                    NACIONALIDAD:
+                    <p:inputText value="#{inscribir.interv.enteInterv.nacionalidad.descripcion}" readonly="true"/>
+                    <p:commandButton icon="ui-icon-search" styleClass="btnStyle" actionListener="#{inscribir.showDlg('/resources/dialog/dlglazynacionalidad')}">
+                        <p:ajax event="dialogReturn" listener="#{inscribir.selectNacUaf}" update="pnlNacionalidad"/>
+                    </p:commandButton>
+                </p:panelGrid>
+                <p:panelGrid columns="4" styleClass="noBorder" style="font-weight: bolder; font-size: 12px;">
+                    ROL:
+                    <p:selectOneMenu value="#{inscribir.uafrol}">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                        <f:selectItem itemLabel="OTORGADO POR" itemValue="#{1}" />
+                        <f:selectItem itemLabel="A FAVOR DE" itemValue="#{2}" />
+                    </p:selectOneMenu>
+                    PAPEL:
+                    <p:selectOneMenu value="#{inscribir.interv.uafPapel}" converter="entityConverter">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                        <f:selectItems value="#{inscribir.uafPapeles}" var="up" itemLabel="#{up.nombre}" itemValue="#{up}"/>  
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar Info" actionListener="#{inscribir.saveInfoUaf()}"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Participantes" widgetVar="dlgNrpm" modal="true" width="600" resizable="false">
+            <h:form id="formNrpm">
+                <p:dataTable value="#{inscribir.participantes}" var="par" emptyMessage="Sin participantes para seleccionar."
+                             scrollable="true" scrollHeight="250" style="text-align: center;margin: 0 auto;">
+                    <p:column headerText="CI/RUC" width="120">
+                        <p:outputLabel value="#{par.cedRuc}"/>
+                    </p:column>
+                    <p:column headerText="Nombre" >
+                        <p:outputLabel value="#{par.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Sel." width="40">
+                        <!--                        <p:commandLink actionListener="# {inscribir.guardarParticipante(par)}">
+                                                    <p:graphicImage value="/resources/icons/check.png" height="16"/>   
+                                                </p:commandLink>-->
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Validación de Trámite" widgetVar="dlgValidacion" modal="true" resizable="false">
+            <h:form id="formValidacion">
+                <p:panelGrid styleClass="noBorder" columns="1" style="font-weight: bolder;color: #0033FF;">
+                    Nota: Confirmar el tipo de trámite y el solicitante.
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="2">
+                    Cédula/RUC:
+                    <p:inputText readonly="true" size="40" value="#{inscribir.tm.cedularuc}"/>
+                    Propietario:
+                    <p:inputText readonly="true" size="40" value="#{inscribir.tm.propietario}"/>
+                    Tipo:
+                    <p:inputText readonly="true" size="40" value="#{inscribir.tm.tipo}"/>
+                    Descripción:
+                    <p:inputText readonly="true" size="40" value="#{inscribir.tm.descripcion}"/>
+                    Fecha:
+                    <p:inputText readonly="true" size="40" value="#{inscribir.tm.fecha}"/>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="2" style="margin: 0 auto;">
+                    <p:commandButton value="Ejecutar Servicio" icon="ui-icon-notice" styleClass="btnStyle" oncomplete="PF('dlgValidacion').hide()"
+                                     actionListener="#{inscribir.ejecutarServicio()}" update="formNuevInsc:tVdetalle"/>
+                    <p:commandButton value="Cancelar" icon="ui-icon-cancel" styleClass="btnStyle" oncomplete="PF('dlgValidacion').hide()"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

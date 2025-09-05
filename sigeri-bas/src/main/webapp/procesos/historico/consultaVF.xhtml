@@ -1,0 +1,487 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Consultas VISUAL</ui:define>
+    <ui:insert name="header" >
+
+    </ui:insert>
+    <ui:define name="content">
+        <h:form id="mainForm" prependId="false">
+            <div class="ui-fluid">
+                <div class="ui-g">
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h5>Consulta de datos históricos</h5>
+                            <p:panelGrid  columns="2" columnClasses="ui-g-12 ui-md-8,ui-g-12 ui-md-4" layout="grid" style="margin-bottom: 10px;">
+                                <p:panelGrid style="width: 100%;" styleClass="ui-panelgrid-blank form-group form-elements" columns="6" columnClasses="ui-g-12 ui-md-1,ui-g-12 ui-md-3,ui-g-12 ui-md-1,ui-g-12 ui-md-3,ui-g-12 ui-md-1,ui-g-12 ui-md-3">
+                                    Desde:
+                                    <p:calendar value="#{historicoView.desde}" pattern="dd/MM/yyyy" mask="true"/>
+                                    Hasta:
+                                    <p:calendar value="#{historicoView.hasta}" pattern="dd/MM/yyyy" mask="true"/>
+                                    Año:
+                                    <p:inputText id="anio" value="#{historicoView.anio}" maxlength="4"
+                                                 onkeypress="focusNextOnEnter(event, 'incripcion')"
+                                                 > <p:keyFilter regEx="/[\d]/"/> </p:inputText>
+                                    Tipo:
+                                    <p:selectOneMenu value="#{historicoView.tipoBusqueda}" >
+                                        <f:selectItem itemLabel="TRASPASOS" itemValue="1" />
+                                        <f:selectItem itemLabel="GRAVAMENES" itemValue="2" />
+                                    </p:selectOneMenu>
+                                    Cliente:
+                                    <p:inputText value="#{historicoView.cliente}" onkeypress="focusNextOnEnter(event, 'anio')"/>
+                                    Nº Insc.:
+                                    <p:inputText id="incripcion" value="#{historicoView.inscripcion}" maxlength="6" > <p:keyFilter regEx="/[\d]/" preventPaste="false"/> </p:inputText>
+                                </p:panelGrid>
+                                <h:panelGroup id="infoCert">
+                                    <p:dataTable id="tbCertificados" var="cer" value="#{historicoView.certificadosVisual}" rendered="#{historicoView.tipoBusqueda eq 1}"
+                                                 scrollable="true" scrollHeight="100" emptyMessage="No existen certificados.">
+                                        <f:facet name="header">
+                                            CERTIFICADOS
+                                        </f:facet>
+                                        <p:column headerText="Nombre">
+                                            <h:outputText value="#{cer.nombreArchivo}" />
+                                        </p:column>
+                                        <p:column style="width:32px;text-align: center">
+                                            <p:commandLink actionListener="#{historicoView.verCertificadoVisualFAC(cer)}" title="Ver Certificado">
+                                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                                            </p:commandLink>                                            
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </p:panelGrid>
+                            <center>
+                                <p:commandButton value="Buscar" actionListener="#{historicoView.buscar()}" update="dataFind,infoCert"
+                                                 styleClass="btnStyle" icon="ui-icon-search" style="width: auto;"/>
+                            </center>
+                            <h:panelGroup id="dataFind" style="padding-top: 10px;" >
+                                <p:panelGrid  columns="2" columnClasses="ui-g-12 ui-md-8,ui-g-12 ui-md-4" layout="grid" rendered="#{historicoView.tipoBusqueda eq 1}" style="margin-top: 10px;">
+                                    <p:dataTable id="dtActosH" widgetVar="dtActosH" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                 rendered="#{historicoView.tipoBusqueda eq 1}" paginatorAlwaysVisible="false"
+                                                 currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 value="#{historicoView.traspasos}" var="ac" emptyMessage="No se encontraron resultados." 
+                                                 resizableColumns="true" scrollWidth="150%" scrollable="true" 
+                                                 selectionMode="single" selection="#{historicoView.clienteActo}" rowIndexVar="indexInd" rowKey="#{ac.pk}" >
+                                        <p:ajax event="rowSelect" listener="#{historicoView.onRowSelectClienteActo}" update="tbCertificados,pnlObservTraspaso,infoTraspaso,tbGravActo,tbAnteActo,tbPostActo" />
+                                        <p:column width="5">
+                                            <p:rowToggler />
+                                        </p:column>
+                                        <p:column headerText="Ver" width="15" rendered="false">
+                                            <p:commandLink actionListener="#{historicoView.verInfoMovimiento(ac)}">
+                                                <p:graphicImage value="/resources/icons/escritura.png" height="16"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column headerText="Año" width="20">
+                                        <!--<p:column headerText="Año" width="15" sortBy="# {ac.anio}" filterMatchMode="exact">-->
+                                            <h:outputText value="#{ac.anio}"/>
+                                        </p:column>
+                                        <p:column headerText="Inscripcion" width="20" sortBy="# {ac.inscripcion}" filterBy="# {ac.inscripcion}" filterFunction="# {historicoView.filterByInscripcion}" >
+                                        <!--<p:column headerText="Inscr." width="20" sortBy="#{ac.inscripcion}">-->
+                                            <h:outputText value="#{ac.inscripcion}"/>
+                                        </p:column>
+                                        <p:column headerText="Fecha Ins." width="40" sortBy="#{ac.fechaInscripcion}">
+                                            <h:outputText value="#{ac.fechaInscripcion}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column  headerText="Compradores" filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                            <!--<p:column headerText="Compradores">-->
+                                            <h:outputText id ="colAdqui" value="#{ac.cliente}"/>
+                                            <p:tooltip for="colAdqui" value="#{ac.cliente}" position="top" />
+                                        </p:column>
+                                        <p:column  headerText="Vendedores" filterBy="#{ac.vendedor}" filterMatchMode="contains">
+                                            <!--<p:column headerText="Vendedores">-->
+                                            <h:outputText id="colTrasf" value="#{ac.vendedor}"/>
+                                            <p:tooltip for="colTrasf" value="#{ac.vendedor}" position="top" />
+                                        </p:column>
+                                        <p:column  headerText="Propiedad" filterBy="# {ac.ubicacionPropiedad}" filterMatchMode="contains">
+                                            <!--<p:column  headerText="Propiedad">-->
+                                            <h:outputText id="colContra" value="#{ac.ubicacionPropiedad}"/>
+                                            <p:tooltip for="colContra" value="#{ac.ubicacionPropiedad}" position="top" />
+                                        </p:column>
+                                        <p:column width="40" filterBy="#{ac.vendido}" headerText="Vendido" filterMatchMode="in">
+                                            <f:facet name="filter">
+                                                <p:selectCheckboxMenu label="Vendido" onchange="PF('dtActosH').filter()" scrollHeight="100" styleClass="custom-filter">
+                                                    <f:converter converterId="javax.faces.Integer" />
+                                                    <f:selectItem itemLabel="NO" itemValue="#{1}" />
+                                                    <f:selectItem itemLabel="PARCIAL" itemValue="#{2}" />
+                                                    <f:selectItem itemLabel="TOTAL" itemValue="#{3}" />
+                                                </p:selectCheckboxMenu>
+                                            </f:facet>
+                                            <h:outputText value="#{ac.vendido eq 1 ? 'NO' : ac.vendido eq 2 ? 'PARCIAL' : 'TOTAL'}" />
+                                        </p:column>
+                                        <p:column width="40" filterBy="#{ac.gravado}" headerText="Gravado" filterMatchMode="in">
+                                            <f:facet name="filter">
+                                                <p:selectCheckboxMenu label="Gravado" onchange="PF('dtActosH').filter()" scrollHeight="100" styleClass="custom-filter">
+                                                    <f:converter converterId="javax.faces.Integer" />
+                                                    <f:selectItem itemLabel="NO" itemValue="#{1}" />
+                                                    <f:selectItem itemLabel="PARCIAL" itemValue="#{2}" />
+                                                    <f:selectItem itemLabel="TOTAL" itemValue="#{3}" />
+                                                </p:selectCheckboxMenu>
+                                            </f:facet>
+                                            <h:outputText value="#{ac.gravado eq 1 ? 'NO' : ac.gravado eq 2 ? 'PARCIAL' : 'TOTAL'}" />
+                                        </p:column>
+                                        <p:column width="100" headerText="Contrato"  sortBy="# {ac.acto}" filterBy="# {ac.acto}" filterMatchMode="contains">
+                                        <!--<p:column width="60" headerText="Contrato" sortBy="#{ac.acto}">-->
+                                            <h:outputText id="actoColContra" value="#{ac.acto}"/>
+                                            <p:tooltip for="actoColContra" value="#{ac.acto}" position="top" />
+                                        </p:column>
+                                        <p:column headerText="Repertorio" width="40" sortBy="#{ac.repertorio}" filterBy="#{ac.repertorio}" filterMatchMode="contains" rendered="false">
+                                            <h:outputText value="#{ac.repertorio}"/>
+                                        </p:column>
+                                        <p:rowExpansion>
+                                            <p:panelGrid  columns="1" columnClasses="ui-g-12" styleClass="ui-panelgrid-blank form-group form-elements" style="border:0px none; background-color:transparent;">
+                                                <h:outputText value="LINDEROS:" style="font-weight: bold"/>
+                                                <p:textEditor id="observTraspaso"  value="#{ac.linderos}" readonly="true" toolbarVisible="false" />
+                                            </p:panelGrid>
+                                        </p:rowExpansion>
+                                    </p:dataTable>
+                                    <p:panelGrid id="pnlObservTraspaso" columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">
+                                        <f:facet name="header">
+                                            OBSERVACIONES
+                                        </f:facet>
+                                        <p:textEditor id="observTraspaso"  value="#{historicoView.observaciones}" readonly="true" toolbarVisible="false" />
+                                        <!--<p:inputTextarea id="observTraspaso" rows="10" cols="33" value="# {historicoView.observaciones}" autoResize="false" readonly="true"/>-->
+                                    </p:panelGrid>
+                                </p:panelGrid>
+                                <h:panelGroup id="infoTraspaso">
+                                    <p:panelGrid  columns="3" columnClasses="ui-g-12 ui-md-4" layout="grid" rendered="#{historicoView.tipoBusqueda eq 1}"
+                                                  style="border:0px none; background-color:transparent;">
+                                        <p:panelGrid  columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">  
+                                            <p:dataTable id="tbGravActo" widgetVar="tbGravActo" var="ac" value="#{historicoView.gravamenesByActo}" resizableColumns="true"
+                                                         selectionMode="single" selection="#{historicoView.gravamenesByActoSeleccionado}" rowKey="#{ac.id}"
+                                                         scrollable="true" scrollHeight="100" emptyMessage="No existen gravamenes.">
+                                                <p:ajax event="rowSelect" listener="#{historicoView.onRowSelectClienteActoGravamen}" update="observGravamen" />
+                                                <p:ajax event="rowUnselect" listener="#{historicoView.onRowUnselectClienteActoGravamen}" update="observGravamen"/>
+                                                <f:facet name="header">GRAVAMENES</f:facet>
+                                                <p:column headerText="Fecha" width="50">
+                                                    <h:outputText id="txtFechaGrav" value="#{ac.fechaInscripcion}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                    <p:tooltip for="txtFechaGrav" value="Institucion: #{ac.institucion}" position="top" />
+                                                </p:column>
+                                                <p:column headerText="Nro." width="60">
+                                                    <h:outputText id="txtNroGrav" value="#{ac.numeroGravamen}" />
+                                                    <p:tooltip for="txtNroGrav" value="Institucion: #{ac.institucion}" position="top" />
+                                                </p:column>
+                                                <p:column headerText="Gravamen" width="70">
+                                                    <h:outputText id="txtGrav" value="#{ac.acto}" />
+                                                    <p:tooltip for="txtGrav" value="Institucion: #{ac.institucion}" position="top" />
+                                                </p:column>
+                                                <!--<p:column headerText="Repertorio" width="80">
+                                                    <h:outputText value="# {ac.repertorio}" />
+                                                </p:column>-->
+                                                <!--<p:column headerText="Insitucion">
+                                                    <h:outputText value="# {ac.institucion}" />
+                                                </p:column>-->
+                                                <p:column filterBy="#{ac.estadoGravamen}" headerText="Estado" filterMatchMode="in">
+                                                    <f:facet name="filter">
+                                                        <p:selectCheckboxMenu label="Estado" onchange="PF('tbGravActo').filter()" scrollHeight="150" styleClass="custom-filter">
+                                                            <f:converter converterId="javax.faces.Integer" />
+                                                            <f:selectItem itemLabel="VIGENTE" itemValue="#{1}" />
+                                                            <f:selectItem itemLabel="PARCIAL" itemValue="#{2}" />
+                                                            <f:selectItem itemLabel="CANCELADO" itemValue="#{3}" />
+                                                        </p:selectCheckboxMenu>
+                                                    </f:facet>
+                                                    <h:outputText id="txtEstadoGrav" value="#{ac.estadoGravamen eq 1 ? 'VIGENTE' : ac.estadoGravamen eq 2 ? 'PARCIAL' : 'CANCELADO'}" />
+                                                    <p:tooltip for="txtEstadoGrav" value="Institucion: #{ac.institucion}" position="top" />
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dataTable id="tbAbvertenciaActo" var="ac" value="#{historicoView.advertenciasByActo}"
+                                                         selectionMode="single" selection="#{historicoView.gravamenesByActoSeleccionado}" rowKey="#{ac.id}"
+                                                         resizableColumns="true" scrollWidth="150%"
+                                                         scrollable="true" scrollHeight="100" emptyMessage="No existen advertencias.">
+                                                <p:ajax event="rowSelect" listener="#{historicoView.onRowSelectClienteActoGravamen}" update="observGravamen" />
+                                                <p:ajax event="rowUnselect" listener="#{historicoView.onRowUnselectClienteActoGravamen}" update="observGravamen"/>
+                                                <f:facet name="header">
+                                                    ADVERTENCIAS
+                                                </f:facet>
+                                                <p:column headerText="Fecha" width="30">
+                                                    <h:outputText value="#{ac.fechaInscripcion}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Referencia">
+                                                    <h:outputText value="#{ac.acto}" />
+                                                </p:column>
+
+                                                <p:column headerText="Advertencia">
+                                                    <h:outputText value="#{ac.institucion}" />
+                                                </p:column>
+                                                <p:column headerText="Estado" width="50">
+                                                    <h:outputText value="#{ac.estadoGravamen eq 1 ? 'VIGENTE' : ac.estadoGravamen eq 2 ? 'PARCIAL' : 'CANCELADO'}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:panelGrid columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">
+                                                <p:inputTextarea id="observGravamen" rows="6" cols="33" value="#{historicoView.observGravamen}"/>
+                                            </p:panelGrid>
+                                        </p:panelGrid>
+                                        <p:panelGrid  columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">  
+                                            <p:dataTable id="tbAnteActo" var="ac" value="#{historicoView.anteriores}"
+                                                         selectionMode="single" selection="#{historicoView.anterioreSeleccionado}" rowKey="#{ac.id}"
+                                                         resizableColumns="true" 
+                                                         scrollable="true" scrollHeight="100" emptyMessage="No existen antecedentes anteriores.">
+                                                <p:ajax event="rowSelect"  update="dataFind" listener="#{historicoView.onRowSelectClienteActoAnterior}"/>
+                                                <p:ajax event="rowUnselect" update="dataFind" listener="#{historicoView.onRowSelectClienteActoAnterior}"/>
+                                                <f:facet name="header">
+                                                    ANTERIORES
+                                                </f:facet>
+                                                <p:column headerText="Fecha" width="60">
+                                                    <h:outputText id="txtFechaAnt" value="#{ac.fechaInscripcion}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                    <p:tooltip for="txtFechaAnt" value="Ubicacion: #{ac.ubicacionPropiedad}" position="top" />
+                                                </p:column>
+                                                <p:column headerText="Incripcion" width="70">
+                                                    <h:outputText id="txtInscAnt" value="#{ac.anio}#{ac.inscripcion}" />
+                                                    <p:tooltip for="txtInscAnt" value="Ubicacion: #{ac.ubicacionPropiedad}" position="top" />
+                                                </p:column>
+                                                <p:column headerText="Contrato">
+                                                    <h:outputText id="txtActoAnt" value="#{ac.acto}" />
+                                                    <p:tooltip for="txtActoAnt" value="Ubicacion: #{ac.ubicacionPropiedad}" position="top" />
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dataTable id="tbPostActo" var="ac" value="#{historicoView.posteriores}"
+                                                         selectionMode="single" selection="#{historicoView.posteriorSeleccionado}" rowKey="#{ac.id}"
+                                                         resizableColumns="true" 
+                                                         scrollable="true" scrollHeight="100" emptyMessage="No existen antecedentes posteriores.">
+                                                <p:ajax event="rowSelect"  update="dataFind" listener="#{historicoView.onRowSelectClienteActoPosterior}"/>
+                                                <p:ajax event="rowUnselect" update="dataFind" listener="#{historicoView.onRowSelectClienteActoPosterior}"/>
+                                                <f:facet name="header">
+                                                    POSTERIORES
+                                                </f:facet>
+                                                <p:column headerText="Fecha" width="60">
+                                                    <h:outputText id="txtFechaPos" value="#{ac.fechaInscripcion}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </h:outputText>
+                                                    <p:tooltip for="txtFechaPos" value="Ubicacion: #{ac.ubicacionPropiedad}" position="top" />
+                                                </p:column>
+                                                <p:column headerText="Incripcion" width="70">
+                                                    <h:outputText id="txtInscPos" value="#{ac.inscripcion}" />
+                                                    <p:tooltip for="txtInscPos" value="Ubicacion: #{ac.ubicacionPropiedad}" position="top" />
+                                                </p:column>
+                                                <p:column headerText="Contrato">
+                                                    <h:outputText id="txtActoPos" value="#{ac.acto}" />
+                                                    <p:tooltip for="txtActoPos" value="Ubicacion: #{ac.ubicacionPropiedad}" position="top" />
+                                                </p:column>
+                                            </p:dataTable>                                                   
+                                        </p:panelGrid>
+
+                                        <p:panelGrid  columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">  
+                                            <p:dataTable id="tbCompradores" var="ac" value="#{historicoView.compradores}"
+                                                         scrollable="true" scrollHeight="150" emptyMessage="No existen compradores.">
+                                                <f:facet name="header">
+                                                    COMPRADOR(ES)
+                                                </f:facet>
+                                                <p:column headerText="Nombre">
+                                                    <h:outputText value="#{ac.nombre}" />
+                                                </p:column>
+
+                                            </p:dataTable>
+                                            <p:dataTable id="tbVendedores" var="ac" value="#{historicoView.vendedores}"
+                                                         scrollable="true" scrollHeight="150" emptyMessage="No existen vendedores.">
+                                                <f:facet name="header">
+                                                    VENDEDOR(ES)
+                                                </f:facet>
+                                                <p:column headerText="Nombre">
+                                                    <h:outputText value="#{ac.nombre}" />
+                                                </p:column>
+                                            </p:dataTable>                                                  
+                                        </p:panelGrid>
+                                    </p:panelGrid>
+                                    <p:panelGrid  columns="2" columnClasses="ui-g-12 ui-md-9,ui-g-12 ui-md-3" layout="grid" rendered="#{historicoView.tipoBusqueda eq 2}" style="margin-top: 10px;">
+                                        <p:dataTable id="dtGravamenes" widgetVar="dtGravamenes" paginator="true" rows="5" rowsPerPageTemplate="5,10,15,20,50" paginatorPosition="top" 
+                                                     resizableColumns="true" scrollWidth="130%" scrollable="true"
+                                                     currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     value="#{historicoView.gravamenes}" var="ac" emptyMessage="No se encontraron resultados."  
+                                                     selectionMode="single" selection="#{historicoView.gravamenenSeleccionado}" rowKey="#{ac.id}"
+                                                     rowIndexVar="indexInd" >
+                                            <p:ajax event="rowSelect" listener="#{historicoView.onRowSelectGravamen}" update="observGravamenActo,tbGravRelacionados,observGravamenRelac,tbDeudoresRelacionados" />
+                                            <p:ajax event="rowUnselect" listener="#{historicoView.onRowUnselectGravamen}" update="observGravamenActo,tbGravRelacionados,observGravamenRelac,tbDeudoresRelacionados"/>
+                                            <p:column headerText="Fecha" width="40" sortBy="#{ac.fechaInscripcion}">
+                                                <h:outputText value="#{ac.fechaInscripcion}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Año" width="20" sortBy="#{ac.anio}" filterBy="#{ac.anio}" filterMatchMode="exact">
+                                                <h:outputText value="#{ac.anio}"/>
+                                            </p:column>
+                                            <p:column headerText="Nro" width="30" sortBy="#{ac.numero}" filterBy="#{ac.numero}"  filterFunction="#{historicoView.filterByInscripcion}">
+                                                <h:outputText value="#{ac.numero}"/>
+                                            </p:column>
+                                            <p:column headerText="Gravamen" width="60" sortBy="#{ac.acto}" filterBy="#{ac.acto}"  filterMatchMode="contains">
+                                                <h:outputText value="#{ac.acto}"/>
+                                            </p:column>
+                                            <p:column filterBy="#{ac.tipoGravamen}" width="40" headerText="Tipo"  filterMatchMode="in">
+                                                <f:facet name="filter">
+                                                    <p:selectCheckboxMenu label="Tipos" onchange="PF('dtGravamenes').filter()" scrollHeight="150" styleClass="custom-filter">
+                                                        <f:selectItem itemLabel="REAL" itemValue="R" />
+                                                        <f:selectItem itemLabel="PERSONAL" itemValue="P" />              
+                                                    </p:selectCheckboxMenu>
+                                                </f:facet>
+                                                <h:outputText value="#{ac.tipoGravamen eq 'R' ? 'REAL' : 'PERSONAL'}" />
+                                            </p:column>
+                                            <p:column width="40" filterBy="#{ac.estadoGravamen}" headerText="Estado" filterMatchMode="in">
+                                                <f:facet name="filter">
+                                                    <p:selectCheckboxMenu label="Estado" onchange="PF('dtGravamenes').filter()" scrollHeight="150" styleClass="custom-filter">
+                                                        <f:converter converterId="javax.faces.Integer" />
+                                                        <f:selectItem itemLabel="VIGENTE" itemValue="#{1}" />
+                                                        <f:selectItem itemLabel="PARCIAL" itemValue="#{2}" />
+                                                        <f:selectItem itemLabel="CANCELADO" itemValue="#{3}" />
+                                                    </p:selectCheckboxMenu>
+                                                </f:facet>
+                                                <h:outputText value="#{ac.estadoGravamen eq 1 ? 'VIGENTE' : ac.estadoGravamen eq 2 ? 'PARCIAL' : 'CANCELADO'}" />
+                                            </p:column>
+                                            <p:column headerText="Deudor" filterBy="#{ac.cliente}" filterMatchMode="contains">
+                                                <h:outputText id="txtDeudor" value="#{ac.cliente}"/>
+                                                <p:tooltip for="txtDeudor" value="#{ac.cliente}" position="top" />
+                                            </p:column>
+                                            <p:column headerText="Institucion"  sortBy="#{ac.institucion}" filterBy="#{ac.institucion}"  filterMatchMode="contains">
+                                                <h:outputText id="txtInstitucion" value="#{ac.institucion}"/>
+                                                <p:tooltip for="txtInstitucion" value="#{ac.institucion}" position="top" />
+                                            </p:column>                                           
+                                            <p:column headerText="Inscripción" width="60" filterBy="#{ac.inscripcion}" filterMatchMode="contains">
+                                                <h:outputText value="#{ac.inscripcion}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:panelGrid columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">
+                                            <f:facet name="header">
+                                                DETALLE TRASPASO
+                                            </f:facet>
+                                            <p:textEditor id="observGravamenActo"  value="#{historicoView.observaciones}" readonly="true" toolbarVisible="false" />
+                                            <!--<p:inputTextarea id="observGravamenActo" rows="12" cols="33" value="# {historicoView.observaciones}" autoResize="false" readonly="true"/>-->
+                                        </p:panelGrid>
+                                    </p:panelGrid>
+                                    <p:panelGrid  columns="3" columnClasses="ui-g-12 ui-md-6,ui-g-12 ui-md-3,ui-g-12 ui-md-3" layout="grid" style="border:0px none; background-color:transparent;">  
+                                        <p:dataTable id="tbGravRelacionados" var="ac" value="#{historicoView.gravamenesRelacionados}"
+                                                     rendered="#{historicoView.tipoBusqueda eq 2}" resizableColumns="true" 
+                                                     scrollable="true" scrollHeight="150" emptyMessage="No existen gravamenes.">
+                                            <f:facet name="header">
+                                                GRAVAMENES RELACIONADOS
+                                            </f:facet>
+                                            <p:column headerText="Fecha" width="60">
+                                                <h:outputText value="#{ac.fechaInscripcion}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Nro Gravamen" width="70">
+                                                <h:outputText value="#{ac.numeroGravamen}" />
+                                            </p:column>
+                                            <p:column headerText="Gravamen" width="80">
+                                                <h:outputText value="#{ac.acto}" />
+                                            </p:column>
+                                            <p:column headerText="Estado" width="60">
+                                                <h:outputText value="#{ac.estadoGravamen eq 1 ? 'VIGENTE' : ac.estadoGravamen eq 2 ? 'PARCIAL' : 'CANCELADO'}" />
+                                            </p:column>
+                                            <p:column headerText="Institucion">
+                                                <h:outputText id="txtInstGrav" value="#{ac.institucion}" />
+                                                <p:tooltip for="txtInstGrav" value="#{ac.institucion}" position="top" />
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:dataTable id="tbDeudoresRelacionados" var="ac" value="#{historicoView.deudores}"
+                                                     rendered="#{historicoView.tipoBusqueda eq 2}" resizableColumns="true" 
+                                                     scrollable="true" scrollHeight="150" emptyMessage="No existen deduores.">
+                                            <f:facet name="header">
+                                                DEUDORES RELACIONADOS
+                                            </f:facet>
+                                            <p:column headerText="Nombre" width="70">
+                                                <h:outputText value="#{ac.nombre}" />
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:panelGrid rendered="#{historicoView.tipoBusqueda eq 2}" columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">
+                                            <f:facet name="header">
+                                                DETALLE GRAVEMEN
+                                            </f:facet>
+                                            <p:inputTextarea id="observGravamenRelac" rows="12" cols="33" value="#{historicoView.observGravamen}" autoResize="false" readonly="true"/>
+                                        </p:panelGrid>
+                                    </p:panelGrid>
+                                </h:panelGroup>
+
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgInfoTraspaso" header="Detalles del movimiento" widgetVar="dlgInfoTraspaso" resizable="false"
+                  modal="true" position="center">
+            <h:form id="frmInfoTraspaso">
+                <p:panelGrid  columns="2" columnClasses="ui-g-12 ui-md-5,ui-g-12 ui-md-7" layout="grid" style="border:0px none; background-color:transparent;">
+                    <p:panelGrid  columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">  
+                        <p:dataTable  var="ac" value="#{historicoView.anteriores}"
+                                      selectionMode="single" selection="#{historicoView.anterioreSeleccionado}" rowKey="#{ac.id}"
+                                      resizableColumns="true" scrollWidth="100%"
+                                      scrollable="true" scrollHeight="100" emptyMessage="No existen antecedentes anteriores.">
+                            <f:facet name="header">
+                                ANTERIORES
+                            </f:facet>
+                            <p:column headerText="Fecha" width="60">
+                                <h:outputText value="#{ac.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Incripcion" width="70">
+                                <h:outputText value="#{ac.anio}#{ac.inscripcion}" />
+                            </p:column>
+                            <p:column headerText="Contrato">
+                                <h:outputText value="#{ac.acto}" />
+                            </p:column>
+
+                        </p:dataTable>
+                        <p:dataTable  var="ac" value="#{historicoView.posteriores}"
+                                      selectionMode="single" selection="#{historicoView.posteriorSeleccionado}" rowKey="#{ac.id}"
+                                      resizableColumns="true" scrollWidth="100%"
+                                      scrollable="true" scrollHeight="100" emptyMessage="No existen antecedentes posteriores.">
+                            <f:facet name="header">
+                                POSTERIORES
+                            </f:facet>
+                            <p:column headerText="Fecha" width="60">
+                                <h:outputText value="#{ac.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Incripcion" width="70">
+                                <h:outputText value="#{ac.inscripcion}" />
+                            </p:column>
+                            <p:column headerText="Contrato">
+                                <h:outputText value="#{ac.acto}" />
+                            </p:column>
+                        </p:dataTable>    
+                        <p:dataTable var="ac" value="#{historicoView.compradores}"
+                                     scrollable="true" scrollHeight="150" emptyMessage="No existen compradores.">
+                            <f:facet name="header">
+                                ADQUIRIENTE(S)
+                            </f:facet>
+                            <p:column headerText="Nombre">
+                                <h:outputText value="#{ac.nombre}" />
+                            </p:column>
+
+                        </p:dataTable>
+                        <p:dataTable var="ac" value="#{historicoView.vendedores}"
+                                     scrollable="true" scrollHeight="150" emptyMessage="No existen vendedores.">
+                            <f:facet name="header">
+                                TRASFIRIENTE(S)
+                            </f:facet>
+                            <p:column headerText="Nombre">
+                                <h:outputText value="#{ac.nombre}" />
+                            </p:column>
+                        </p:dataTable>     
+                    </p:panelGrid>
+                    <p:panelGrid  columns="1" columnClasses="ui-g-12" layout="grid" style="border:0px none; background-color:transparent;">  
+
+                    </p:panelGrid>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

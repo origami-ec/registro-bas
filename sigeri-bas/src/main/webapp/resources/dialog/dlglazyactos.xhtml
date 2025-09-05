@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <ui:include src="styleTemplete.xhtml" />
+        <title>Contratos de Inscripción</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable value="#{dlgLazyActos.lazy}" var="actos1" paginator="true" lazy="true" paginatorPosition="bottom"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rows="8" rowsPerPageTemplate="8,15,20" emptyMessage="No hay elementos." filterEvent="enter">
+                <!--<p:column headerText="Abrev." filterBy="# {actos1.abreviatura}" filterStyle="width: 75%" width="100">
+                    <p:outputLabel value="# {actos1.abreviatura}" />
+                </p:column>-->
+                <p:column headerText="Nombre" filterStyle="width: 75%" filterBy="#{actos1.nombre}">
+                    <p:outputLabel value="#{actos1.nombre}" />
+                </p:column>
+                <!--<p:column headerText="Libro" width="120">
+                    <p:outputLabel value="# {actos1.libro.nombre}" />
+                </p:column>-->
+                <p:column headerText="**" width="50">
+                    <p:commandButton icon="pi pi-forward" actionListener="#{dlgLazyActos.selectObject(actos1)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

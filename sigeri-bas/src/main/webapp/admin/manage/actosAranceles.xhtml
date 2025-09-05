@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Aranceles y Actos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">ARANCELES Y ACTOS/CONTRATOS</h3></center>
+            <p:accordionPanel id="accMantenimiento" activeIndex="1">
+                <p:tab title="ARANCELES (VALORES DE ACTOS)" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtArancel" value="#{mantenimientos.arancelesLazy}" var="ar" style="width: 60%;float: left;"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" rowsPerPageTemplate="10,20,50" emptyMessage="No hay elementos." filterEvent="enter" paginator="true"
+                                 lazy="true" resizableColumns="true">
+                        <p:column headerText="Denominacion" sortBy="#{ar.denominacion}" filterBy="#{ar.denominacion}" filterStyle="width: 95%">
+                            <p:outputLabel id="lblDenominacion" value="#{ar.denominacion}" />
+                            <p:tooltip for="lblDenominacion" value="#{ar.denominacion}" position="top"/>
+                        </p:column>
+                        <p:column headerText="Tipo Registro" width="80">
+                            <p:outputLabel value="PROPIEDAD" rendered="#{ar.abreviatura eq 'PRO'}"/>
+                            <p:outputLabel value="MERCANTIL" rendered="#{ar.abreviatura eq 'MER'}"/>
+                        </p:column>
+                        <p:column headerText="Tipo Arancel" width="90">
+                            <p:outputLabel value="#{ar.tipoArancel}" />
+                        </p:column>
+                        <p:column headerText="Valor" width="50">
+                            <p:outputLabel value="#{ar.valorArancel()}" />
+                        </p:column>
+                        <p:column headerText="***" width="20">
+                            <p:commandButton actionListener="#{mantenimientos.selectArancel(ar)}" icon="pi pi-pencil" title="Editar" 
+                                             process="@this" update="mainForm:accMantenimiento:pnlArancel">
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlArancel" header="Información del Arancel" style="width: 39%;float: right;">
+                        <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;">
+                            Denominación:
+                            <p:inputText value="#{mantenimientos.arancel.denominacion}" maxlength="100" style="text-transform: uppercase;width: 350px;"/>
+                            Tipo Registro:
+                            <p:selectOneMenu  value="#{mantenimientos.arancel.abreviatura}" 
+                                              style="display: block; margin-top: 3px; min-width: 0px !important; width: 200px !important;">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="null"/>
+                                <f:selectItem itemLabel="PROPIEDAD" itemValue="PRO"/>
+                                <f:selectItem itemLabel="MERCANTIL" itemValue="MER" itemDisabled="true"/>
+                            </p:selectOneMenu>
+                            Tipo Arancel:
+                            <p:selectOneMenu  value="#{mantenimientos.arancel.codigo}" 
+                                              style="display: block; margin-top: 3px; min-width: 0px !important; width: 200px !important;">
+                                <f:selectItem itemLabel="NORMAL" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="50% DEL AVALUO" itemValue="#{2}"/>
+                                <f:selectItem itemLabel="30% DEL AVALUO" itemValue="#{3}"/>
+                                <!--<f:selectItem itemLabel="LEY MERCADOS Y VALORES" itemValue="# {3}"/>-->
+                            </p:selectOneMenu>
+                            Valor:
+                            <p:inputNumber id="valor_arancel" value="#{mantenimientos.arancel.valor}" disabled="#{mantenimientos.soloCuantia}"/>
+                            Sobre Cuantía:
+                            <p:selectBooleanCheckbox value="#{mantenimientos.soloCuantia}">
+                                <p:ajax update="valor_arancel" listener="#{mantenimientos.selectSoloCuantia()}" />
+                            </p:selectBooleanCheckbox>
+                            <p:spacer width="5"/>
+                            <p:commandButton value="Guardar" icon="pi pi-save" update="dtArancel, pnlArancel" 
+                                             actionListener="#{mantenimientos.saveArancel()}" process="pnlArancel"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="ACTOS DE ORDENES DE PAGO" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGrid style="margin: 0 auto;width: 70%;">
+                        <p:commandButton value="Nuevo Acto" icon="pi pi-plus" actionListener="#{mantenimientos.showDlgActo()}"
+                                         style="float: right;"/>
+                    </h:panelGrid>
+                    <p:dataTable id="dtActos" value="#{mantenimientos.actos}" var="actos" lazy="true" resizableColumns="true"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" 
+                                 style="margin: 0 auto;width: 70%;">
+                        <p:column headerText="Nombre" sortBy="#{actos.nombre}" filterBy="#{actos.nombre}" filterStyle="width: 95%">
+                            <p:outputLabel id="lblNombreActo" value="#{actos.nombre}" />
+                            <p:tooltip for="lblNombreActo" value="#{actos.nombre}" position="top"/>
+                        </p:column>
+                        <p:column headerText="Cod.Olimpo" width="150">
+                            <p:outputLabel value="#{actos.codigoAnterior}" />
+                        </p:column>
+                        <p:column headerText="Libro" width="150">
+                            <p:outputLabel value="#{actos.libro.nombre}" />
+                        </p:column>
+                        <p:column headerText="Valor" width="60" >
+                            <p:outputLabel value="#{actos.arancel.valorArancel()}" />
+                        </p:column>
+                        <p:column headerText="Tipo Arancel" width="90">
+                            <p:outputLabel value="#{actos.arancel.tipoArancel}" />
+                        </p:column>
+                        <p:column headerText="Editar" width="40" style="text-align: center;">
+                            <p:commandButton actionListener="#{mantenimientos.selectActo(actos)}" 
+                                             icon="pi pi-pencil" title="Editar"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog header="Informacion del Contrato" widgetVar="dlgNewActo" resizable="false" modal="true">
+            <h:form id="formContrato">
+                <h:panelGrid columns="2" style="font-weight: bolder;">
+                    Nombre:
+                    <p:inputText value="#{mantenimientos.acto.nombre}" style="width: 300px;text-transform: uppercase;" />
+                    Codigo Olimpo:
+                    <p:inputNumber value="#{mantenimientos.acto.codigoAnterior}" style="width: 300px;" required="true"
+                                   decimalPlaces="0" thousandSeparator="" />
+                    Tipo Documento:
+                    <p:selectOneMenu  value="#{mantenimientos.acto.solvencia}" 
+                                      style="display: block; margin-top: 3px; min-width: 0px !important; width: 90% !important;">
+                        <f:selectItem itemLabel="CONTRATO" itemValue="#{false}"/>
+                        <f:selectItem itemLabel="CERTIFICADO" itemValue="#{true}"/>
+                        <p:ajax update="librosActos" event="change"/>
+                    </p:selectOneMenu>
+                    Libro:
+                    <p:selectOneMenu id="librosActos" value="#{mantenimientos.libroSeleccionado}" filter="true" converter="entityConverter" 
+                                     style="display: block; margin-top: 3px; min-width: 0px !important; width: 90% !important;" 
+                                     disabled="#{mantenimientos.acto.solvencia}" var="lib">
+                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                        <f:selectItems value="#{mantenimientos.libros}" var="li" itemLabel="#{li.nombre}" itemValue="#{li}"/>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nombre"/>
+                            </f:facet>
+                            <h:outputText value="#{lib.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Registro"/>
+                            </f:facet>
+                            <h:outputText value="Propiedad" rendered="#{lib.propiedad eq true}"/>
+                            <h:outputText value="Mercantil" rendered="#{lib.propiedad eq false}"/>
+                        </p:column>
+                    </p:selectOneMenu>
+                    Arancel:
+                    <p:selectOneMenu id="arancelActo" value="#{mantenimientos.arancelSeleccionado}" filter="true" converter="entityConverter" 
+                                     style="display: block; margin-top: 3px; min-width: 0px !important; width: 90% !important;" 
+                                     filterMatchMode="startsWith" var="aran">
+                        <p:ajax update="arancelActo" />
+                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                        <f:selectItems value="#{mantenimientos.aranceles}" var="ar1" itemLabel="#{ar1.denominacion}" itemValue="#{ar1}"/>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                            <h:outputText value="$#{aran.valor}" rendered="#{aran.valorFijo}"/>
+                            <h:outputText value="CUANTÍA" rendered="#{!aran.valorFijo}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Nombre"/></f:facet>
+                            <h:outputText value="#{aran.denominacion}"/>
+                        </p:column>
+                    </p:selectOneMenu>
+                    Tipo Acto:
+                    <p:selectOneMenu  value="#{mantenimientos.cobro}" 
+                                      style="display: block; margin-top: 3px; min-width: 0px !important; width: 90% !important;" >
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{0}"/>
+                        <f:selectItem itemLabel="PROPIEDAD" itemValue="#{1}"/>
+                        <f:selectItem itemLabel="MERCANTIL" itemValue="#{2}" itemDisabled="true" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <center><p:commandButton icon="pi pi-save" value="Guardar" actionListener="#{mantenimientos.saveActosPago()}"/></center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

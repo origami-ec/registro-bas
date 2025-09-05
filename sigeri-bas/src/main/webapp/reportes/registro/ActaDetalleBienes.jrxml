@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ActaDetalleBienes" pageWidth="435" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="435" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="5f11f9fd-ea0c-4136-905e-07244485776e">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0FFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="negrita" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<subDataset name="Table Dataset 1" uuid="02770f48-6edd-4347-8c3e-156ed9e70b0b">
+		<queryString language="SQL">
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="P_MOVIMIENTO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select f.clave_catastral as codigo_predial, f.num_ficha, f.linderos,
+f.descripcion_bien, pa.descripcion as parroquia, f.tipo_ficha
+from app.reg_movimiento_ficha h
+left join app.reg_movimiento r on(h.movimiento=r.id)
+left join app.reg_ficha f on( h.ficha=f.id)
+left join app.cat_parroquia pa on pa.id = f.parroquia
+where r.id=$P{P_MOVIMIENTO};]]>
+	</queryString>
+	<field name="codigo_predial" class="java.lang.String"/>
+	<field name="num_ficha" class="java.lang.Long"/>
+	<field name="linderos" class="java.lang.String"/>
+	<field name="descripcion_bien" class="java.lang.String"/>
+	<field name="parroquia" class="java.lang.String"/>
+	<field name="tipo_ficha" class="java.lang.Long"/>
+	<group name="DetallesInmuebles">
+		<groupExpression><![CDATA[$F{codigo_predial}+$F{num_ficha}+$F{linderos}]]></groupExpression>
+		<groupHeader>
+			<band height="60" splitType="Stretch">
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="14" width="218" height="14" uuid="c1d9ee17-04ec-48bd-95a3-f090b0a90e1a"/>
+					<box leftPadding="2">
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo_predial} == null ? "NO REGISTRA" : $F{codigo_predial}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="negrita" mode="Opaque" x="0" y="0" width="218" height="14" backcolor="#CCCCCC" uuid="54ec341d-92af-472e-947d-76747c2d3f7d"/>
+					<box leftPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Cod.Catastral/Identificación/Chasis]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="219" y="14" width="80" height="14" uuid="427376d3-a86f-49a8-a84c-121c43c52994"/>
+					<box leftPadding="2">
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{num_ficha}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="0" y="42" width="435" height="13" uuid="51337c00-767a-4c5f-9296-35d9e8ab4980"/>
+					<box leftPadding="5"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descripcion_bien} == null ? $F{linderos} :
+$F{descripcion_bien} + "\n" + $F{linderos}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="negrita" x="0" y="28" width="181" height="14" uuid="94b0dbdd-2026-4c84-b959-e4c09ca3dfad"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Descripción del bien:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="negrita" mode="Opaque" x="219" y="0" width="80" height="14" backcolor="#CCCCCC" uuid="ecccde10-eb86-4ecc-b04b-7ee0e70d12c4"/>
+					<box leftPadding="3">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Nro. de Ficha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="negrita" mode="Opaque" x="300" y="0" width="135" height="14" backcolor="#CCCCCC" uuid="5fc9d2b8-de89-4a2b-863a-797c1df54500">
+						<printWhenExpression><![CDATA[$F{tipo_ficha} == 1L]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="3">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Parroquia]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="300" y="14" width="135" height="14" uuid="67eb4fa2-b679-419e-a32d-9ddd261ee8ef">
+						<printWhenExpression><![CDATA[$F{tipo_ficha} == 1L]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2">
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{parroquia}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band splitType="Stretch"/>
+		</groupFooter>
+	</group>
+</jasperReport>

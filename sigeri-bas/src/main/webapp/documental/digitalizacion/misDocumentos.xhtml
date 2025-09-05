@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <!--<ui:define name="top"><h3>Mis documentos</h3></ui:define>-->
+    <ui:define name="title">Mis documentos</ui:define>
+    <ui:define name="content">
+        <center><h3 style="font-weight: bolder;">MIS DOCUMENTOS</h3></center>
+        <h:form id="formMain" prependId="false" >
+            <p:dataTable id="dtDocs" reflow="true" paginator="true" lazy="true" rows="10" widgetVar="dtDocs" var="archivo"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="10,20,30" rowIndexVar="i" filterEvent="enter" value="#{misDocumentosMB.lazyArchivos}" >
+                <p:column headerText="***" width="20" rendered="false">
+                    <p:outputLabel value="#{i + 1}" />
+                </p:column>
+                <p:column headerText="Tipo Indexación" field="tipoIndexacion" width="150" >
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('dtDocs').filter()" >
+                            <f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{misDocumentosMB.indices}" var="app" itemLabel="#{app.descripcion}" 
+                                           itemValue="#{app.descripcion}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <p:outputLabel value="#{archivo.tipoIndexacion}" />
+                </p:column>
+                <p:column headerText="Nro Trámite" width="100" filterBy="#{archivo.numTramite}" filterMatchMode="equals">
+                    <p:outputLabel value="#{archivo.numTramite}"/>
+                </p:column>
+                <p:column headerText="Tipo de Proceso" filterBy="#{archivo.tramite}">
+                    <p:outputLabel value="#{archivo.tramite}" />
+                </p:column>
+                <p:column headerText="Nombre Original" filterBy="#{archivo.detalleDocumento}">
+                    <p:outputLabel value="#{archivo.detalleDocumento}" />
+                </p:column>
+                <p:column headerText="Nombre Documental" filterBy="#{archivo.nombre}">
+                    <p:outputLabel value="#{archivo.nombre}" />
+                </p:column>
+                <p:column headerText="Descripción del Documento" width="200" >
+                    <p:outputLabel value="Páginas: " style="font-weight: bolder"/>
+                    <p:outputLabel value="#{archivo.numeroPaginas}" /> <br/>
+                    <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                    <p:outputLabel value="#{archivo.peso}" /><br/>
+                    <p:outputLabel value="Fecha: " style="font-weight: bolder"/>
+                    <p:outputLabel value="#{archivo.fecha}" >
+                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Acciones" width="100">
+                    <center>
+                        <p:commandLink actionListener="#{misDocumentosMB.visualizarDocumento(archivo)}" process="@this" 
+                                       style="margin-right: 10px;color: darkcyan;" title="Visualizar Documento">
+                            <i class="pi pi-eye" style="font-size: 1.5em; margin-right: 5px;"></i>
+                        </p:commandLink> 
+                        <p:spacer width="10" />
+                        <p:commandLink actionListener="#{misDocumentosMB.consultarArchivo(archivo.id)}" process="@this"
+                                       style="margin-right: 10px;color: darkred;" title="Corregir Indice" disabled="true" >
+                            <i class="pi pi-pencil" style="font-size: 1.5em; margin-right: 5px;"></i>
+                        </p:commandLink>
+                        <!--<p:spacer width="2" />
+                        <p:commandLink disabled="true" 
+                                       actionListener="# {misDocumentosMB.dlgConvertirArchivo(archivo)}" process="@this"
+                                       style="margin-right: 10px" title="Convertir">
+                            <i class="pi pi-refresh" style="font-size: 1.2em; margin-right: 5px;"></i>
+                        </p:commandLink>
+                        <p:spacer width="2" />
+                        <p:commandLink disabled="true" 
+                                       actionListener="# {misDocumentosMB.visualizarDocumento(archivo)}"  process="@this"
+                                       styleClass="edit" style="margin-right: 10px" title="Eliminar documento">
+                            <i class="pi pi-trash" style="font-size: 1.2em; margin-right: 5px;color: red;"></i>
+                        </p:commandLink> -->
+                    </center>
+                </p:column>
+            </p:dataTable>
+
+            <p:tabView id="tvDocs" dynamic="true" rendered="false" >
+                <p:tab title="Mis documentos" >
+
+                </p:tab>
+                <p:tab title="Búsqueda avanzada" id="tabBusqueda" rendered="false" >
+                    <p:panelGrid id="pnlIndex" columns="2" columnClasses="forty-percent, sixty-percent" styleClass="ui-panelgrid-blank" style="width: 100% !important" >
+                        <h:panelGroup id="pnlIndicesDatos">
+                            <p:outputLabel value="# trámite" style="width: 100%; font-weight: bolder"/><br/>
+                            <p:inputText id="numTramite" value="#{misDocumentosMB.numTramite}"  style="width: 100%" /> <br/>
+                            <p:outputLabel value="Indexación: " style="width: 100%; font-weight: bolder"/><br/>
+                            <p:selectOneMenu value="#{misDocumentosMB.indice}" converter="dtoConverter" style="width: 100%">
+                                <p:ajax update="dtIndicesFrm" />
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems var="i" value="#{misDocumentosMB.indices}" itemLabel="#{i.descripcion}" itemValue="#{i}"/>
+                            </p:selectOneMenu><br/>
+                            <p:outputLabel value="Búsqueda mediante descripción del documento" style="width: 100%; font-weight: bolder"/><br/>
+                            <p:inputText id="descripcionArchivo" value="#{misDocumentosMB.indice.descripcionArchivo}"  style="width: 100%" /> <br/><br/>
+                            <center>
+                                <p:commandButton value="Consultar indice"
+                                                 process="@this, descripcionArchivo, numTramite"
+                                                 update="@form"
+                                                 actionListener="#{misDocumentosMB.buscarArchivos()}" styleClass="rounded-button" icon="fa fa-search"/>
+                            </center>
+                        </h:panelGroup>
+                        <h:panelGroup id="pnlIndicesDet">
+                            <p:dataTable id="dtIndicesFrm" var="index" value="#{misDocumentosMB.indice.campos}" editable="true" lazy="false"> 
+                                <p:ajax event="rowEdit" listener="#{misDocumentosMB.onRowEdit}" />
+                                <p:ajax event="rowEditCancel" listener="#{misDocumentosMB.onRowCancel}" />
+                                <p:column headerText="Descripción" width="100">
+                                    <p:outputLabel value="* " style="color: red" rendered="#{index.obligatorio}"/>
+                                    <p:outputLabel value="#{index.descripcion}" />
+                                </p:column>
+                                <p:column headerText="Detalle">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <p:outputLabel value="#{index.detalle}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <br/>
+                                            <p:inputText id="modelInput" value="#{index.detalle}" style="width:100%;" rendered="#{index.tipoDato eq 'TEXTO'}"/>
+                                            <p:inputText id="text2" value="#{index.detalle}" rendered="#{index.tipoDato eq 'NUMERO'}" style="width:100%;">
+                                                <p:keyFilter mask="num" />
+                                            </p:inputText>
+                                            <p:selectBooleanButton onLabel="SI" offLabel="NO" value="#{index.detalle}" rendered="#{index.tipoDato eq 'LOGICO'}"
+                                                                   onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem;" />
+
+                                            <p:calendar id="datetime" value="#{index.detalle}"  style="width:100%; " 
+                                                        showOn="button" placeholder="yyyy-MM-dd" navigator="true"
+                                                        pattern="yyyy-MM-dd" rendered="#{index.tipoDato eq 'FECHA'}">
+                                                <f:convertDateTime pattern="yyyy-MM-dd" />
+                                            </p:calendar>
+
+                                            <p:selectOneMenu value="#{index.detalle}"  style="width:100%;" rendered="#{index.tipoDato eq 'CATEGORIA'}"> 
+                                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                                <f:selectItems var="i" value="#{index.categorias}" itemLabel="#{i}" itemValue="#{i}"/>
+                                            </p:selectOneMenu>
+                                            <br/>
+
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column style="width:6rem" headerText="***">
+                                    <p:rowEditor editTitle="Editar #{index.descripcion}" cancelTitle="Cancelar" saveTitle="Actualizar datos #{index.descripcion}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </p:panelGrid>
+                    <br/>
+                    <h:panelGroup id="pnlDtBusqueda">
+                        <p:dataTable id="dtDocsBusqueda" reflow="true" paginator="true" lazy="false" rows="10" widgetVar="dtDocsBusqueda"
+                                     rowsPerPageTemplate="10,20,30" rowIndexVar="i" rowKey="#{archivo.id}" filterEvent="enter"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     value="#{misDocumentosMB.archivosBusqueda}" var="archivo" 
+                                     emptyMessage="No se encontró ningún archivo"  
+                                     paginatorPosition="bottom" tableStyle="table-layout:auto">
+                            <p:column headerText="***" width="20">
+                                <p:outputLabel value="#{i + 1}" />
+                            </p:column>
+                            <p:column headerText="***" width="20">
+                                <p:rowToggler/>
+                            </p:column> 
+                            <p:column headerText="Tipo" > 
+                                <p:outputLabel value="#{archivo.tipoIndexacion}" />
+                            </p:column>
+                            <p:column headerText="# trámite" width="170" filterBy="#{archivo.numTramite}">
+                                <p:outputLabel value="#{archivo.numTramite}"/>
+                            </p:column> 
+                            <p:column headerText="Tipo de trámite" filterBy="#{archivo.tramite}">
+                                <p:outputLabel value="#{archivo.tramite}" />
+                            </p:column>
+                            <p:column headerText="Descripción del documento" filterBy="#{archivo.detalleDocumento}">
+                                <p:outputLabel value="#{archivo.detalleDocumento}" />
+                            </p:column>
+                            <p:column headerText="Archivo" filterBy="#{archivo.nombre}" width="160" >
+                                <p:outputLabel value="Archivo: " style="font-weight: bolder"/>
+                                <p:outputLabel value="#{archivo.nombre}" /> <br/>
+                                <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                                <p:outputLabel value="#{archivo.peso}" /><br/>
+                                <p:outputLabel value="Fecha: " style="font-weight: bolder"/>
+                                <p:outputLabel value="#{archivo.fecha}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                                </p:outputLabel>
+                            </p:column> 
+                            <p:column headerText="Acciones" width="170">
+                                <center>
+                                    <p:commandLink  actionListener="#{misDocumentosMB.visualizarDocumento(archivo)}"
+                                                    styleClass="edit" style="margin-right: 10px" title="Visualizar documento">
+                                        <i class="fa fa-file-pdf-o" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                    </p:commandLink> 
+                                </center>
+                            </p:column>
+                            <p:rowExpansion>
+                                <p:dataList value="#{archivo.detalles}" var="deta" >
+                                    <p:outputLabel value="#{deta.descripcion} " style="font-weight: bolder" /> 
+                                    <p:outputLabel value="#{deta.detalle}" rendered="#{deta.tipoDato ne 'FECHA'}"/> 
+                                    <p:outputLabel value="#{deta.detalle}" rendered="#{deta.tipoDato eq 'FECHA'}">
+                                        <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    </p:outputLabel>
+                                </p:dataList>
+                            </p:rowExpansion>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </p:tab>
+            </p:tabView>
+
+
+        </h:form>
+
+        <p:dialog id="dlgConversion" widgetVar="dlgConversion" width="250" height="200" header="Convertidor"
+                  modal="true" resizable="false" showEffect="fade" closeOnEscape="true">
+            <h:form prependId="false" id="frmConversion">
+                <h:panelGroup style="width: 100%">
+                    <p:outputLabel value="Escoja el tipo de conversión" style="font-weight: bold" />
+                </h:panelGroup><br/><br/>
+                <h:panelGroup style="width: 100%">
+                    <p:selectOneMenu value="#{misDocumentosMB.archivo.convertir}" style="width: 100%" panelStyleClass="hideDisabled" >
+                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                        <c:if test="#{misDocumentosMB.archivo.formato eq 'WORD'}">
+                            <f:selectItem itemLabel="WORD a PDF" itemValue="WORD_PDF" />
+                        </c:if>
+                        <c:if test="#{misDocumentosMB.archivo.formato eq 'EXCEL'}">
+                            <f:selectItem itemLabel="EXCEL a PDF" itemValue="EXCEL_PDF" />
+                        </c:if>
+                        <c:if test="#{misDocumentosMB.archivo.formato eq 'PDF'}">
+                            <f:selectItem itemLabel="PDF a WORD" itemValue="PDF_WORD" />
+                            <f:selectItem itemLabel="PDF a EXCEL" itemValue="PDF_EXCEL"  rendered="false"/>
+                            <f:selectItem itemLabel="PDF a TXT" itemValue="PDF_TXT" />
+                        </c:if>
+                        <c:if test="#{misDocumentosMB.archivo.formato eq 'TXT'}"> 
+                            <f:selectItem itemLabel="TXT a PDF" itemValue="TXT_PDF" />
+                        </c:if>
+                        <c:if test="#{misDocumentosMB.archivo.formato eq 'IMG'}">
+                            <f:selectItem itemLabel="TIFF" itemValue="IMG_TIFF" />
+                            <f:selectItem itemLabel="BMP" itemValue="IMG_BMP" />
+                            <f:selectItem itemLabel="WMF" itemValue="IMG_WMF" />
+                            <f:selectItem itemLabel="DIB" itemValue="IMG_DIB" />
+                            <f:selectItem itemLabel="GIF" itemValue="IMG_GIF" />
+                            <f:selectItem itemLabel="JPG" itemValue="IMG_JPG" />
+                            <f:selectItem itemLabel="TIF2" itemValue="IMG_TIF2" />
+                            <f:selectItem itemLabel="PCX" itemValue="IMG_PCX" />
+                        </c:if>
+                    </p:selectOneMenu>
+                </h:panelGroup><br/><br/>
+                <h:panelGroup style="width: 100%">
+                    <center>
+                        <p:commandButton value="Convertir"  
+                                         actionListener="#{misDocumentosMB.convertirArchivo()}" 
+                                         icon="fa fa-save"   />
+                    </center>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+
+
+    </ui:define>
+</ui:composition>
