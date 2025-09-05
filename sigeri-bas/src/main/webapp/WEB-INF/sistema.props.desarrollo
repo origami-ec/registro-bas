@@ -1,13 +1,13 @@
 [sistema]
 ejbRuta = java:global/sigeri_bas/
 
-rutaAnexos = D:/server-files/sigeri/anexos/
-rutaTemporales = D:/server-files/sigeri/temp/
-rutaFirmados = D:/server-files/sigeri/fd/
-rutaFirmaEC = D:/server-files/firmas/
-rutaImagenes = D:/server-files/origami/imagenes
-rutaTitulos = D:/server-files/sigeri/titulos/
-rutaDevolutivas = D:/server-files/sigeri/devolutivas/
+rutaAnexos = /server-files/anexos/
+rutaTemporales = /server-files/temp/
+rutaFirmados = /server-files/fd/
+rutaFirmaEC = /server-files/firmas/
+rutaImagenes = /server-files/imagenes/
+rutaTitulos = /server-files/titulos/
+rutaDevolutivas = /server-files/devolutivas/
 formatoArchivos = /(\\.|\\/)(gif|jpe?g|png|pdf|xlsx|docx|xlsm|dwg|shp|doc|xls|ppt|pptx|tif|txt)$/
 
 [ejbs]
@@ -22,33 +22,33 @@ region = EC
 [mail]
 smtp_Host = smtp.gmail.com
 smtp_Port = 587
-correo = tramitesventanillaonline@registrodelapropiedadsd.gob.ec
-pass = tramites02
+correo = origami.supergold@gmail.com
+pass = nonosawkzhpymdme
 ssl = true
 
 [condb]
 driverClass = org.postgresql.Driver
-url = jdbc:postgresql://192.188.57.85:5432/sigeri_bas
+url = jdbc:postgresql://192.168.10.124:5432/sigeri_bas
 username = sisapp
-password = sis@pp2023
+password = sisapp98
 minPoolConSize = 1
 maxPoolConsize = 2
 maxIdleTime = 1800
 
 [activiti]
 driverClass = org.postgresql.Driver
-url = jdbc:postgresql://192.188.57.85:5432/sigeri_bas
+url = jdbc:postgresql://192.168.10.124:5432/sigeri_bas
 username = sisapp
-password = sis@pp2023
+password = sisapp98
 minPoolConSize = 1
 maxPoolConsize = 2
 maxIdleTime = 1800
 
 [docdb]
 driverClass = org.postgresql.Driver
-url = jdbc:postgresql://192.188.57.85:5432/sigeri_bas_archivos
+url = jdbc:postgresql://192.168.10.124:5432/sigeri_bas_archivos
 username = sisapp
-password = sis@pp2023
+password = sisapp98
 minPoolConSize = 1
 maxPoolConsize = 2
 maxIdleTime = 1800
