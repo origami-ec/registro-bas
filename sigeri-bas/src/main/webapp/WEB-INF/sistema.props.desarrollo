@@ -29,8 +29,8 @@ ssl = true
 [condb]
 driverClass = org.postgresql.Driver
 url = jdbc:postgresql://192.168.10.124:5432/sigeri_bas
-username = sisapp
-password = sisapp98
+username = admin_db
+password = G7v$kP2#nL9!tQx@
 minPoolConSize = 1
 maxPoolConsize = 2
 maxIdleTime = 1800
@@ -38,8 +38,8 @@ maxIdleTime = 1800
 [activiti]
 driverClass = org.postgresql.Driver
 url = jdbc:postgresql://192.168.10.124:5432/sigeri_bas
-username = sisapp
-password = sisapp98
+username = admin_db
+password = G7v$kP2#nL9!tQx@
 minPoolConSize = 1
 maxPoolConsize = 2
 maxIdleTime = 1800
@@ -47,8 +47,8 @@ maxIdleTime = 1800
 [docdb]
 driverClass = org.postgresql.Driver
 url = jdbc:postgresql://192.168.10.124:5432/sigeri_bas_archivos
-username = sisapp
-password = sisapp98
+username = admin_db
+password = G7v$kP2#nL9!tQx@
 minPoolConSize = 1
 maxPoolConsize = 2
 maxIdleTime = 1800
